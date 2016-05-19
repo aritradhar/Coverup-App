@@ -20,6 +20,7 @@ public class App {
 	public App(String fileName)
 	{
 		this.fileName = fileName;
+		this.ServerpublicKey = Base64.getUrlDecoder().decode("sZQ2t2kz9I2lLBGOFZGMQu0p_9ePEL_FPblEg0lyETM=");
 	}
 	
 	public void extractMessage() throws IOException, NoSuchAlgorithmException
@@ -35,24 +36,31 @@ public class App {
 		}
 		br.close();
 		
-		JSONObject jObject = new JSONObject(sb);
-		this.version = jObject.getString("version");
-		this.message = jObject.getString("message");
+		JSONObject jObject = new JSONObject(sb.toString());
+			
 		this.signatureString = jObject.getString("signature");
+		this.message = jObject.getString("message").toString();
+		this.version = jObject.getString("version").toString();
 		
 		byte[] messageBytes = this.message.getBytes();
 		byte[] messageHash = MessageDigest.getInstance("sha-512").digest(messageBytes);
 		
-		byte[] signatureBytes = Base64.getUrlDecoder().decode(signatureString);
+		byte[] signatureBytes = Base64.getUrlDecoder().decode(this.signatureString);
 		
 		if(!Curve25519.getInstance("best").verifySignature(ServerpublicKey, messageHash, signatureBytes))
 		{
 			throw new RuntimeException("SIgnature is not verified");
 		}
+		else
+		{
+			System.out.println("Success!");
+		}
 	}
 	
-	public static void main(String[] args) {
+	public static void main(String[] args) throws NoSuchAlgorithmException, IOException {
 		
+		App app = new App("json.txt");
+		app.extractMessage();
 	}
 
 }
