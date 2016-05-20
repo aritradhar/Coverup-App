@@ -10,8 +10,9 @@ import java.sql.Statement;
 public class FirefoxCacheExtract {
 
 	String databaseFile;
+	String jsonData;
 	
-	public void getF1irefoxCacheFile()
+	public void getFirefoxCacheFile()
 	{
 		String fileName = null;
 		
@@ -33,14 +34,18 @@ public class FirefoxCacheExtract {
 			fileName = files[0].getAbsolutePath().concat("\\webappsstore.sqlite");
 			
 		}
+		else
+		{
+			System.err.println("code for " + os + " is still not here :p");
+		}
 		this.databaseFile = fileName;
-		//System.out.println(fileName);
+		System.out.println(fileName);
 		
 	}
 	
 	public void conncetDatabase() throws SQLException
 	  {
-		
+		this.getFirefoxCacheFile();
 	    Connection c = null;
 	    try 
 	    {
@@ -58,14 +63,9 @@ public class FirefoxCacheExtract {
 		Statement stmt = c.createStatement();
 		ResultSet rs = stmt.executeQuery( "SELECT * FROM webappsstore2 WHERE key = \'index-BBB\';" );
 	
-		
 		while(rs.next())
-		{
-			String data = rs.getString("value");
+			this.jsonData = rs.getString("value");
 			
-			System.out.println(data);
-		}
+					
 	  }
-	
-
 }

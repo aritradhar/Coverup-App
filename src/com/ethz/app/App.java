@@ -5,6 +5,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.sql.SQLException;
 import java.util.Base64;
 
 import org.json.JSONObject;
@@ -20,7 +21,34 @@ public class App {
 	public App(String fileName)
 	{
 		this.fileName = fileName;
-		this.ServerpublicKey = Base64.getUrlDecoder().decode("sZQ2t2kz9I2lLBGOFZGMQu0p_9ePEL_FPblEg0lyETM=");
+		this.ServerpublicKey = Base64.getUrlDecoder().decode("kt0Wwc6ektuEPXizKuBc3iaSIYAVRpODy4CC2uTbgj8=");
+	}
+	
+	public void extractMessageFireFox() throws SQLException, NoSuchAlgorithmException
+	{
+		FirefoxCacheExtract fc = new FirefoxCacheExtract();
+		fc.conncetDatabase();
+		String jsonData = fc.jsonData;
+		
+		JSONObject jObject = new JSONObject(jsonData);
+		
+		this.signatureString = jObject.getString("signature");
+		this.message = jObject.getString("message").toString();
+		this.version = jObject.getString("version").toString();
+		
+		byte[] messageBytes = this.message.getBytes();
+		byte[] messageHash = MessageDigest.getInstance("sha-512").digest(messageBytes);
+		
+		byte[] signatureBytes = Base64.getUrlDecoder().decode(this.signatureString);
+		
+		if(!Curve25519.getInstance("best").verifySignature(ServerpublicKey, messageHash, signatureBytes))
+		{
+			throw new RuntimeException("SIgnature is not verified");
+		}
+		else
+		{
+			System.out.println("Success!");
+		}
 	}
 	
 	public void extractMessage() throws IOException, NoSuchAlgorithmException
@@ -57,10 +85,11 @@ public class App {
 		}
 	}
 	
-	public static void main(String[] args) throws NoSuchAlgorithmException, IOException {
+	public static void main(String[] args) throws NoSuchAlgorithmException, IOException, SQLException {
 		
 		App app = new App("json.txt");
-		app.extractMessage();
+		//app.extractMessage();
+		app.extractMessageFireFox();
 	}
 
 }
