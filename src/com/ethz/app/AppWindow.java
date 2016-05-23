@@ -7,16 +7,22 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.security.NoSuchAlgorithmException;
 import java.sql.SQLException;
+import java.util.Base64;
 
-import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JFrame;
-import javax.swing.JTextArea;
-import javax.swing.JScrollBar;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.JTextPane;
+import javax.swing.UIManager;
+import javax.swing.UIManager.LookAndFeelInfo;
+import javax.swing.UnsupportedLookAndFeelException;
+import javax.swing.JLabel;
+import javax.swing.border.CompoundBorder;
+import javax.swing.border.BevelBorder;
+import java.awt.FlowLayout;
 
 public class AppWindow {
 
@@ -29,7 +35,10 @@ public class AppWindow {
 	private JTextField textField;
 
 	public static boolean set = false;
-	public static void main(String[] args) {
+	public static void main(String[] args) throws ClassNotFoundException, InstantiationException, IllegalAccessException, UnsupportedLookAndFeelException {
+		
+		UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());	
+			
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
@@ -51,7 +60,8 @@ public class AppWindow {
 	public AppWindow() throws NoSuchAlgorithmException, SQLException {
 
 		this.app = new App();
-		app.extractMessageFireFox();
+		app.loadMessage();
+		app.loadSignature();
 
 		initialize();
 	}
@@ -64,6 +74,8 @@ public class AppWindow {
 		frame = new JFrame();
 		frame.setTitle("Firefox cache extractor");
 		frame.setBounds(100, 100, 1223, 848);
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		
 
 		JPanel panel = new JPanel();
 		frame.getContentPane().add(panel, BorderLayout.SOUTH);
@@ -77,42 +89,50 @@ public class AppWindow {
 		scrollPane.setViewportView(textArea);
 
 		JPanel panel_1 = new JPanel();
+		FlowLayout flowLayout = (FlowLayout) panel_1.getLayout();
+		flowLayout.setAlignment(FlowLayout.LEFT);
 		scrollPane.setColumnHeaderView(panel_1);
 
 		textField = new JTextField();
 		panel_1.add(textField);
 		textField.setColumns(10);
 
-		JTextPane textPane = new JTextPane();
-		panel_1.add(textPane);
-
 		JButton btnLoadMessage;
 
 		JButton btnSetServerPk = new JButton("Set Server PK");
-		btnSetServerPk.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
+		panel_1.add(btnSetServerPk);
+		
+		JLabel lblNewLabel = new JLabel("Using no PK");
+		panel_1.add(lblNewLabel);
+		
+		btnSetServerPk.addActionListener(new ActionListener() 
+		{
+			
+			public void actionPerformed(ActionEvent e) 
+			{
 
 				String pkText = textField.getText();
 				if(pkText == null || pkText.length() == 0)
 				{
-					textPane.setText("PK not set");
+					lblNewLabel.setText("PK not set");
 				}
 				else
 				{
 					try
 					{
 						app.setPK(pkText);
-						textPane.setText("PK set");
+						lblNewLabel.setText("PK set : " + Base64.getUrlEncoder().encodeToString(app.ServerpublicKey));
 					}
 					catch(Exception ex)
 					{
-						textPane.setText("Invalid");
+						lblNewLabel.setText("Invalid PK");
 					}
 
 				}
 			}
 		});
-		panel_1.add(btnSetServerPk);
+		
+		
 
 		if(app == null)
 		{
@@ -122,8 +142,14 @@ public class AppWindow {
 
 		btnLoadMessage = new JButton("Load Message");
 
-		btnLoadMessage.addActionListener(new ActionListener() {
+		btnLoadMessage.addActionListener(new ActionListener() 
+		{
 			public void actionPerformed(ActionEvent e) {
+				try {
+					app.loadMessage();
+				} catch (SQLException e1) {
+					e1.printStackTrace();
+				}
 				textArea.setText(app.message);
 			}
 		});
@@ -132,6 +158,11 @@ public class AppWindow {
 		JButton btnLoadSignature = new JButton("Load Signature");
 		btnLoadSignature.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				try {
+					app.loadSignature();
+				} catch ( SQLException e1) {
+					e1.printStackTrace();
+				}
 				textArea.setText(app.signatureString);
 			}
 		});
@@ -139,6 +170,7 @@ public class AppWindow {
 
 		JButton btnVerifySignature = new JButton("Verify Signature");
 		btnVerifySignature.addActionListener(new ActionListener() {
+			
 			public void actionPerformed(ActionEvent e) {
 
 				try {
@@ -151,6 +183,10 @@ public class AppWindow {
 						textArea.setText("Invalid signature");
 
 				} 
+				catch(NullPointerException ex)
+				{
+					textArea.setText("Error! PK not set");
+				}
 				catch (Exception e1) 
 				{
 					e1.printStackTrace();
