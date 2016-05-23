@@ -140,11 +140,12 @@ public class App {
 		}
 	}
 
+	/*
 	public static void main(String[] args) throws NoSuchAlgorithmException, IOException, SQLException {
 
 		App app = new App();
 		//app.extractMessage();
 		app.extractMessageFireFox();
 	}
-
+	 */
 }
