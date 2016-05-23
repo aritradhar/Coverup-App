@@ -17,11 +17,18 @@ public class App {
 	public byte[] ServerpublicKey;
 	
 	String version, message, signatureString;
+	boolean verifyResult;
 	
 	public App(String fileName)
 	{
+		this.verifyResult = false;
 		this.fileName = fileName;
-		this.ServerpublicKey = Base64.getUrlDecoder().decode("kt0Wwc6ektuEPXizKuBc3iaSIYAVRpODy4CC2uTbgj8=");
+		this.ServerpublicKey = Base64.getUrlDecoder().decode("jMpEEfoSc2iOgRXeLQnLN1YKtjcyN824yso3psylEU0=");
+	}
+	public App()
+	{
+		this.verifyResult = false;
+		this.ServerpublicKey = Base64.getUrlDecoder().decode("jMpEEfoSc2iOgRXeLQnLN1YKtjcyN824yso3psylEU0=");
 	}
 	
 	public void extractMessageFireFox() throws SQLException, NoSuchAlgorithmException
@@ -36,6 +43,8 @@ public class App {
 		this.message = jObject.getString("message").toString();
 		this.version = jObject.getString("version").toString();
 		
+		
+		
 		byte[] messageBytes = this.message.getBytes();
 		byte[] messageHash = MessageDigest.getInstance("sha-512").digest(messageBytes);
 		
@@ -47,8 +56,11 @@ public class App {
 		}
 		else
 		{
-			System.out.println("Success!");
+			this.verifyResult = true;
+			System.err.println("Success!");
 		}
+		
+		System.out.println(this.message);
 	}
 	
 	public void extractMessage() throws IOException, NoSuchAlgorithmException
@@ -81,13 +93,14 @@ public class App {
 		}
 		else
 		{
+			this.verifyResult = true;
 			System.out.println("Success!");
 		}
 	}
 	
 	public static void main(String[] args) throws NoSuchAlgorithmException, IOException, SQLException {
 		
-		App app = new App("json.txt");
+		App app = new App();
 		//app.extractMessage();
 		app.extractMessageFireFox();
 	}
