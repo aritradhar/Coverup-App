@@ -23,6 +23,11 @@ import javax.swing.JLabel;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.BevelBorder;
 import java.awt.FlowLayout;
+import javax.swing.DropMode;
+import javax.swing.SwingConstants;
+import javax.swing.JMenuBar;
+import javax.swing.JMenu;
+import javax.swing.JMenuItem;
 
 public class AppWindow {
 
@@ -32,7 +37,7 @@ public class AppWindow {
 	 * Launch the application.
 	 */
 	public static App app;
-	private JTextField textField;
+	private JTextField txtQq;
 
 	public static boolean set = false;
 	public static void main(String[] args) throws ClassNotFoundException, InstantiationException, IllegalAccessException, UnsupportedLookAndFeelException {
@@ -93,9 +98,11 @@ public class AppWindow {
 		flowLayout.setAlignment(FlowLayout.LEFT);
 		scrollPane.setColumnHeaderView(panel_1);
 
-		textField = new JTextField();
-		panel_1.add(textField);
-		textField.setColumns(10);
+		txtQq = new JTextField();
+		txtQq.setToolTipText("");
+		txtQq.setHorizontalAlignment(SwingConstants.CENTER);
+		panel_1.add(txtQq);
+		txtQq.setColumns(25);
 
 		JButton btnLoadMessage;
 
@@ -111,7 +118,7 @@ public class AppWindow {
 			public void actionPerformed(ActionEvent e) 
 			{
 
-				String pkText = textField.getText();
+				String pkText = txtQq.getText();
 				if(pkText == null || pkText.length() == 0)
 				{
 					lblNewLabel.setText("PK not set");
@@ -199,6 +206,31 @@ public class AppWindow {
 			}
 		});
 		panel.add(btnVerifySignature);
+		
+		/*JMenuBar menuBar = new JMenuBar();
+		frame.setJMenuBar(menuBar);
+		
+		JMenu mnMenu = new JMenu("Menu");
+		menuBar.add(mnMenu);
+		
+		JMenuItem mntmSendPost = new JMenuItem("Send post");
+		mntmSendPost.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				
+				System.out.println("clicked");
+				EventQueue.invokeLater(new Runnable() {
+					public void run() {
+						try {
+							PostCall frame = new PostCall();
+							frame.setVisible(true);
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
+					}
+				});
+			}
+		});
+		mnMenu.add(mntmSendPost);*/
 
 
 	}
