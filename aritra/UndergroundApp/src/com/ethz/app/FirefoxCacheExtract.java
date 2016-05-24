@@ -12,7 +12,7 @@ public class FirefoxCacheExtract {
 	String databaseFile;
 	String jsonData;
 	
-	public void getFirefoxCacheFile()
+	public String getFirefoxCacheFile()
 	{
 		String fileName = null;
 		
@@ -41,6 +41,7 @@ public class FirefoxCacheExtract {
 		this.databaseFile = fileName;
 		System.out.println(fileName);
 		
+		return fileName;
 	}
 	
 	public void conncetDatabase() throws SQLException
@@ -66,6 +67,7 @@ public class FirefoxCacheExtract {
 		while(rs.next())
 			this.jsonData = rs.getString("value");
 			
-					
+		stmt.close();
+		c.close();
 	  }
 }

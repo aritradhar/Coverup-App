@@ -7,6 +7,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.sql.SQLException;
 
 import javax.swing.DefaultCellEditor;
 import javax.swing.JButton;
@@ -102,7 +103,15 @@ class ButtonEditor extends DefaultCellEditor {
     public Object getCellEditorValue() {
         if (isPushed) {
         	//edit here to set the marker to the firefox database
-            JOptionPane.showMessageDialog(button, row + " "+ label + " pressed and link = " + table.getValueAt(row, 0));
+            //JOptionPane.showMessageDialog(button, row + " "+ label + " pressed and link = " + table.getValueAt(row, 0));
+            try {
+				TableHandler.insertDataToTable("index-CCC", table.getValueAt(row, 0).toString());
+				JOptionPane.showMessageDialog(button, "Database insert success!!");
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				JOptionPane.showMessageDialog(button, "Database insert fail!!" + table.getValueAt(row, 0).toString());
+				e.printStackTrace();
+			}
         }
         isPushed = false;
         return label;
@@ -121,7 +130,6 @@ class ButtonEditor extends DefaultCellEditor {
 }
 
 //////////////////////////////
-
 
 public class TableView extends JFrame {
 
