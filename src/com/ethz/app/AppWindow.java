@@ -51,12 +51,15 @@ public class AppWindow {
 		UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());	
 			
 		EventQueue.invokeLater(new Runnable() {
-			public void run() {
+			public void run() 
+			{
 				try {
 
 					AppWindow window = new AppWindow();
 					window.frame.setVisible(true);
-				} catch (Exception e) {
+				} 
+				catch (Exception e) 
+				{
 					e.printStackTrace();
 				}
 			}
@@ -81,7 +84,9 @@ public class AppWindow {
 	 * Initialize the contents of the frame.
 	 * @throws NoSuchAlgorithmException 
 	 */
-	private void initialize() throws NoSuchAlgorithmException {
+	private void initialize() throws NoSuchAlgorithmException 
+	{
+		
 		frame = new JFrame();
 		frame.setTitle("Firefox cache extractor");
 		frame.setBounds(100, 100, 783, 510);
@@ -159,10 +164,14 @@ public class AppWindow {
 
 		btnLoadMessage.addActionListener(new ActionListener() 
 		{
-			public void actionPerformed(ActionEvent e) {
-				try {
+			public void actionPerformed(ActionEvent e) 
+			{
+				try 
+				{
 					app.loadMessage();
-				} catch (SQLException e1) {
+				} 
+				catch (SQLException e1) 
+				{
 					e1.printStackTrace();
 				}
 				textArea.setText(app.message);
@@ -237,12 +246,17 @@ public class AppWindow {
 			public void actionPerformed(ActionEvent e) {
 				
 				System.out.println("clicked");
-				EventQueue.invokeLater(new Runnable() {
-					public void run() {
-						try {
+				EventQueue.invokeLater(new Runnable() 
+				{
+					public void run()
+					{
+						try 
+						{
 							TableView frame = new TableView();
 							frame.setVisible(true);
-						} catch (Exception e) {
+						} 
+						catch (Exception e) 
+						{
 							e.printStackTrace();
 						}
 					}
