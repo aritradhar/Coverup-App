@@ -28,6 +28,12 @@ import javax.swing.SwingConstants;
 import javax.swing.JMenuBar;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.Component;
+
+import javax.swing.BorderFactory;
+import javax.swing.Box;
 
 public class AppWindow {
 
@@ -78,7 +84,7 @@ public class AppWindow {
 	private void initialize() throws NoSuchAlgorithmException {
 		frame = new JFrame();
 		frame.setTitle("Firefox cache extractor");
-		frame.setBounds(100, 100, 1223, 848);
+		frame.setBounds(100, 100, 783, 510);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
 
@@ -100,7 +106,7 @@ public class AppWindow {
 
 		txtQq = new JTextField();
 		txtQq.setToolTipText("");
-		txtQq.setHorizontalAlignment(SwingConstants.CENTER);
+		txtQq.setHorizontalAlignment(SwingConstants.LEFT);
 		panel_1.add(txtQq);
 		txtQq.setColumns(25);
 
@@ -110,6 +116,8 @@ public class AppWindow {
 		panel_1.add(btnSetServerPk);
 		
 		JLabel lblNewLabel = new JLabel("Using no PK");
+		lblNewLabel.setHorizontalAlignment(SwingConstants.LEFT);
+		//lblNewLabel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
 		panel_1.add(lblNewLabel);
 		
 		btnSetServerPk.addActionListener(new ActionListener() 
@@ -163,6 +171,18 @@ public class AppWindow {
 		panel.add(btnLoadMessage);
 
 		JButton btnLoadSignature = new JButton("Load Signature");
+		btnLoadSignature.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				
+				try {
+					app.loadSignature();
+				} catch ( SQLException e1) {
+					e1.printStackTrace();
+				}
+				textArea.setText(app.signatureString);
+			}
+		});
 		btnLoadSignature.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				try {
@@ -197,8 +217,7 @@ public class AppWindow {
 				catch (Exception e1) 
 				{
 					e1.printStackTrace();
-
-					textArea.setText("Exception happened in signature verification");
+					textArea.setText("Exception happened in signature verification\n-------------------\n"+e1.getClass()+ " " +e1.getMessage());
 				}
 
 
