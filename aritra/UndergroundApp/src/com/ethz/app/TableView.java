@@ -149,6 +149,7 @@ public class TableView extends JFrame {
 		UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());	
 		
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+		setTitle("Table viewer");
 		setBounds(100, 100, 640, 601);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));

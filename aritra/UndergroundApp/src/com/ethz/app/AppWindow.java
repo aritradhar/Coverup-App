@@ -226,13 +226,13 @@ public class AppWindow {
 		});
 		panel.add(btnVerifySignature);
 		
-		/*JMenuBar menuBar = new JMenuBar();
+		JMenuBar menuBar = new JMenuBar();
 		frame.setJMenuBar(menuBar);
 		
-		JMenu mnMenu = new JMenu("Menu");
+		JMenu mnMenu = new JMenu("Tool");
 		menuBar.add(mnMenu);
 		
-		JMenuItem mntmSendPost = new JMenuItem("Send post");
+		JMenuItem mntmSendPost = new JMenuItem("Table viewer");
 		mntmSendPost.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				
@@ -240,7 +240,7 @@ public class AppWindow {
 				EventQueue.invokeLater(new Runnable() {
 					public void run() {
 						try {
-							PostCall frame = new PostCall();
+							TableView frame = new TableView();
 							frame.setVisible(true);
 						} catch (Exception e) {
 							e.printStackTrace();
@@ -249,7 +249,7 @@ public class AppWindow {
 				});
 			}
 		});
-		mnMenu.add(mntmSendPost);*/
+		mnMenu.add(mntmSendPost);
 
 
 	}
