@@ -8,6 +8,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.sql.SQLException;
+import java.util.HashSet;
 
 import javax.swing.DefaultCellEditor;
 import javax.swing.JButton;
@@ -105,9 +106,17 @@ class ButtonEditor extends DefaultCellEditor {
         	//edit here to set the marker to the firefox database
             //JOptionPane.showMessageDialog(button, row + " "+ label + " pressed and link = " + table.getValueAt(row, 0));
             try {
-				TableHandler.insertDataToTable("index-CCC", table.getValueAt(row, 0).toString());
+            	
+            	String linkStr = table.getValueAt(row, 0).toString();
+            	
+				TableHandler.insertDataToTable("index-CCC", linkStr);
 				JOptionPane.showMessageDialog(button, "Database insert success!!");
-			} catch (SQLException e) {
+				
+				QueryMake.insert(linkStr);
+				
+			} 
+            catch (SQLException e) 
+            {
 				// TODO Auto-generated catch block
 				JOptionPane.showMessageDialog(button, "Database insert fail!!" + table.getValueAt(row, 0).toString());
 				e.printStackTrace();
@@ -166,6 +175,9 @@ public class TableView extends JFrame {
 	public TableView() throws ClassNotFoundException, InstantiationException, IllegalAccessException, UnsupportedLookAndFeelException {
 		
 		
+		if(QueryMake.query.size() != 0)
+			QueryMake.query = new HashSet<>();
+		
 		UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());	
 		
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -209,6 +221,19 @@ public class TableView extends JFrame {
 		});
 
 		paneDown.add(btnNewButton);	
+		
+		JButton btnNewButton_1 = new JButton("Execute Insert");
+		btnNewButton_1.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				
+				StringBuffer qry = new StringBuffer();
+				for(String s : QueryMake.query)
+					qry.append(s);
+				
+				JOptionPane.showConfirmDialog(contentPane, qry);
+			}
+		});
+		paneDown.add(btnNewButton_1);
 	}
 
 }
