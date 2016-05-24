@@ -15,25 +15,18 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
-import javax.swing.JTextPane;
 import javax.swing.UIManager;
-import javax.swing.UIManager.LookAndFeelInfo;
+
 import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.JLabel;
-import javax.swing.border.CompoundBorder;
-import javax.swing.border.BevelBorder;
 import java.awt.FlowLayout;
-import javax.swing.DropMode;
+
 import javax.swing.SwingConstants;
 import javax.swing.JMenuBar;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.Component;
-
-import javax.swing.BorderFactory;
-import javax.swing.Box;
 
 public class AppWindow {
 
@@ -71,6 +64,7 @@ public class AppWindow {
 	 * @throws NoSuchAlgorithmException 
 	 * @throws SQLException 
 	 */
+	@SuppressWarnings("static-access")
 	public AppWindow() throws NoSuchAlgorithmException, SQLException {
 
 		this.app = new App();
