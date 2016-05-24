@@ -58,9 +58,13 @@ class ButtonEditor extends DefaultCellEditor {
 	protected JButton button;
     private String label;
     private boolean isPushed;
+    private int row;
+    private JTable table;
 
-    public ButtonEditor(JCheckBox checkBox) {
+    public ButtonEditor(JCheckBox checkBox, JTable table) {
         super(checkBox);
+        this.table = table;
+        
         button = new JButton();
         button.setOpaque(true);
         button.addActionListener(new ActionListener() {
@@ -74,10 +78,17 @@ class ButtonEditor extends DefaultCellEditor {
     @Override
     public Component getTableCellEditorComponent(JTable table, Object value,
             boolean isSelected, int row, int column) {
-        if (isSelected) {
+    	
+    	this.row = row;
+    	
+        if (isSelected) 
+        {
+        	
             button.setForeground(table.getSelectionForeground());
             button.setBackground(table.getSelectionBackground());
-        } else {
+        } 
+        else 
+        {
             button.setForeground(table.getForeground());
             button.setBackground(table.getBackground());
         }
@@ -90,7 +101,8 @@ class ButtonEditor extends DefaultCellEditor {
     @Override
     public Object getCellEditorValue() {
         if (isPushed) {
-            JOptionPane.showMessageDialog(button, label + " pressed");
+        	//edit here to set the marker to the firefox database
+            JOptionPane.showMessageDialog(button, row + " "+ label + " pressed and link = " + table.getValueAt(row, 0));
         }
         isPushed = false;
         return label;
@@ -177,15 +189,14 @@ public class TableView extends JFrame {
 				//table = new JTable(0, 2);
 				DefaultTableModel model = (DefaultTableModel) table.getModel();
 				
-				model.setDataVector(new Object[][]{{"button 1", "select"},
-                    {"button 2", "select"}}, new Object[]{"Link", "Select"});
+				model.setDataVector(new Object[][]{{"Link1", "select"},
+                    {"Link2", "select"}}, new Object[]{"Link", "Select"});
 				
-
+				//System.out.println(table.getValueAt(0, 0));
+				
 				table.getColumn("Select").setCellRenderer(new ButtonRenderer());
-		        table.getColumn("Select").setCellEditor(new ButtonEditor(new JCheckBox()));
+				table.getColumn("Select").setCellEditor(new ButtonEditor(new JCheckBox(), table));
 		        
-				//model.removeRow(0);
-				//model.addRow(new Object[]{"a", "b"});
 			}
 		});
 
@@ -193,5 +204,3 @@ public class TableView extends JFrame {
 	}
 
 }
-
-
