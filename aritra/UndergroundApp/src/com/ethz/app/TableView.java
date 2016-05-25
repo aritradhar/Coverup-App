@@ -7,6 +7,10 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.sql.SQLException;
 import java.util.HashSet;
 import java.util.Scanner;
@@ -119,7 +123,8 @@ class ButtonEditor extends DefaultCellEditor {
 				JOptionPane.showMessageDialog(button, "Database insert success!!");
 				
 				QueryMake.insert(linkStr);
-				button.setText("Selected");
+				table.setValueAt("Selected", row, 2);
+				//button.setText("Selected");
 				
 			} 
             catch (SQLException e) 
@@ -136,11 +141,13 @@ class ButtonEditor extends DefaultCellEditor {
     @Override
     public boolean stopCellEditing() {
         isPushed = false;
+        //button.setText("Selected");
         return super.stopCellEditing();
     }
 
     @Override
     protected void fireEditingStopped() {
+    	//button.setText("Selected");
         super.fireEditingStopped();
     }
 }
@@ -220,12 +227,30 @@ public class TableView extends JFrame {
 				//model.setDataVector(new Object[][]{{"Link1", "select"},
                  //   {"Link2", "select"}}, new Object[]{"Link", "Select"});
 				
-				System.out.println("put json String");
-				Scanner s = new Scanner(System.in);
-				String jsonString = s.nextLine();
-				s.close();
+
+				BufferedReader br = null;
+				try {
+					br = new BufferedReader(new FileReader("Tabledata.txt"));
+				} catch (FileNotFoundException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+				StringBuffer stb =new StringBuffer();
+				String st = null;
+				
+				try {
+					while((st = br.readLine()) != null)
+					{
+						stb.append(st);
+					}
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+				
+				String jsonString = stb.toString();
 						
-				model.setDataVector(GetTable.getTableData(jsonString), new Object[]{"Link", "Select", "col"});
+				model.setDataVector(GetTable.getTableData(jsonString), new Object[]{"Link", "Select", "Flag"});
 				
 				//System.out.println(table.getValueAt(0, 0));
 				
