@@ -225,7 +225,7 @@ public class TableView extends JFrame {
 				String jsonString = s.nextLine();
 				s.close();
 						
-				model.setDataVector(GetTable.getTableData(jsonString), new Object[]{"Link", "Select"});
+				model.setDataVector(GetTable.getTableData(jsonString), new Object[]{"Link", "Select", "col"});
 				
 				//System.out.println(table.getValueAt(0, 0));
 				
