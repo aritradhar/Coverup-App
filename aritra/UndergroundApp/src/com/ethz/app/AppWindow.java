@@ -258,6 +258,23 @@ public class AppWindow {
 			}
 		});
 		mnMenu.add(mntmSendPost);
+		
+		JMenuItem mntmDataAssemble = new JMenuItem("Data Assemble");
+		mntmDataAssemble.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				EventQueue.invokeLater(new Runnable() {
+					public void run() {
+						try {
+							AssembleFrame window = new AssembleFrame();
+							window.frame.setVisible(true);
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
+					}
+				});
+			}
+		});
+		mnMenu.add(mntmDataAssemble);
 
 
 	}
