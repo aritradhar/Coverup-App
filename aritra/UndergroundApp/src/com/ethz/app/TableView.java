@@ -9,6 +9,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.sql.SQLException;
 import java.util.HashSet;
+import java.util.Scanner;
 
 import javax.swing.DefaultCellEditor;
 import javax.swing.JButton;
@@ -42,9 +43,12 @@ class ButtonRenderer extends JButton implements TableCellRenderer {
         if (isSelected) {
             setForeground(table.getSelectionForeground());
             setBackground(table.getSelectionBackground());
+            //setText("Selected");
         } else {
             setForeground(table.getForeground());
             setBackground(UIManager.getColor("Button.background"));
+            
+            //setText((value == null) ? "" : value.toString());
         }
         setText((value == null) ? "" : value.toString());
         return this;
@@ -72,7 +76,8 @@ class ButtonEditor extends DefaultCellEditor {
         button.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                fireEditingStopped();
+            	//button.setText("Selected");
+            	fireEditingStopped();
             }
         });
     }
@@ -114,6 +119,7 @@ class ButtonEditor extends DefaultCellEditor {
 				JOptionPane.showMessageDialog(button, "Database insert success!!");
 				
 				QueryMake.insert(linkStr);
+				button.setText("Selected");
 				
 			} 
             catch (SQLException e) 
@@ -199,6 +205,7 @@ public class TableView extends JFrame {
 		contentPane.add(paneDown, BorderLayout.SOUTH);
 		table = new JTable(0, 2);
 		table.setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
+		
 		JScrollPane scrollPane = new JScrollPane(table, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		panelMid.add(scrollPane);
 		
@@ -210,8 +217,15 @@ public class TableView extends JFrame {
 				//table = new JTable(0, 2);
 				DefaultTableModel model = (DefaultTableModel) table.getModel();
 				
-				model.setDataVector(new Object[][]{{"Link1", "select"},
-                    {"Link2", "select"}}, new Object[]{"Link", "Select"});
+				//model.setDataVector(new Object[][]{{"Link1", "select"},
+                 //   {"Link2", "select"}}, new Object[]{"Link", "Select"});
+				
+				System.out.println("put json String");
+				Scanner s = new Scanner(System.in);
+				String jsonString = s.nextLine();
+				s.close();
+						
+				model.setDataVector(GetTable.getTableData(jsonString), new Object[]{"Link", "Select"});
 				
 				//System.out.println(table.getValueAt(0, 0));
 				
@@ -229,7 +243,7 @@ public class TableView extends JFrame {
 				
 				StringBuffer qry = new StringBuffer();
 				for(String s : QueryMake.query)
-					qry.append(s);
+					qry.append(s).append("\n");
 				
 				JOptionPane.showConfirmDialog(contentPane, qry);
 			}
