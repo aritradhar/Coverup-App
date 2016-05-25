@@ -34,6 +34,18 @@ public class FirefoxCacheExtract {
 			fileName = files[0].getAbsolutePath().concat("\\webappsstore.sqlite");
 			
 		}
+		else if(os.contains("Linux")){
+			appDataLoc = System.getenv("HOME");
+			appDataLoc = appDataLoc.concat("/.mozilla");
+			File mozzila = new File(appDataLoc);
+			
+			if(!mozzila.exists())
+				throw new RuntimeException("Firefox not installed");
+			
+			appDataLoc = appDataLoc.concat("/firefox/6p4vbecj.default/webappsstore.sqlite");
+			
+			fileName = appDataLoc;
+		}
 		else
 		{
 			System.err.println("code for " + os + " is still not here :p");
