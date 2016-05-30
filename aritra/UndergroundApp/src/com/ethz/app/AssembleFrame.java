@@ -4,8 +4,15 @@ import java.awt.EventQueue;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
+
 import java.awt.BorderLayout;
+import java.awt.Color;
+
 import javax.swing.JButton;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
 
 public class AssembleFrame {
 
@@ -46,14 +53,31 @@ public class AssembleFrame {
 		JPanel panel = new JPanel();
 		frame.getContentPane().add(panel, BorderLayout.SOUTH);
 		
+		JScrollPane scrollPane = new JScrollPane();
+		frame.getContentPane().add(scrollPane, BorderLayout.CENTER);
+
+		JTextArea textArea = new JTextArea();
+		textArea.setForeground(Color.BLACK);;
+		textArea.setLineWrap(true);
+		textArea.setEditable(false);
+		scrollPane.setViewportView(textArea);
+		
+		
 		JButton btnAssemble = new JButton("Assemble");
+		btnAssemble.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				
+				
+				 new ShowDirectoryDialog().run();
+				 
+				 //System.out.println(JSONDirPath);
+				
+			}
+		});
 		panel.add(btnAssemble);
 		
 		JButton btnDisplay = new JButton("Display ");
 		panel.add(btnDisplay);
-		
-		JPanel panel_1 = new JPanel();
-		frame.getContentPane().add(panel_1, BorderLayout.CENTER);
 	}
 
 }

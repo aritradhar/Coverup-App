@@ -96,6 +96,7 @@ public class AppWindow {
 		JTextArea textArea = new JTextArea();
 		textArea.setForeground(Color.BLACK);;
 		textArea.setLineWrap(true);
+		textArea.setEditable(false);
 		scrollPane.setViewportView(textArea);
 
 		JPanel panel_1 = new JPanel();
