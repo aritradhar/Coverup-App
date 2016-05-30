@@ -7,13 +7,27 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
+import org.json.JSONObject;
+
+import com.ethz.fountain.Droplet;
+import com.ethz.fountain.Glass;
+
 import java.awt.BorderLayout;
 import java.awt.Color;
 
 import javax.swing.JButton;
 import java.awt.event.ActionListener;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.Arrays;
+import java.util.Base64;
 import java.awt.event.ActionEvent;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 
 public class AssembleFrame {
 
@@ -74,9 +88,8 @@ public class AssembleFrame {
 		btnAssemble.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				
-				
 				 new ShowDirectoryDialog().run();
-				 lblNewLabel.setText("JSON folder : " + JSONDirPath);
+				 lblNewLabel.setText("JSON folder : " + JSONDirPath);			 
 				 //System.out.println(JSONDirPath);
 				
 			}
@@ -84,6 +97,61 @@ public class AssembleFrame {
 		panel.add(btnAssemble);
 		
 		JButton btnDisplay = new JButton("Display");
+		btnDisplay.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				
+				File[] files =  new File(JSONDirPath).listFiles();
+				
+				Glass glass = new Glass(10);
+				for(File file : files)
+				{
+					
+					System.out.println(file.getAbsoluteFile());
+					BufferedReader br = null;
+					try 
+					{
+						br = new BufferedReader(new FileReader(file.getAbsoluteFile()));
+						StringBuffer stb = new StringBuffer();
+						String st = "";
+						
+						while((st = br.readLine()) != null)
+							stb.append(st);
+						
+						JSONObject job = new JSONObject(stb.toString());
+						
+						Droplet d = new Droplet(Base64.getUrlDecoder().decode(job.get("data").toString()), job.getLong("seed"), job.getInt("num_chunks"));
+						glass.addDroplet(d);
+						
+						if(glass.isDone())
+						{	
+							System.out.println("Success!!!");
+							break;
+						}	
+						
+						//JOptionPane.showMessageDialog(frame, "Assemble success!!!");
+					} 
+					catch (FileNotFoundException e1) 
+					{
+						e1.printStackTrace();
+					} catch (IOException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+					finally 
+					{
+						try {
+							
+							br.close();
+						} 
+						catch (IOException e1) 
+						{
+							e1.printStackTrace();
+						}
+					}
+					
+				}
+			}
+		});
 		panel.add(btnDisplay);
 	}
 
