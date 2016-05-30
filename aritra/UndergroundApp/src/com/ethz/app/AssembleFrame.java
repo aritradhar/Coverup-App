@@ -13,6 +13,7 @@ import java.awt.Color;
 import javax.swing.JButton;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import javax.swing.JLabel;
 
 public class AssembleFrame {
 
@@ -62,6 +63,12 @@ public class AssembleFrame {
 		textArea.setEditable(false);
 		scrollPane.setViewportView(textArea);
 		
+		JPanel panel_1 = new JPanel();
+		scrollPane.setColumnHeaderView(panel_1);
+		
+		JLabel lblNewLabel = new JLabel("JSON folder not selected");
+		panel_1.add(lblNewLabel);
+		
 		
 		JButton btnAssemble = new JButton("Assemble");
 		btnAssemble.addActionListener(new ActionListener() {
@@ -69,14 +76,14 @@ public class AssembleFrame {
 				
 				
 				 new ShowDirectoryDialog().run();
-				 
+				 lblNewLabel.setText("JSON folder : " + JSONDirPath);
 				 //System.out.println(JSONDirPath);
 				
 			}
 		});
 		panel.add(btnAssemble);
 		
-		JButton btnDisplay = new JButton("Display ");
+		JButton btnDisplay = new JButton("Display");
 		panel.add(btnDisplay);
 	}
 
