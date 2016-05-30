@@ -11,6 +11,7 @@ public class AssembleFrame {
 
 	JFrame frame;
 
+	public static String JSONDirPath;
 	/**
 	 * Launch the application.
 	 */
