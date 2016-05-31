@@ -185,6 +185,11 @@ public class AssembleFrame {
 								}
 							}
 						}
+						if(!glass.isDone())
+						{
+							JOptionPane.showMessageDialog(frame, "Not enought droplets yet!");
+						}
+						
 					}
 					catch(Exception ex)
 					{
