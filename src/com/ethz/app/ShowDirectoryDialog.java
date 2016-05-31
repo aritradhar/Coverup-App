@@ -19,9 +19,9 @@ public class ShowDirectoryDialog {
 	
 	public static String dirName;
 	
-	  public void run() {
+	  public void display() {
 	    Display display = new Display();
-	    Shell shell = new Shell(SWT.ON_TOP);
+	    Shell shell = new Shell(display, SWT.ON_TOP);
 	    shell.setText("Directory Browser");
 	    createContents(shell);
 	    shell.pack();
@@ -95,6 +95,6 @@ public class ShowDirectoryDialog {
 	   * @param args the command line arguments
 	   */
 	  public static void main(String[] args) {
-	    new ShowDirectoryDialog().run();
+	    new ShowDirectoryDialog().display();
 	  }
 	}
