@@ -1,50 +1,50 @@
 package com.ethz.app;
 
-import java.awt.EventQueue;
-
-import javax.swing.JFrame;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
-
-import org.eclipse.swt.widgets.Display;
-import org.json.JSONObject;
-
-import com.ethz.fountain.Droplet;
-import com.ethz.fountain.Glass;
-
 import java.awt.BorderLayout;
 import java.awt.Color;
-
-import javax.swing.JButton;
-import javax.swing.JFileChooser;
-
+import java.awt.EventQueue;
+import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.Arrays;
 import java.util.Base64;
-import java.awt.event.ActionEvent;
+
+import javax.swing.JButton;
+import javax.swing.JFileChooser;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
+import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
+
+import org.json.JSONObject;
+
+import com.ethz.fountain.Droplet;
+import com.ethz.fountain.Glass;
 
 public class AssembleFrame {
 
 	JFrame frame;
 	
 	JFileChooser chooser;
-	String choosertitle;
-	
 
 	public static String JSONDirPath;
 	/**
 	 * Launch the application.
+	 * @throws UnsupportedLookAndFeelException 
+	 * @throws IllegalAccessException 
+	 * @throws InstantiationException 
+	 * @throws ClassNotFoundException 
 	 */
-	public static void main(String[] args) {
+	public static void main(String[] args) throws ClassNotFoundException, InstantiationException, IllegalAccessException, UnsupportedLookAndFeelException {
+		UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());	
+		
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
@@ -98,9 +98,9 @@ public class AssembleFrame {
 				
 				chooser = new JFileChooser(); 
 				chooser.setCurrentDirectory(new java.io.File("."));
-				chooser.setDialogTitle(choosertitle);
-				chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-
+				chooser.setDialogTitle("Select JSON dir");
+				chooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
+						
 				chooser.setAcceptAllFileFilterUsed(false);  
 				
 				if (chooser.showOpenDialog(frame) == JFileChooser.APPROVE_OPTION) 
