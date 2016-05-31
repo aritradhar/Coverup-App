@@ -7,6 +7,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
+import org.eclipse.swt.widgets.Display;
 import org.json.JSONObject;
 
 import com.ethz.fountain.Droplet;
@@ -16,6 +17,8 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 
 import javax.swing.JButton;
+import javax.swing.JFileChooser;
+
 import java.awt.event.ActionListener;
 import java.io.BufferedReader;
 import java.io.File;
@@ -32,6 +35,10 @@ import javax.swing.JOptionPane;
 public class AssembleFrame {
 
 	JFrame frame;
+	
+	JFileChooser chooser;
+	String choosertitle;
+	
 
 	public static String JSONDirPath;
 	/**
@@ -86,13 +93,26 @@ public class AssembleFrame {
 
 		JButton btnAssemble = new JButton("Locate");
 		btnAssemble.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
+			public void actionPerformed(ActionEvent e) 
+			{
+				
+				chooser = new JFileChooser(); 
+				chooser.setCurrentDirectory(new java.io.File("."));
+				chooser.setDialogTitle(choosertitle);
+				chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 
-				new ShowDirectoryDialog().run();
-				if(JSONDirPath != null)
-					lblNewLabel.setText("JSON folder : " + JSONDirPath);			 
-				//System.out.println(JSONDirPath);
-
+				chooser.setAcceptAllFileFilterUsed(false);  
+				
+				if (chooser.showOpenDialog(frame) == JFileChooser.APPROVE_OPTION) 
+				{ 		
+					JSONDirPath = chooser.getSelectedFile().getAbsolutePath();
+					lblNewLabel.setText("JSON folder : " + JSONDirPath);
+				}
+				else 
+				{
+					lblNewLabel.setText("JSON folder not selected" + JSONDirPath);
+					
+				}
 			}
 		});
 		panel.add(btnAssemble);
