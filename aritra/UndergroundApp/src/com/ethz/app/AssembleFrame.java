@@ -31,7 +31,7 @@ import com.ethz.fountain.Glass;
 public class AssembleFrame {
 
 	JFrame frame;
-	
+
 	JFileChooser chooser;
 
 	public static String JSONDirPath;
@@ -44,7 +44,7 @@ public class AssembleFrame {
 	 */
 	public static void main(String[] args) throws ClassNotFoundException, InstantiationException, IllegalAccessException, UnsupportedLookAndFeelException {
 		UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());	
-		
+
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
@@ -95,14 +95,14 @@ public class AssembleFrame {
 		btnAssemble.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) 
 			{
-				
+
 				chooser = new JFileChooser(); 
 				chooser.setCurrentDirectory(new java.io.File("."));
 				chooser.setDialogTitle("Select JSON dir");
 				chooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
-						
+
 				chooser.setAcceptAllFileFilterUsed(false);  
-				
+
 				if (chooser.showOpenDialog(frame) == JFileChooser.APPROVE_OPTION) 
 				{ 		
 					JSONDirPath = chooser.getSelectedFile().getAbsolutePath();
@@ -111,7 +111,7 @@ public class AssembleFrame {
 				else 
 				{
 					lblNewLabel.setText("JSON folder not selected" + JSONDirPath);
-					
+
 				}
 			}
 		});
@@ -127,61 +127,70 @@ public class AssembleFrame {
 				else
 				{
 					File[] files =  new File(JSONDirPath).listFiles();
-
 					Glass glass = new Glass(10);
-					for(File file : files)
+
+					try
 					{
-
-						System.out.println(file.getAbsoluteFile());
-						BufferedReader br = null;
-						try 
+						int counter = 0;
+						for(File file : files)
 						{
-							br = new BufferedReader(new FileReader(file.getAbsoluteFile()));
-							StringBuffer stb = new StringBuffer();
-							String st = "";
+							//System.out.println(file.getAbsoluteFile());
+							BufferedReader br = null;
+							try 
+							{
+								br = new BufferedReader(new FileReader(file.getAbsoluteFile()));
+								StringBuffer stb = new StringBuffer();
+								String st = "";
 
-							while((st = br.readLine()) != null)
-								stb.append(st);
+								while((st = br.readLine()) != null)
+									stb.append(st);
 
-							JSONObject job = new JSONObject(stb.toString());
+								JSONObject job = new JSONObject(stb.toString());
 
-							Droplet d = new Droplet(Base64.getUrlDecoder().decode(job.get("data").toString()), job.getLong("seed"), job.getInt("num_chunks"));
-							glass.addDroplet(d);
+								Droplet d = new Droplet(Base64.getUrlDecoder().decode(job.get("data").toString()), job.getLong("seed"), job.getInt("num_chunks"));
+								glass.addDroplet(d);
 
-							if(glass.isDone())
-							{	
-								byte[] decodedData = new byte[1000];
+								counter++;
+								if(glass.isDone())
+								{	
+									byte[] decodedData = new byte[1000];
 
-								for(int i = 0; i < Glass.chunks.length; i++)
-									System.arraycopy(Glass.chunks[i], 0, decodedData, i * 100, 100);
+									for(int i = 0; i < Glass.chunks.length; i++)
+										System.arraycopy(Glass.chunks[i], 0, decodedData, i * 100, 100);
 
-								textArea.setText(Base64.getUrlEncoder().encodeToString(decodedData));
+									JOptionPane.showMessageDialog(frame, "Decoding success\nDroplet utilized : " + counter + ", Total Droplets : " + files.length);
+									
+									textArea.setText(Base64.getUrlEncoder().encodeToString(decodedData));
+									break;
+								}	
 
-								System.err.println("Decoding SUCCESS");
-								break;
-							}	
-
-							//JOptionPane.showMessageDialog(frame, "Assemble success!!!");
-						} 
-						catch (FileNotFoundException e1) 
-						{
-							e1.printStackTrace();
-						} catch (IOException e1) {
-							// TODO Auto-generated catch block
-							e1.printStackTrace();
-						}
-						finally 
-						{
-							try {
-
-								br.close();
+								//JOptionPane.showMessageDialog(frame, "Assemble success!!!");
 							} 
-							catch (IOException e1) 
+							catch (FileNotFoundException e1) 
 							{
 								e1.printStackTrace();
+							} catch (IOException e1) {
+								// TODO Auto-generated catch block
+								e1.printStackTrace();
+							}
+							finally 
+							{
+								try {
+
+									br.close();
+								} 
+								catch (IOException e1) 
+								{
+									e1.printStackTrace();
+								}
 							}
 						}
 					}
+					catch(Exception ex)
+					{
+						JOptionPane.showMessageDialog(frame, "Bad input!!");
+					}
+
 
 				}
 			}
