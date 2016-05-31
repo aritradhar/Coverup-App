@@ -70,7 +70,7 @@ public class AssembleFrame {
 	private void initialize() {
 		frame = new JFrame();
 		frame.setBounds(100, 100, 832, 635);
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
 		JPanel panel = new JPanel();
 		frame.getContentPane().add(panel, BorderLayout.SOUTH);
