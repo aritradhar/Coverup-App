@@ -27,6 +27,7 @@ import org.json.JSONObject;
 
 import com.ethz.fountain.Droplet;
 import com.ethz.fountain.Glass;
+import javax.swing.JProgressBar;
 
 public class AssembleFrame {
 
@@ -43,15 +44,19 @@ public class AssembleFrame {
 	 * @throws InstantiationException 
 	 * @throws ClassNotFoundException 
 	 */
-	public static void main(String[] args) throws ClassNotFoundException, InstantiationException, IllegalAccessException, UnsupportedLookAndFeelException {
+	public static void main(String[] args) throws ClassNotFoundException, InstantiationException, IllegalAccessException, UnsupportedLookAndFeelException 
+	{
 		UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());	
 
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
-				try {
+				try 
+				{
 					AssembleFrame window = new AssembleFrame();
 					window.frame.setVisible(true);
-				} catch (Exception e) {
+				} 
+				catch (Exception e) 
+				{
 					e.printStackTrace();
 				}
 			}
@@ -120,8 +125,13 @@ public class AssembleFrame {
 		panel.add(btnAssemble);
 
 		JButton btnDisplay = new JButton("Assemble");
-		btnDisplay.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
+		JProgressBar progressBar = new JProgressBar();
+		progressBar.setStringPainted(true);
+		
+		btnDisplay.addActionListener(new ActionListener() 
+		{
+			public void actionPerformed(ActionEvent e) 
+			{
 
 				if(JSONDirPath == null)
 					JOptionPane.showMessageDialog(frame, "JSON path not set!");
@@ -154,9 +164,7 @@ public class AssembleFrame {
 								
 								//initialize glass only once
 								if(glass == null)
-								{
 									glass = new Glass(job.getInt("num_chunks"));
-								}
 								
 								glass.addDroplet(d);
 
@@ -175,6 +183,7 @@ public class AssembleFrame {
 									
 									//textArea.setText(Base64.getUrlEncoder().encodeToString(decodedData));
 									textArea.setText(new String(decodedData));
+									progressBar.setValue(100);
 									break;
 								}	
 
@@ -205,19 +214,33 @@ public class AssembleFrame {
 							JOptionPane.showMessageDialog(frame, "Not enought droplets yet!");
 							byte[][] partialChunks = Glass.chunks;
 							StringBuffer stb = new StringBuffer();
+							
+							int completed = 0, s_size = 0;
+							boolean flag = false;
+							
 							for(byte b[] : partialChunks)
 							{
+								//total += b.length;
 								if(b == null)
-								{
+								{								
 									stb.append("<_______missing chunk______>");
 								}
 								else
 								{
+									flag = true;
+									s_size = b.length;
+									completed += b.length;
 									stb.append(new String(b));
 								}
 							}
 							
 							textArea.setText(stb.toString());
+							if(flag)
+								progressBar.setValue((100 * completed)/(s_size * partialChunks.length));
+							else
+								progressBar.setValue(0);
+							
+							//System.out.println((completed * 100)/(s_size * partialChunks.length));
 						}
 						
 					}
@@ -231,6 +254,7 @@ public class AssembleFrame {
 			}
 		});
 		panel.add(btnDisplay);
+		panel.add(progressBar);
 	}
 
 }
