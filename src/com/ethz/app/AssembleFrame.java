@@ -35,6 +35,7 @@ public class AssembleFrame {
 	JFileChooser chooser;
 
 	public static String JSONDirPath;
+	
 	/**
 	 * Launch the application.
 	 * @throws UnsupportedLookAndFeelException 
@@ -70,6 +71,7 @@ public class AssembleFrame {
 	private void initialize() {
 		frame = new JFrame();
 		frame.setBounds(100, 100, 832, 635);
+		frame.setTitle("Fountain assemble");
 		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
 		JPanel panel = new JPanel();
@@ -127,7 +129,8 @@ public class AssembleFrame {
 				else
 				{
 					File[] files =  new File(JSONDirPath).listFiles();
-					Glass glass = new Glass(10);
+					
+					Glass glass = null;
 
 					try
 					{
@@ -148,19 +151,30 @@ public class AssembleFrame {
 								JSONObject job = new JSONObject(stb.toString());
 
 								Droplet d = new Droplet(Base64.getUrlDecoder().decode(job.get("data").toString()), job.getLong("seed"), job.getInt("num_chunks"));
+								
+								//initialize glass only once
+								if(glass == null)
+								{
+									glass = new Glass(job.getInt("num_chunks"));
+								}
+								
 								glass.addDroplet(d);
 
 								counter++;
 								if(glass.isDone())
 								{	
-									byte[] decodedData = new byte[1000];
+									//TODO: this size has to be dynamic depends on the data size which is to be preshared in the table
+									//byte[] decodedData = new byte[1000];
 
-									for(int i = 0; i < Glass.chunks.length; i++)
-										System.arraycopy(Glass.chunks[i], 0, decodedData, i * 100, 100);
+									//for(int i = 0; i < Glass.chunks.length; i++)
+									//	System.arraycopy(Glass.chunks[i], 0, decodedData, i * 100, 100);
 
+									byte[] decodedData = glass.getDecodedData();
+									
 									JOptionPane.showMessageDialog(frame, "Decoding success\nDroplet utilized : " + counter + ", Total Droplets : " + files.length);
 									
-									textArea.setText(Base64.getUrlEncoder().encodeToString(decodedData));
+									//textArea.setText(Base64.getUrlEncoder().encodeToString(decodedData));
+									textArea.setText(new String(decodedData));
 									break;
 								}	
 
@@ -169,8 +183,9 @@ public class AssembleFrame {
 							catch (FileNotFoundException e1) 
 							{
 								e1.printStackTrace();
-							} catch (IOException e1) {
-								// TODO Auto-generated catch block
+							} 
+							catch (IOException e1) 
+							{
 								e1.printStackTrace();
 							}
 							finally 
@@ -188,6 +203,21 @@ public class AssembleFrame {
 						if(!glass.isDone())
 						{
 							JOptionPane.showMessageDialog(frame, "Not enought droplets yet!");
+							byte[][] partialChunks = Glass.chunks;
+							StringBuffer stb = new StringBuffer();
+							for(byte b[] : partialChunks)
+							{
+								if(b == null)
+								{
+									stb.append("<_______missing chunk______>");
+								}
+								else
+								{
+									stb.append(new String(b));
+								}
+							}
+							
+							textArea.setText(stb.toString());
 						}
 						
 					}

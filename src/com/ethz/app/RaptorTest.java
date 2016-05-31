@@ -47,7 +47,8 @@ public class RaptorTest {
         if (dataLen > MAX_DATA_LEN)
             throw new IllegalArgumentException("data length is too large");
 
-        return FECParameters.deriveParameters(dataLen, PAY_LEN, MAX_DEC_MEM);
+        return FECParameters.newParameters(dataLen, 5000, 200);
+       // return FECParameters.deriveParameters(dataLen, PAY_LEN, MAX_DEC_MEM);
     }
     
 
@@ -93,11 +94,11 @@ public class RaptorTest {
     
     public static void main(String[] args) {
 		
-    	FECParameters param = getParameters(1000000000);
+    	FECParameters param = getParameters(10000000);
     	
     	System.out.println(param);
     	
-    	byte[] data = new byte[1000000000];
+    	byte[] data = new byte[10000000];
     	new Random().nextBytes(data);
     	
     	ArrayDataEncoder enc = OpenRQ.newEncoder(data, param);   	
@@ -121,11 +122,11 @@ public class RaptorTest {
     		{
                 j++;      
                 sbState = sbDec.putEncodingPacket(srcPacket);
-                /*if(sbState == SourceBlockState.DECODED)
+                if(sbState == SourceBlockState.DECODED)
                 {
                 	System.out.println(i + "," + j);
                 	break;
-                }*/
+                }
             }
         }
 
