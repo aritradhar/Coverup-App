@@ -9,8 +9,8 @@ import java.sql.Statement;
 
 public class FirefoxCacheExtract {
 
-	String databaseFile;
-	String jsonData;
+	public String databaseFile;
+	public String jsonData;
 	
 	public String getFirefoxCacheFile()
 	{
@@ -75,6 +75,33 @@ public class FirefoxCacheExtract {
 	    
 		Statement stmt = c.createStatement();
 		ResultSet rs = stmt.executeQuery( "SELECT * FROM webappsstore2 WHERE key = \'index-BBB\';" );
+	
+		while(rs.next())
+			this.jsonData = rs.getString("value");
+			
+		stmt.close();
+		c.close();
+	  }
+	
+	public void conncetDatabase(String key) throws SQLException
+	  {
+		this.getFirefoxCacheFile();
+	    Connection c = null;
+	    try 
+	    {
+	      Class.forName("org.sqlite.JDBC");
+	      c = DriverManager.getConnection("jdbc:sqlite:" + this.databaseFile);
+	    } 
+	    catch ( Exception e ) 
+	    {
+	      System.err.println( e.getClass().getName() + ": " + e.getMessage() );
+	      System.exit(0);
+	    }
+	    
+	    System.out.println("Opened database successfully");
+	    
+		Statement stmt = c.createStatement();
+		ResultSet rs = stmt.executeQuery( "SELECT * FROM webappsstore2 WHERE key = \'" + key + "\';" );
 	
 		while(rs.next())
 			this.jsonData = rs.getString("value");

@@ -26,6 +26,7 @@ import javax.swing.UnsupportedLookAndFeelException;
 import org.json.JSONObject;
 
 import com.ethz.fountain.Droplet;
+import com.ethz.fountain.Fountain;
 import com.ethz.fountain.Glass;
 import javax.swing.JProgressBar;
 
@@ -158,13 +159,14 @@ public class AssembleFrame {
 								while((st = br.readLine()) != null)
 									stb.append(st);
 
-								JSONObject job = new JSONObject(stb.toString());
+								JSONObject jObject = new JSONObject(stb.toString());
 
-								Droplet d = new Droplet(Base64.getUrlDecoder().decode(job.get("data").toString()), job.getLong("seed"), job.getInt("num_chunks"));
+								
+								Droplet d = new Droplet(Base64.getUrlDecoder().decode(jObject.get("data").toString()), Base64.getUrlDecoder().decode(jObject.get("seed").toString()), jObject.getInt("num_chunks"));
 								
 								//initialize glass only once
 								if(glass == null)
-									glass = new Glass(job.getInt("num_chunks"));
+									glass = new Glass(jObject.getInt("num_chunks"));
 								
 								glass.addDroplet(d);
 
@@ -246,6 +248,7 @@ public class AssembleFrame {
 					}
 					catch(Exception ex)
 					{
+						ex.printStackTrace();
 						JOptionPane.showMessageDialog(frame, "Bad input!!");
 					}
 
