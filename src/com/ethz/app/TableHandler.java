@@ -37,9 +37,7 @@ public class TableHandler {
 	    {
 	    	insertStmt = "UPDATE webappsstore2 set value = '" + value + "' WHERE key = '" + key + "'";
 	    	stmt.executeUpdate(insertStmt);
-	    }
-	    
-	    
+	    }  
 	    stmt.close();
 	    //c.commit();
 	    c.close();
