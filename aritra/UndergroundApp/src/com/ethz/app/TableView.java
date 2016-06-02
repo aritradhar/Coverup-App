@@ -113,26 +113,10 @@ class ButtonEditor extends DefaultCellEditor {
     @Override
     public Object getCellEditorValue() {
         if (isPushed) {
-        	//edit here to set the marker to the firefox database
-            //JOptionPane.showMessageDialog(button, row + " "+ label + " pressed and link = " + table.getValueAt(row, 0));
-            try {
-            	
-            	String linkStr = table.getValueAt(row, 0).toString();
-            	
-				TableHandler.insertDataToTable("index-CCC", linkStr);
-				JOptionPane.showMessageDialog(button, "Database insert success!!");
-				
-				QueryMake.insert(linkStr);
-				table.setValueAt("Selected", row, 2);
-				//button.setText("Selected");
-				
-			} 
-            catch (SQLException e) 
-            {
-				// TODO Auto-generated catch block
-				JOptionPane.showMessageDialog(button, "Database insert fail!!" + table.getValueAt(row, 0).toString());
-				e.printStackTrace();
-			}
+        	String linkStr = table.getValueAt(row, 0).toString();
+			
+			//TableHandler.insertDataToTable("index-CCC", linkStr);
+			JOptionPane.showMessageDialog(button, "Database insert success!!");
         }
         isPushed = false;
         return label;
