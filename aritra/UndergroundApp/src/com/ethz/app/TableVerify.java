@@ -78,8 +78,8 @@ public class TableVerify {
 	{
 		
 		frame = new JFrame();
-		frame.setTitle("Firefox cache extractor");
-		frame.setBounds(100, 100, 783, 510);
+		frame.setTitle("Server Fountain Table");
+		frame.setBounds(100, 100, 795, 535);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
 
@@ -157,15 +157,23 @@ public class TableVerify {
 		{
 			public void actionPerformed(ActionEvent e) 
 			{
+				//try to reload from the database in case there is any update
 				try 
-				{
+				{		
 					tableChecker.loadtableData();
 				} 
 				catch (SQLException e1) 
 				{
 					e1.printStackTrace();
 				}
-				textArea.setText(tableChecker.tableJson);
+				
+				String[] urls = tableChecker.getURLsFromTable();
+				StringBuffer toProject = new StringBuffer();
+				
+				for(String url : urls)
+					toProject.append(url).append("\n");
+				
+				textArea.setText(toProject.toString());
 			}
 		});
 		panel.add(btnLoadMessage);
@@ -175,11 +183,17 @@ public class TableVerify {
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				
-				try {
+				//try to reload from the database in case there is any update
+				try 
+				{		
 					tableChecker.loadtableData();
-				} catch ( SQLException e1) {
+				} 
+				catch (SQLException e1) 
+				{
 					e1.printStackTrace();
 				}
+				
+				
 				textArea.setText(tableChecker.signature);
 			}
 		});
