@@ -1,7 +1,6 @@
 package com.ethz.app;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -10,22 +9,26 @@ import java.sql.SQLException;
 import java.util.Base64;
 
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
+import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.UIManager;
 
 import javax.swing.UnsupportedLookAndFeelException;
+import javax.swing.table.DefaultTableModel;
 import javax.swing.JLabel;
-import java.awt.FlowLayout;
+import javax.swing.JOptionPane;
+
+
 
 import javax.swing.SwingConstants;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 
 public class TableVerify {
+	
+	private JTable table;
 
 	public JFrame frame;
 
@@ -76,29 +79,27 @@ public class TableVerify {
 	 */
 	private void initialize() throws NoSuchAlgorithmException 
 	{
-		
 		frame = new JFrame();
 		frame.setTitle("Server Fountain Table");
-		frame.setBounds(100, 100, 795, 535);
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.setBounds(100, 100, 1253, 819);
+		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		
 
 		JPanel panel = new JPanel();
-		frame.getContentPane().add(panel, BorderLayout.SOUTH);
-
-		JScrollPane scrollPane = new JScrollPane();
-		frame.getContentPane().add(scrollPane, BorderLayout.CENTER);
-
-		JTextArea textArea = new JTextArea();
-		textArea.setForeground(Color.BLACK);;
-		textArea.setLineWrap(true);
-		textArea.setEditable(false);
-		scrollPane.setViewportView(textArea);
-
+		frame.getContentPane().add(panel, BorderLayout.SOUTH);;
+		
+		JPanel panelMid = new JPanel();
+		frame.getContentPane().add(panelMid, BorderLayout.CENTER);
+		
+		table = new JTable(0, 2);
+		table.setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
+		
+		JScrollPane scrollPane = new JScrollPane(table, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+		panelMid.add(scrollPane);
+		
+		
 		JPanel panel_1 = new JPanel();
-		FlowLayout flowLayout = (FlowLayout) panel_1.getLayout();
-		flowLayout.setAlignment(FlowLayout.LEFT);
-		scrollPane.setColumnHeaderView(panel_1);
+		frame.getContentPane().add(panel_1, BorderLayout.NORTH);
 
 		txtQq = new JTextField();
 		txtQq.setToolTipText("");
@@ -168,36 +169,37 @@ public class TableVerify {
 				}
 				
 				String[] urls = tableChecker.getURLsFromTable();
-				StringBuffer toProject = new StringBuffer();
 				
+				Object[][] tableModelData = new Object[urls.length][2];
+				
+				int i = 0;
 				for(String url : urls)
-					toProject.append(url).append("\n");
-				
-				textArea.setText(toProject.toString());
-			}
-		});
-		panel.add(btnLoadMessage);
-
-		JButton btnLoadSignature = new JButton("Load Signature");
-		btnLoadSignature.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseClicked(MouseEvent e) {
-				
-				//try to reload from the database in case there is any update
-				try 
-				{		
-					tableChecker.loadtableData();
-				} 
-				catch (SQLException e1) 
 				{
-					e1.printStackTrace();
+					tableModelData[i][0] = url;
+					tableModelData[i][1] = "Droplet Progress";
+					i++;
 				}
 				
 				
-				textArea.setText(tableChecker.signature);
+				DefaultTableModel model = (DefaultTableModel) table.getModel();
+				
+				//model.setDataVector(GetTable.getTableData(jsonString), new Object[]{"Link", "Select", "Flag"});
+				
+				model.setDataVector(tableModelData, new Object[]{"URL", "Droplet Progress"});
+				
+				//System.out.println(table.getValueAt(0, 0));
+				
+				table.getColumn("Droplet Progress").setCellRenderer(new ButtonRenderer());
+				table.getColumn("Droplet Progress").setCellEditor(new ButtonEditor(new JCheckBox(), table));
+				
+				
+				/*for(String url : urls)
+					toProject.append(url).append("\n");
+				
+				textArea.setText(toProject.toString());*/
 			}
 		});
-		panel.add(btnLoadSignature);
+		panel.add(btnLoadMessage);
 
 		JButton btnVerifySignature = new JButton("Verify Signature");
 		btnVerifySignature.addActionListener(new ActionListener() {
@@ -208,20 +210,20 @@ public class TableVerify {
 					tableChecker.verifyMessage();
 
 					if(tableChecker.verifyResult)
-						textArea.setText("Verify success");
+						JOptionPane.showMessageDialog(frame, "Table verification successful!!");
 
 					else
-						textArea.setText("Invalid signature");
+						JOptionPane.showMessageDialog(frame, "Table verification fail!!");
 
 				} 
 				catch(NullPointerException ex)
 				{
-					textArea.setText("Error! PK not set");
+					JOptionPane.showMessageDialog(frame, "Error! PK not set");
 				}
 				catch (Exception e1) 
 				{
 					e1.printStackTrace();
-					textArea.setText("Exception happened in signature verification\n-------------------\n"+e1.getClass()+ " " +e1.getMessage());
+					JOptionPane.showMessageDialog(frame, "Exception happened in signature verification");
 				}
 
 
