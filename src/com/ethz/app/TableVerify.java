@@ -22,20 +22,17 @@ import javax.swing.JLabel;
 import java.awt.FlowLayout;
 
 import javax.swing.SwingConstants;
-import javax.swing.JMenuBar;
-import javax.swing.JMenu;
-import javax.swing.JMenuItem;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
 public class TableVerify {
 
-	private JFrame frame;
+	public JFrame frame;
 
 	/**
 	 * Launch the application.
 	 */
-	public static App app;
+	public static TableChecker tableChecker;
 	private JTextField txtQq;
 
 	public static boolean set = false;
@@ -67,9 +64,8 @@ public class TableVerify {
 	@SuppressWarnings("static-access")
 	public TableVerify() throws NoSuchAlgorithmException, SQLException {
 
-		this.app = new App();
-		app.loadMessage();
-		app.loadSignature();
+		this.tableChecker = new TableChecker();
+		tableChecker.loadtableData();
 
 		initialize();
 	}
@@ -135,8 +131,8 @@ public class TableVerify {
 				{
 					try
 					{
-						app.setPK(pkText);
-						lblNewLabel.setText("PK set : " + Base64.getUrlEncoder().encodeToString(app.ServerpublicKey));
+						tableChecker.setPK(pkText);
+						lblNewLabel.setText("PK set : " + Base64.getUrlEncoder().encodeToString(tableChecker.ServerpublicKey));
 					}
 					catch(Exception ex)
 					{
@@ -149,7 +145,7 @@ public class TableVerify {
 		
 		
 
-		if(app == null)
+		if(tableChecker == null)
 		{
 			System.err.println("NULL app");
 		}
@@ -163,13 +159,13 @@ public class TableVerify {
 			{
 				try 
 				{
-					app.loadMessage();
+					tableChecker.loadtableData();
 				} 
 				catch (SQLException e1) 
 				{
 					e1.printStackTrace();
 				}
-				textArea.setText(app.message);
+				textArea.setText(tableChecker.tableJson);
 			}
 		});
 		panel.add(btnLoadMessage);
@@ -180,21 +176,11 @@ public class TableVerify {
 			public void mouseClicked(MouseEvent e) {
 				
 				try {
-					app.loadSignature();
+					tableChecker.loadtableData();
 				} catch ( SQLException e1) {
 					e1.printStackTrace();
 				}
-				textArea.setText(app.signatureString);
-			}
-		});
-		btnLoadSignature.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				try {
-					app.loadSignature();
-				} catch ( SQLException e1) {
-					e1.printStackTrace();
-				}
-				textArea.setText(app.signatureString);
+				textArea.setText(tableChecker.signature);
 			}
 		});
 		panel.add(btnLoadSignature);
@@ -205,9 +191,9 @@ public class TableVerify {
 			public void actionPerformed(ActionEvent e) {
 
 				try {
-					app.verifyMessage();
+					tableChecker.verifyMessage();
 
-					if(app.verifyResult)
+					if(tableChecker.verifyResult)
 						textArea.setText("Verify success");
 
 					else

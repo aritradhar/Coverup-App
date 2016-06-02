@@ -236,7 +236,7 @@ public class AppWindow {
 		JMenu mnMenu = new JMenu("Tool");
 		menuBar.add(mnMenu);
 		
-		JMenuItem mntmSendPost = new JMenuItem("Table viewer");
+		JMenuItem mntmSendPost = new JMenuItem("Table Viewer");
 		mntmSendPost.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				
@@ -275,6 +275,30 @@ public class AppWindow {
 				});
 			}
 		});
+		
+		JMenuItem mntmTableVerify = new JMenuItem("Table Verify");
+		mntmTableVerify.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				
+						
+				EventQueue.invokeLater(new Runnable() {
+					public void run() 
+					{
+						try {
+
+							TableVerify window = new TableVerify();
+							window.frame.setVisible(true);
+						} 
+						catch (Exception e) 
+						{
+							e.printStackTrace();
+						}
+					}
+				});
+				
+			}
+		});
+		mnMenu.add(mntmTableVerify);
 		mnMenu.add(mntmDataAssemble);
 
 
