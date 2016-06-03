@@ -38,6 +38,8 @@ public class AssembleFrame {
 
 	public static String JSONDirPath;
 	
+	public String urlString;
+	
 	/**
 	 * Launch the application.
 	 * @throws UnsupportedLookAndFeelException 
@@ -68,6 +70,11 @@ public class AssembleFrame {
 	 * Create the application.
 	 */
 	public AssembleFrame() {
+		initialize();
+	}
+	
+	public AssembleFrame(String urlString) {
+		this.urlString = urlString;
 		initialize();
 	}
 

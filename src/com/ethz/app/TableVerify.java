@@ -2,6 +2,7 @@ package com.ethz.app;
 
 import java.awt.BorderLayout;
 import java.awt.EventQueue;
+import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.security.NoSuchAlgorithmException;
@@ -81,7 +82,7 @@ public class TableVerify {
 	{
 		frame = new JFrame();
 		frame.setTitle("Server Fountain Table");
-		frame.setBounds(100, 100, 1253, 819);
+		frame.setBounds(100, 100, 666, 584);
 		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		
 
@@ -99,8 +100,13 @@ public class TableVerify {
 		
 		
 		JPanel panel_1 = new JPanel();
+		FlowLayout flowLayout = (FlowLayout) panel_1.getLayout();
+		flowLayout.setAlignment(FlowLayout.LEFT);
+		scrollPane.setColumnHeaderView(panel_1);
 		frame.getContentPane().add(panel_1, BorderLayout.NORTH);
 
+		
+		
 		txtQq = new JTextField();
 		txtQq.setToolTipText("");
 		txtQq.setHorizontalAlignment(SwingConstants.LEFT);
@@ -114,7 +120,7 @@ public class TableVerify {
 		
 		JLabel lblNewLabel = new JLabel("Using no PK");
 		lblNewLabel.setHorizontalAlignment(SwingConstants.LEFT);
-		//lblNewLabel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+		
 		panel_1.add(lblNewLabel);
 		
 		btnSetServerPk.addActionListener(new ActionListener() 
@@ -176,7 +182,7 @@ public class TableVerify {
 				for(String url : urls)
 				{
 					tableModelData[i][0] = url;
-					tableModelData[i][1] = "Droplet Progress";
+					tableModelData[i][1] = "Go";
 					i++;
 				}
 				
