@@ -19,6 +19,9 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
+import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
+import javax.swing.text.DefaultCaret;
 
 public class DataBasePoll extends JFrame {
 
@@ -30,13 +33,21 @@ public class DataBasePoll extends JFrame {
 	private JTextField txtQq;
 	private ScheduledThreadPoolExecutor executor;
 	
-	public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
+	public static void main(String[] args) throws ClassNotFoundException, InstantiationException, IllegalAccessException, UnsupportedLookAndFeelException {
+		
+		UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());	
+		
+		EventQueue.invokeLater(new Runnable() 
+		{
+			public void run() 
+			{
+				try 
+				{
 					DataBasePoll dPool = new DataBasePoll();
 					dPool.frame.setVisible(true);
-				} catch (Exception e) {
+				} 
+				catch (Exception e) 
+				{
 					e.printStackTrace();
 				}
 			}
@@ -47,7 +58,7 @@ public class DataBasePoll extends JFrame {
 	public DataBasePoll() {
 		
 		frame = new JFrame();
-		frame.setTitle("Firefox cache extractor");
+		frame.setTitle("Database polling");
 		frame.setBounds(100, 100, 783, 510);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	
@@ -59,7 +70,11 @@ public class DataBasePoll extends JFrame {
 		textArea.setForeground(Color.BLACK);;
 		textArea.setLineWrap(true);
 		textArea.setEditable(false);
+		DefaultCaret caret = (DefaultCaret)textArea.getCaret();
+		caret.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
+		 
 		scrollPane.setViewportView(textArea);
+		
 
 		JPanel panel_1 = new JPanel();
 		FlowLayout flowLayout = (FlowLayout) panel_1.getLayout();
@@ -71,7 +86,7 @@ public class DataBasePoll extends JFrame {
 		txtQq.setHorizontalAlignment(SwingConstants.LEFT);
 		panel_1.add(txtQq);
 		txtQq.setColumns(25);
-
+		
 		JButton btnSetServerPk = new JButton("Set Server PK");
 		panel_1.add(btnSetServerPk);
 		
@@ -79,6 +94,15 @@ public class DataBasePoll extends JFrame {
 		lblNewLabel.setHorizontalAlignment(SwingConstants.LEFT);
 		//lblNewLabel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
 		panel_1.add(lblNewLabel);
+		
+		JPanel panel = new JPanel();
+		frame.getContentPane().add(panel, BorderLayout.SOUTH);
+		
+		JButton btnNewButton_1 = new JButton("Stop");
+		btnNewButton_1.setEnabled(false);
+		
+		JButton btnNewButton = new JButton("Start Polling");
+		btnNewButton.setEnabled(false);
 		
 		btnSetServerPk.addActionListener(new ActionListener() 
 		{
@@ -97,6 +121,7 @@ public class DataBasePoll extends JFrame {
 					{
 						RepeatedDatabaseCheck.ServerPublickey = Base64.getUrlDecoder().decode(pkText);
 						lblNewLabel.setText("PK set : " + Base64.getUrlEncoder().encodeToString(RepeatedDatabaseCheck.ServerPublickey));
+						btnNewButton.setEnabled(true);
 					}
 					catch(Exception ex)
 					{
@@ -107,13 +132,7 @@ public class DataBasePoll extends JFrame {
 			}
 		});
 		
-		JPanel panel = new JPanel();
-		frame.getContentPane().add(panel, BorderLayout.SOUTH);
 		
-		JButton btnNewButton_1 = new JButton("Stop");
-		btnNewButton_1.setEnabled(false);
-		
-		JButton btnNewButton = new JButton("Start Polling");
 		btnNewButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				
@@ -124,34 +143,45 @@ public class DataBasePoll extends JFrame {
 						// TODO Auto-generated method stub
 						try 
 						{
-							new RepeatedDatabaseCheck();
+							/*txtQq.setText
+							(
+									txtQq.getText().concat
+									(
+											new RepeatedDatabaseCheck().messaage.toString()
+									)
+							);*/
+							
+							RepeatedDatabaseCheck t = new RepeatedDatabaseCheck();
+							textArea.append("\n".concat(t.messaage.toString()));
 						} 
 						
 						catch(RuntimeException ex)
 						{
-							txtQq.setText(txtQq.getText().concat("\n").concat(ex.getMessage()));
 							ex.printStackTrace();
+							textArea.append("\n".concat(ex.getMessage()));
+							
 						}
 						catch (SQLException e) 
 						{
-							txtQq.setText(txtQq.getText().concat("\n").concat("ran into database problem"));
 							e.printStackTrace();
-							
+							textArea.append("\n".concat("ran into database problem"));		
 						} 
 						catch (Exception e) 
 						{
-							txtQq.setText(txtQq.getText().concat("\n").concat("Some other shit!"));
 							e.printStackTrace();
+							textArea.append("\n".concat("Some other shit!"));						
 						}
+						
 					}
 				};
 			    //Taking an instance of class contains your repeated method.
 
 				executor = new ScheduledThreadPoolExecutor(10);
-				executor.scheduleAtFixedRate(myRunnable, 0, 500, TimeUnit.MILLISECONDS);
+				executor.scheduleAtFixedRate(myRunnable, 0, 1000, TimeUnit.MILLISECONDS);
 				
 				btnNewButton_1.setEnabled(true);
 				btnNewButton.setEnabled(false);
+				
 			}
 		});
 		panel.add(btnNewButton);

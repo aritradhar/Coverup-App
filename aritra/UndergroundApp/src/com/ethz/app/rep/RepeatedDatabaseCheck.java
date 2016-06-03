@@ -1,5 +1,8 @@
 package com.ethz.app.rep;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -11,18 +14,22 @@ import org.whispersystems.curve25519.Curve25519;
 
 import com.ethz.app.FirefoxCacheExtract;
 import com.ethz.app.TableChecker;
+import com.ethz.app.env.ENV;
 
 public class RepeatedDatabaseCheck {
 	
 	public static byte[] ServerPublickey;
-	
+	StringBuffer messaage;
 	
 	public RepeatedDatabaseCheck() throws Exception 
 	{
 		System.out.println("Run");
+		this.messaage = new StringBuffer();
 		this.doTableCheck();
 		this.doDataBaseCheck();
 	}
+	
+	
 	
 	private void doTableCheck() throws SQLException
 	{
@@ -31,7 +38,9 @@ public class RepeatedDatabaseCheck {
 	}
 	
 	
-	private void doDataBaseCheck() throws SQLException
+	
+	
+	private void doDataBaseCheck() throws SQLException, IOException
 	{
 		FirefoxCacheExtract ffce = new FirefoxCacheExtract();
 		ffce.getFirefoxCacheFile();
@@ -48,15 +57,28 @@ public class RepeatedDatabaseCheck {
 		String signatureString = jObject.getString("signature");
 		byte[] signatureBytes = Base64.getUrlDecoder().decode(signatureString);
 		
+		this.messaage.append("Droplet length : ").append(dropletByte.length);
+		
+		byte[] hashtableBytes = null;
 		try 
 		{
 			
 			MessageDigest md = MessageDigest.getInstance("SHA-256");
-			byte[] hashtableBytes = md.digest(dropletByte);
+			hashtableBytes = md.digest(dropletByte);
+			
+			//System.out.println("hash " + Base64.getUrlEncoder().encodeToString(hashtableBytes));
+			
 			boolean check = Curve25519.getInstance("best").verifySignature(RepeatedDatabaseCheck.ServerPublickey, hashtableBytes, signatureBytes);
 			
 			if(!check)
+			{
+				this.messaage.append("\nSignature verification failed");
 				throw new RuntimeException("Signature verification failed");
+			}
+			else
+			{
+				this.messaage.append("\nSignature verification success");
+			}
 		} 
 		
 		catch (NoSuchAlgorithmException e) 
@@ -64,7 +86,32 @@ public class RepeatedDatabaseCheck {
 			e.printStackTrace();
 		}
 		
+		JSONObject tableJSONData = TableChecker.URL_JSON_TABLE_MAP.get(dropletUrl);
+		String dropletLocation =  tableJSONData.get("dropletLoc").toString();
 		
+		this.messaage.append("\ndroplet location : ").append(dropletLocation);
+		
+		String fileName = ENV.APP_STORAGE_LOC + ENV.DELIM + dropletLocation + ENV.DELIM + Base64.getUrlEncoder().encodeToString(hashtableBytes).concat(".txt");
+		
+		if(!new File(ENV.APP_STORAGE_LOC + ENV.DELIM + dropletLocation).exists())
+		{
+			new File(ENV.APP_STORAGE_LOC + ENV.DELIM + dropletLocation).mkdir();
+		}
+		
+		File file = new File(fileName);
+		if(!file.exists())
+		{
+			FileWriter fw = new FileWriter(fileName);
+			fw.write(droplet);
+			this.messaage.append("\n Droplet dumped in local storage");
+			fw.close();
+		}
+		else
+		{
+			this.messaage.append("\n Droplet exists in loal Storage. Skipped...");
+		}
+		
+		this.messaage.append("\n---------------------------------\n");
 	}
 	
 	
