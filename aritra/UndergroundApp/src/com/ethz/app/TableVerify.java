@@ -20,6 +20,9 @@ import javax.swing.UIManager;
 
 import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.table.DefaultTableModel;
+
+import com.ethz.app.env.ENV;
+
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 
@@ -206,7 +209,7 @@ public class TableVerify {
 			}
 		});
 		panel.add(btnLoadMessage);
-
+		
 		JButton btnVerifySignature = new JButton("Verify Signature");
 		btnVerifySignature.addActionListener(new ActionListener() {
 			
