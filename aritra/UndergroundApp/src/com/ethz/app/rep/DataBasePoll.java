@@ -126,7 +126,21 @@ public class DataBasePoll extends JFrame {
 						{
 							new RepeatedDatabaseCheck();
 						} 
-						catch (SQLException e) {
+						
+						catch(RuntimeException ex)
+						{
+							txtQq.setText(txtQq.getText().concat("\n").concat(ex.getMessage()));
+							ex.printStackTrace();
+						}
+						catch (SQLException e) 
+						{
+							txtQq.setText(txtQq.getText().concat("\n").concat("ran into database problem"));
+							e.printStackTrace();
+							
+						} 
+						catch (Exception e) 
+						{
+							txtQq.setText(txtQq.getText().concat("\n").concat("Some other shit!"));
 							e.printStackTrace();
 						}
 					}
