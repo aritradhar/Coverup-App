@@ -41,7 +41,7 @@ public class TableChecker
 		this.setMapFromtableJSON();
 	}
 	
-	public void setMapFromtableJSON()
+	private void setMapFromtableJSON()
 	{
 		JSONObject jObject = new JSONObject(this.tableJson);
 		JSONArray tabelDataArray = jObject.getJSONArray("table");

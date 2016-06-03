@@ -83,7 +83,7 @@ public class FirefoxCacheExtract {
 		c.close();
 	  }
 	
-	public void conncetDatabase(String key) throws SQLException
+	public String conncetDatabase(String key) throws SQLException
 	  {
 		this.getFirefoxCacheFile();
 	    Connection c = null;
@@ -108,5 +108,7 @@ public class FirefoxCacheExtract {
 			
 		stmt.close();
 		c.close();
+		
+		return this.jsonData;
 	  }
 }
