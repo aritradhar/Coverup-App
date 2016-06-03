@@ -25,6 +25,7 @@ import javax.swing.UnsupportedLookAndFeelException;
 
 import org.json.JSONObject;
 
+import com.ethz.app.env.ENV;
 import com.ethz.fountain.Droplet;
 import com.ethz.fountain.Fountain;
 import com.ethz.fountain.Glass;
@@ -35,10 +36,9 @@ public class AssembleFrame {
 	JFrame frame;
 
 	JFileChooser chooser;
-
 	public static String JSONDirPath;
-	
-	public String urlString;
+	String urlString;
+	boolean independent;
 	
 	/**
 	 * Launch the application.
@@ -70,11 +70,20 @@ public class AssembleFrame {
 	 * Create the application.
 	 */
 	public AssembleFrame() {
+		this.independent = true;
 		initialize();
 	}
 	
 	public AssembleFrame(String urlString) {
 		this.urlString = urlString;
+		
+		JSONObject jObject = TableChecker.URL_JSON_TABLE_MAP.get(urlString);
+		String dropletDirID = jObject.getString("dropletLoc");
+		JSONDirPath = ENV.APP_STORAGE_LOC + ENV.DELIM + dropletDirID;
+		
+		this.independent = false;
+		System.out.println(JSONDirPath);
+		
 		initialize();
 	}
 
@@ -103,6 +112,10 @@ public class AssembleFrame {
 		scrollPane.setColumnHeaderView(panel_1);
 
 		JLabel lblNewLabel = new JLabel("JSON folder not selected");
+		
+		if(!independent)
+			lblNewLabel.setText("JSON folder : " + JSONDirPath);
+		
 		panel_1.add(lblNewLabel);
 
 
@@ -146,6 +159,7 @@ public class AssembleFrame {
 
 				else
 				{
+					
 					File[] files =  new File(JSONDirPath).listFiles();
 					
 					Glass glass = null;
@@ -252,6 +266,11 @@ public class AssembleFrame {
 							//System.out.println((completed * 100)/(s_size * partialChunks.length));
 						}
 						
+					}
+					catch(NullPointerException ex)
+					{
+						ex.printStackTrace();
+						JOptionPane.showMessageDialog(frame, "Droplet dir missing!!");
 					}
 					catch(Exception ex)
 					{
