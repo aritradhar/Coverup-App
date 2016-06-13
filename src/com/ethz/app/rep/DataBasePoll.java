@@ -29,7 +29,7 @@ public class DataBasePoll extends JFrame {
 	 * 
 	 */
 	private static final long serialVersionUID = -9079243269473511003L;
-	private JFrame frame;
+	public JFrame frame;
 	private JTextField txtQq;
 	private ScheduledThreadPoolExecutor executor;
 	
@@ -60,7 +60,7 @@ public class DataBasePoll extends JFrame {
 		frame = new JFrame();
 		frame.setTitle("Database polling");
 		frame.setBounds(100, 100, 783, 510);
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 	
 
 		JScrollPane scrollPane = new JScrollPane();

@@ -18,6 +18,9 @@ import javax.swing.JTextField;
 import javax.swing.UIManager;
 
 import javax.swing.UnsupportedLookAndFeelException;
+
+import com.ethz.app.rep.DataBasePoll;
+
 import javax.swing.JLabel;
 import java.awt.FlowLayout;
 
@@ -300,6 +303,33 @@ public class AppWindow {
 		});
 		mnMenu.add(mntmTableVerify);
 		mnMenu.add(mntmDataAssemble);
+		
+		//call poll database class here
+		JMenuItem mntmPollDatabase = new JMenuItem("Poll Database");
+		mntmPollDatabase.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) 
+			{
+				
+				EventQueue.invokeLater(new Runnable() 
+				{
+					public void run() 
+					{
+						try 
+						{
+							DataBasePoll dPool = new DataBasePoll();
+							dPool.frame.setVisible(true);
+						} 
+						catch (Exception e) 
+						{
+							e.printStackTrace();
+						}
+					}
+				});
+				
+				
+			}
+		});
+		mnMenu.add(mntmPollDatabase);
 
 
 	}
