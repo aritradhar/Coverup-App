@@ -29,6 +29,8 @@ import com.ethz.app.env.ENV;
 import com.ethz.fountain.Droplet;
 import com.ethz.fountain.Fountain;
 import com.ethz.fountain.Glass;
+import com.ethz.ugs.compressUtil.CompressUtil;
+
 import javax.swing.JProgressBar;
 
 public class AssembleFrame {
@@ -289,17 +291,35 @@ public class AssembleFrame {
 		panel.add(btnDisplay);
 		panel.add(progressBar);
 		
-		JButton btnNewButton = new JButton("Decompress");
-		btnNewButton.addActionListener(new ActionListener() {
+		JButton decompressButton = new JButton("Decompress");
+		
+		if(!ENV.COMPRESSION_SUPPORT)
+			decompressButton.setEnabled(false);
+		
+		decompressButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) 
 			{
 				if(!glassDone)
 				{
 					JOptionPane.showMessageDialog(frame, "Not enought droplets yet!");
 				}
+				else
+				{
+					byte[] compressedData = textArea.getText().getBytes();
+					byte[] decompressedData = null;
+					try 
+					{
+						decompressedData = CompressUtil.deCompress(compressedData);
+					} 
+					catch (IOException e1) 
+					{			
+						e1.printStackTrace();
+					}
+					textArea.setText(new String(decompressedData));
+				}
 			}
 		});
-		panel.add(btnNewButton);
+		panel.add(decompressButton);
 	}
 
 }
