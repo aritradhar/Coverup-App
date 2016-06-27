@@ -312,16 +312,10 @@ public class AppWindow {
 							e.printStackTrace();
 						}
 					}
-				});
-				
-				
+				});			
 			}
 		});
 		mnMenu.add(mntmPollDatabase);
 		
-		
-
-
 	}
-
 }
