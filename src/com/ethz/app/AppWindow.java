@@ -251,30 +251,6 @@ public class AppWindow {
 		JMenu mnMenu = new JMenu("Tool");
 		menuBar.add(mnMenu);
 		
-		JMenuItem mntmSendPost = new JMenuItem("Table Viewer");
-		mntmSendPost.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				
-				System.out.println("clicked");
-				EventQueue.invokeLater(new Runnable() 
-				{
-					public void run()
-					{
-						try 
-						{
-							TableView frame = new TableView();
-							frame.setVisible(true);
-						} 
-						catch (Exception e) 
-						{
-							e.printStackTrace();
-						}
-					}
-				});
-			}
-		});
-		mnMenu.add(mntmSendPost);
-		
 		JMenuItem mntmDataAssemble = new JMenuItem("Data Assemble");
 		mntmDataAssemble.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {

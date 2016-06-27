@@ -300,9 +300,8 @@ public class AssembleFrame {
 			public void actionPerformed(ActionEvent e) 
 			{
 				if(!glassDone)
-				{
 					JOptionPane.showMessageDialog(frame, "Not enought droplets yet!");
-				}
+				
 				else
 				{
 					byte[] compressedData = textArea.getText().getBytes();

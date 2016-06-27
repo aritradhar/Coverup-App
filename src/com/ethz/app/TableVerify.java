@@ -105,10 +105,7 @@ public class TableVerify {
 		JPanel panel_1 = new JPanel();
 		FlowLayout flowLayout = (FlowLayout) panel_1.getLayout();
 		flowLayout.setAlignment(FlowLayout.LEFT);
-		scrollPane.setColumnHeaderView(panel_1);
-		frame.getContentPane().add(panel_1, BorderLayout.NORTH);
-
-		
+		scrollPane.setColumnHeaderView(panel_1);	
 		
 		txtQq = new JTextField();
 		txtQq.setToolTipText("");
