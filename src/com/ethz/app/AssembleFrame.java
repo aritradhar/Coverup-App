@@ -40,6 +40,8 @@ public class AssembleFrame {
 	String urlString;
 	boolean independent;
 	
+	public static boolean glassDone = false;
+	
 	/**
 	 * Launch the application.
 	 * @throws UnsupportedLookAndFeelException 
@@ -207,6 +209,8 @@ public class AssembleFrame {
 									//textArea.setText(Base64.getUrlEncoder().encodeToString(decodedData));
 									textArea.setText(new String(decodedData));
 									progressBar.setValue(100);
+									glassDone = true;
+									
 									break;
 								}	
 
@@ -284,6 +288,18 @@ public class AssembleFrame {
 		});
 		panel.add(btnDisplay);
 		panel.add(progressBar);
+		
+		JButton btnNewButton = new JButton("Decompress");
+		btnNewButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) 
+			{
+				if(!glassDone)
+				{
+					JOptionPane.showMessageDialog(frame, "Not enought droplets yet!");
+				}
+			}
+		});
+		panel.add(btnNewButton);
 	}
 
 }
