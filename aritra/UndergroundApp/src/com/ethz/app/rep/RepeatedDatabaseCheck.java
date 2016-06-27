@@ -104,10 +104,12 @@ public class RepeatedDatabaseCheck {
 			FileWriter fw = new FileWriter(fileName);
 			fw.write(droplet);
 			this.messaage.append("\n Droplet dumped in local storage");
+			this.messaage.append("\n Droplet id : " + Base64.getUrlEncoder().encodeToString(hashtableBytes));
 			fw.close();
 		}
 		else
 		{
+			this.messaage.append("\n Droplet id : " + Base64.getUrlEncoder().encodeToString(hashtableBytes));
 			this.messaage.append("\n Droplet exists in loal Storage. Skipped...");
 		}
 		
