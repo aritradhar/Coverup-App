@@ -12,5 +12,6 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="lib/swt.jar"/>
 	<classpathentry kind="lib" path="lib/fountain2_0.jar"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/UndergroundServer"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

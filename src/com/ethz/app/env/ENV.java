@@ -24,4 +24,6 @@ public class ENV {
 			file.mkdir();
 	}
 	
+	public static final boolean COMPRESSION_SUPPORT = false;
+	
 }

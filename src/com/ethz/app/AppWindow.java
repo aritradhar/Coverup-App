@@ -30,6 +30,7 @@ import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import javax.swing.JTabbedPane;
 
 public class AppWindow {
 
@@ -88,6 +89,14 @@ public class AppWindow {
 		frame.setTitle("Firefox cache extractor");
 		frame.setBounds(100, 100, 783, 510);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		
+		//JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);
+		//frame.getContentPane().add(tabbedPane, BorderLayout.CENTER);
+		
+
+		
+		//tabbedPane.add("wc", panel);
+		
 		
 
 		JPanel panel = new JPanel();
@@ -233,6 +242,9 @@ public class AppWindow {
 		});
 		panel.add(btnVerifySignature);
 		
+		//frame.add(tabbedPane);
+		
+		
 		JMenuBar menuBar = new JMenuBar();
 		frame.setJMenuBar(menuBar);
 		
@@ -330,6 +342,8 @@ public class AppWindow {
 			}
 		});
 		mnMenu.add(mntmPollDatabase);
+		
+		
 
 
 	}
