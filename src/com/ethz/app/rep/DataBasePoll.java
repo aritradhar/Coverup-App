@@ -6,12 +6,14 @@ import java.awt.EventQueue;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Base64;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 import javax.swing.JButton;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -32,6 +34,9 @@ public class DataBasePoll extends JFrame {
 	public JFrame frame;
 	private JTextField txtQq;
 	private ScheduledThreadPoolExecutor executor;
+	private static String databaseFileLocation;
+	
+	JFileChooser chooser;
 	
 	public static void main(String[] args) throws ClassNotFoundException, InstantiationException, IllegalAccessException, UnsupportedLookAndFeelException {
 		
@@ -151,7 +156,7 @@ public class DataBasePoll extends JFrame {
 									)
 							);*/
 							
-							RepeatedDatabaseCheck t = new RepeatedDatabaseCheck();
+							RepeatedDatabaseCheck t = new RepeatedDatabaseCheck(DataBasePoll.databaseFileLocation);
 							textArea.append("\n".concat(t.messaage.toString()));
 						} 
 						
@@ -184,6 +189,39 @@ public class DataBasePoll extends JFrame {
 				
 			}
 		});
+		
+		JLabel dbLocLabel = new JLabel("Using defalut DB file");
+		panel.add(dbLocLabel);
+		
+		
+		JButton btnNewButton_2 = new JButton("Set Cache");
+		btnNewButton_2.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+							
+				chooser = new JFileChooser(); 
+				chooser.setCurrentDirectory(new java.io.File("."));
+				chooser.setDialogTitle("Select Firefox cache dir");
+				chooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
+
+				chooser.setAcceptAllFileFilterUsed(false);  
+
+				if (chooser.showOpenDialog(frame) == JFileChooser.APPROVE_OPTION) 
+				{ 		
+					databaseFileLocation = chooser.getSelectedFile().getAbsolutePath();
+					dbLocLabel.setText("DB location set");
+		
+				}
+				else 
+				{
+					dbLocLabel.setText("Using defalut DB file");
+
+				}
+			}
+		});
+		
+		
+		
+		panel.add(btnNewButton_2);
 		panel.add(btnNewButton);
 		
 		btnNewButton_1.addActionListener(new ActionListener() {

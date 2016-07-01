@@ -21,14 +21,19 @@ public class RepeatedDatabaseCheck {
 	public static byte[] ServerPublickey;
 	StringBuffer messaage;
 	
-	public RepeatedDatabaseCheck() throws Exception 
+	public static String changedDBLoc = "";
+	public String modifiedDatabaseLocation;
+	
+	
+	public RepeatedDatabaseCheck(String modifiedDatabaseLocation) throws Exception 
 	{
+		this.modifiedDatabaseLocation = modifiedDatabaseLocation;
 		System.out.println("Run");
+		
 		this.messaage = new StringBuffer();
 		this.doTableCheck();
 		this.doDataBaseCheck();
 	}
-	
 	
 	
 	private void doTableCheck() throws SQLException
@@ -36,8 +41,6 @@ public class RepeatedDatabaseCheck {
 		TableChecker tabCheck = new TableChecker();
 		tabCheck.loadtableData();
 	}
-	
-	
 	
 	
 	private void doDataBaseCheck() throws SQLException, IOException

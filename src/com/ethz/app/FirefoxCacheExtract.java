@@ -12,6 +12,17 @@ public class FirefoxCacheExtract {
 	public String databaseFile;
 	public String jsonData;
 	
+	public static String changedDBLocation = "";
+	
+	public String getFirefoxCacheFile(String fileName)
+	{
+		if(fileName.length() == 0)
+			return this.getFirefoxCacheFile();
+		
+		this.databaseFile = fileName;
+		return fileName;
+	}
+	
 	public String getFirefoxCacheFile()
 	{
 		String fileName = null;
