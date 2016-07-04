@@ -157,6 +157,7 @@ public class DataBasePoll extends JFrame {
 							);*/
 							
 							RepeatedDatabaseCheck t = new RepeatedDatabaseCheck(DataBasePoll.databaseFileLocation);
+							//System.out.println(DataBasePoll.databaseFileLocation);
 							textArea.append("\n".concat(t.messaage.toString()));
 						} 
 						
@@ -207,7 +208,7 @@ public class DataBasePoll extends JFrame {
 
 				if (chooser.showOpenDialog(frame) == JFileChooser.APPROVE_OPTION) 
 				{ 		
-					databaseFileLocation = chooser.getSelectedFile().getAbsolutePath();
+					DataBasePoll.databaseFileLocation = chooser.getSelectedFile().getAbsolutePath();
 					dbLocLabel.setText("DB location set");
 		
 				}

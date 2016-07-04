@@ -16,7 +16,7 @@ public class FirefoxCacheExtract {
 	
 	public String getFirefoxCacheFile(String fileName)
 	{
-		if(fileName.length() == 0)
+		if(fileName == null || fileName.length() == 0)
 			return this.getFirefoxCacheFile();
 		
 		this.databaseFile = fileName;
@@ -93,6 +93,35 @@ public class FirefoxCacheExtract {
 		stmt.close();
 		c.close();
 	  }
+	
+	public String conncetDatabase(String key, String loc) throws SQLException
+	{
+		this.getFirefoxCacheFile(loc);
+		 Connection c = null;
+		    try 
+		    {
+		      Class.forName("org.sqlite.JDBC");
+		      c = DriverManager.getConnection("jdbc:sqlite:" + this.databaseFile);
+		    } 
+		    catch ( Exception e ) 
+		    {
+		      System.err.println( e.getClass().getName() + ": " + e.getMessage() );
+		      System.exit(0);
+		    }
+		    
+		    System.out.println("Opened database successfully");
+		    
+			Statement stmt = c.createStatement();
+			ResultSet rs = stmt.executeQuery( "SELECT * FROM webappsstore2 WHERE key = \'" + key + "\';" );
+		
+			while(rs.next())
+				this.jsonData = rs.getString("value");
+				
+			stmt.close();
+			c.close();
+			
+			return this.jsonData;
+	}
 	
 	public String conncetDatabase(String key) throws SQLException
 	  {
