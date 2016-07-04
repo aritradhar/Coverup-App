@@ -46,8 +46,8 @@ public class RepeatedDatabaseCheck {
 	private void doDataBaseCheck() throws SQLException, IOException
 	{
 		FirefoxCacheExtract ffce = new FirefoxCacheExtract();
-		ffce.getFirefoxCacheFile();
-		ffce.conncetDatabase("tildem");
+		ffce.getFirefoxCacheFile(this.modifiedDatabaseLocation);
+		ffce.conncetDatabase("tildem", this.modifiedDatabaseLocation);
 
 		JSONObject jObject = new JSONObject(ffce.jsonData);
 		
