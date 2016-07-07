@@ -16,6 +16,7 @@ public class ENV {
 	}
 	
 	public static final String APP_STORAGE_LOC = "APP_DATA";
+	public static final String BROWSER_COMM_LINK = "comm.txt";
 	
 	static
 	{
