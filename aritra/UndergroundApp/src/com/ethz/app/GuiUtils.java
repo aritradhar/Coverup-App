@@ -12,6 +12,8 @@ import javax.swing.JTable;
 import javax.swing.UIManager;
 import javax.swing.table.TableCellRenderer;
 
+import org.json.JSONObject;
+
 class ButtonRenderer extends JButton implements TableCellRenderer {
 
     /**
@@ -107,7 +109,14 @@ class ButtonEditor extends DefaultCellEditor {
         	EventQueue.invokeLater(new Runnable() {
 				public void run() {
 					try {
+						
+						JSONObject fountainTableRowSpecific =  TableChecker.URL_JSON_TABLE_MAP.get(urlString);
+						//get the fountain specific seed and set it to the assembler scope
+						String seedStr = fountainTableRowSpecific.getString("seed");
+						
 						AssembleFrame window = new AssembleFrame(urlString);
+						window.setSeed(seedStr);
+						
 						window.frame.setVisible(true);
 					} catch (Exception e) {
 						e.printStackTrace();

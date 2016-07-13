@@ -42,6 +42,7 @@ public class AssembleFrame {
 	public static String JSONDirPath;
 	String urlString;
 	boolean independent;
+	public byte[] fountainSeed;
 	
 	public static boolean glassDone = false;
 	
@@ -52,7 +53,7 @@ public class AssembleFrame {
 	 * @throws InstantiationException 
 	 * @throws ClassNotFoundException 
 	 */
-	public static void main(String[] args) throws ClassNotFoundException, InstantiationException, IllegalAccessException, UnsupportedLookAndFeelException 
+	/*public static void main(String[] args) throws ClassNotFoundException, InstantiationException, IllegalAccessException, UnsupportedLookAndFeelException 
 	{
 		UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());	
 
@@ -69,7 +70,7 @@ public class AssembleFrame {
 				}
 			}
 		});
-	}
+	}*/
 
 	/**
 	 * Create the application.
@@ -77,6 +78,11 @@ public class AssembleFrame {
 	public AssembleFrame() {
 		this.independent = true;
 		initialize();
+	}
+	
+	public void setSeed(String seedStr)
+	{
+		this.fountainSeed = Base64.getUrlDecoder().decode(seedStr);
 	}
 	
 	public AssembleFrame(String urlString) {
@@ -153,6 +159,8 @@ public class AssembleFrame {
 		JButton btnDisplay = new JButton("Assemble");
 		JProgressBar progressBar = new JProgressBar();
 		progressBar.setStringPainted(true);
+		JButton btnNewButton = new JButton("Make Droplets");
+		btnNewButton.setEnabled(false);
 		
 		btnDisplay.addActionListener(new ActionListener() 
 		{
@@ -240,7 +248,7 @@ public class AssembleFrame {
 										data_fw.append(new String(decodedData));
 										data_fw.close();
 									}
-									
+									btnNewButton.setEnabled(true);
 									break;
 								}	
 
@@ -347,6 +355,27 @@ public class AssembleFrame {
 			}
 		});
 		panel.add(decompressButton);
+		
+		
+		btnNewButton.addActionListener(new ActionListener() 
+		{
+			public void actionPerformed(ActionEvent e) 
+			{
+				String dropletLocation = ENV.APP_STORAGE_LOC + ENV.DELIM + ENV.APP_STORAGE_BROWSER_COMM_DROPLET_LOC;
+				if(!new File(dropletLocation).exists())
+					new File(dropletLocation).mkdir();
+				
+				
+				String dropletLocationSpecific = dropletLocation + ENV.DELIM + new File(JSONDirPath).getName();
+				
+				if(!new File(dropletLocationSpecific).exists())
+					new File(dropletLocationSpecific).mkdir();
+				
+				
+				//File dropletLocation = 
+			}
+		});
+		panel.add(btnNewButton);
 	}
 
 }
