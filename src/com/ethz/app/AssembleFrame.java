@@ -174,6 +174,10 @@ public class AssembleFrame {
 						int counter = 0;
 						for(File file : files)
 						{
+							
+							if(file.getName().contains(ENV.APP_STORAGE_DROPLET_URL) || file.getName().contains(ENV.APP_STORAGE_COMPLETE_DATA))
+								continue;
+							
 							//System.out.println(file.getAbsoluteFile());
 							BufferedReader br = null;
 							try 
@@ -215,8 +219,27 @@ public class AssembleFrame {
 									glassDone = true;
 									
 									//put this information in APP_STORAGE_LOC
-									FileWriter compl_fw = new FileWriter(ENV.APP_STORAGE_LOC + ENV.DELIM + ENV.APP_STORAGE_COMPLETED_DROPLET_FILE, true);
+									String dropletUrlFileName =  JSONDirPath + ENV.DELIM + ENV.APP_STORAGE_DROPLET_URL;
+									BufferedReader brUrl = new BufferedReader(new FileReader(dropletUrlFileName));
+									String stTemp = null, fountainUrl = null;
+									while((stTemp = brUrl.readLine()) != null)
+									{
+										fountainUrl = stTemp;
+									}
+									brUrl.close();
 									
+									FileWriter compl_fw = new FileWriter(ENV.APP_STORAGE_LOC + ENV.DELIM + ENV.APP_STORAGE_COMPLETED_DROPLET_FILE, true);
+									compl_fw.append(fountainUrl + "\n");
+									compl_fw.close();
+									
+									File completeDataFile = new File(JSONDirPath + ENV.DELIM + ENV.APP_STORAGE_COMPLETE_DATA);
+
+									if(!completeDataFile.exists())
+									{
+										FileWriter data_fw = new FileWriter(JSONDirPath + ENV.DELIM + ENV.APP_STORAGE_COMPLETE_DATA);
+										data_fw.append(new String(decodedData));
+										data_fw.close();
+									}
 									
 									break;
 								}	
