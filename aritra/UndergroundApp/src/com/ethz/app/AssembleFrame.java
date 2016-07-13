@@ -44,6 +44,8 @@ public class AssembleFrame {
 	boolean independent;
 	public byte[] fountainSeed;
 	
+	public byte[] decodedData;
+	
 	public static boolean glassDone = false;
 	
 	/**
@@ -217,7 +219,7 @@ public class AssembleFrame {
 									//for(int i = 0; i < Glass.chunks.length; i++)
 									//	System.arraycopy(Glass.chunks[i], 0, decodedData, i * 100, 100);
 
-									byte[] decodedData = glass.getDecodedData();
+									decodedData = glass.getDecodedData();
 									
 									JOptionPane.showMessageDialog(frame, "Decoding success\nDroplet utilized : " + counter + ", Total Droplets : " + files.length);
 									
@@ -227,27 +229,35 @@ public class AssembleFrame {
 									glassDone = true;
 									
 									//put this information in APP_STORAGE_LOC
-									String dropletUrlFileName =  JSONDirPath + ENV.DELIM + ENV.APP_STORAGE_DROPLET_URL;
-									BufferedReader brUrl = new BufferedReader(new FileReader(dropletUrlFileName));
-									String stTemp = null, fountainUrl = null;
-									while((stTemp = brUrl.readLine()) != null)
+									try
 									{
-										fountainUrl = stTemp;
-									}
-									brUrl.close();
-									
-									FileWriter compl_fw = new FileWriter(ENV.APP_STORAGE_LOC + ENV.DELIM + ENV.APP_STORAGE_COMPLETED_DROPLET_FILE, true);
-									compl_fw.append(fountainUrl + "\n");
-									compl_fw.close();
-									
-									File completeDataFile = new File(JSONDirPath + ENV.DELIM + ENV.APP_STORAGE_COMPLETE_DATA);
+										String dropletUrlFileName =  JSONDirPath + ENV.DELIM + ENV.APP_STORAGE_DROPLET_URL;
+										BufferedReader brUrl = new BufferedReader(new FileReader(dropletUrlFileName));
+										String stTemp = null, fountainUrl = null;
+										while((stTemp = brUrl.readLine()) != null)
+										{
+											fountainUrl = stTemp;
+										}
+										brUrl.close();
 
-									if(!completeDataFile.exists())
-									{
-										FileWriter data_fw = new FileWriter(JSONDirPath + ENV.DELIM + ENV.APP_STORAGE_COMPLETE_DATA);
-										data_fw.append(new String(decodedData));
-										data_fw.close();
+										FileWriter compl_fw = new FileWriter(ENV.APP_STORAGE_LOC + ENV.DELIM + ENV.APP_STORAGE_COMPLETED_DROPLET_FILE, true);
+										compl_fw.append(fountainUrl + "\n");
+										compl_fw.close();
+
+										File completeDataFile = new File(JSONDirPath + ENV.DELIM + ENV.APP_STORAGE_COMPLETE_DATA);
+
+										if(!completeDataFile.exists())
+										{
+											FileWriter data_fw = new FileWriter(JSONDirPath + ENV.DELIM + ENV.APP_STORAGE_COMPLETE_DATA);
+											data_fw.append(new String(decodedData));
+											data_fw.close();
+										}
 									}
+									catch(Exception ex)
+									{
+										System.out.println("--");
+									}
+									
 									btnNewButton.setEnabled(true);
 									break;
 								}	
@@ -371,6 +381,31 @@ public class AssembleFrame {
 				if(!new File(dropletLocationSpecific).exists())
 					new File(dropletLocationSpecific).mkdir();
 				
+				String counterS = (String)JOptionPane.showInputDialog(frame, "Enter droplet count", "Droplet Generate", JOptionPane.PLAIN_MESSAGE, null, null, "50");
+				int dropletCounter = Integer.parseInt(counterS);
+				
+				try 
+				{
+					
+					Fountain fountain = new Fountain(decodedData, ENV.FOUNTAIN_CHUNK_SIZE, fountainSeed);
+					
+					for(int i = 0; i < dropletCounter; i++)
+					{
+						FileWriter fw = new FileWriter(dropletLocationSpecific + ENV.DELIM + i  + ".json");
+						fw.write(fountain.droplet().toString());
+						fw.close();
+					}
+					
+					JOptionPane.showMessageDialog(frame,
+						    "Droplets dumped in : " + dropletLocationSpecific,
+						    "Droplets generated",
+						    JOptionPane.PLAIN_MESSAGE);
+				}
+				
+				catch (Exception e1)
+				{
+					e1.printStackTrace();
+				}
 				
 				//File dropletLocation = 
 			}

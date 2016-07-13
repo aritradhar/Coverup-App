@@ -22,6 +22,8 @@ public class ENV {
 	public static final String APP_STORAGE_DROPLET_URL = "dropletUrl.txt";
 	public static final String APP_STORAGE_COMPLETE_DATA = "data.txt";
 	
+	public static final int FOUNTAIN_CHUNK_SIZE = 10000;
+	
 	public static final String BROWSER_COMM_LINK = "comm.txt";
 	 
 	
