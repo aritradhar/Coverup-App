@@ -9,6 +9,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Base64;
 
@@ -212,6 +213,10 @@ public class AssembleFrame {
 									textArea.setText(new String(decodedData));
 									progressBar.setValue(100);
 									glassDone = true;
+									
+									//put this information in APP_STORAGE_LOC
+									FileWriter compl_fw = new FileWriter(ENV.APP_STORAGE_LOC + ENV.DELIM + ENV.APP_STORAGE_COMPLETED_DROPLET_FILE, true);
+									
 									
 									break;
 								}	

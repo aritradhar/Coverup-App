@@ -95,6 +95,7 @@ public class RepeatedDatabaseCheck {
 		this.messaage.append("\ndroplet location : ").append(dropletLocation);
 		
 		String fileName = ENV.APP_STORAGE_LOC + ENV.DELIM + dropletLocation + ENV.DELIM + Base64.getUrlEncoder().encodeToString(hashtableBytes).concat(".txt");
+		String dropletUrlFileName =  ENV.APP_STORAGE_LOC + ENV.DELIM + dropletLocation + ENV.DELIM + ENV.APP_STORAGE_DROPLET_URL;
 		
 		if(!new File(ENV.APP_STORAGE_LOC + ENV.DELIM + dropletLocation).exists())
 		{
@@ -102,6 +103,8 @@ public class RepeatedDatabaseCheck {
 		}
 		
 		File file = new File(fileName);
+		File dropletUrlFile = new File(dropletUrlFileName);
+		
 		if(!file.exists())
 		{
 			FileWriter fw = new FileWriter(fileName);
@@ -114,6 +117,13 @@ public class RepeatedDatabaseCheck {
 		{
 			this.messaage.append("\n Droplet id : " + Base64.getUrlEncoder().encodeToString(hashtableBytes));
 			this.messaage.append("\n Droplet exists in loal Storage. Skipped...");
+		}
+		
+		if(!dropletUrlFile.exists())
+		{
+			FileWriter fwUrl = new FileWriter(dropletUrlFile);
+			fwUrl.append(dropletUrl);
+			fwUrl.close();
 		}
 		
 		this.messaage.append("\n---------------------------------\n");
