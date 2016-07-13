@@ -118,7 +118,9 @@ class ButtonEditor extends DefaultCellEditor {
 						window.setSeed(seedStr);
 						
 						window.frame.setVisible(true);
-					} catch (Exception e) {
+					} 
+					catch (Exception e) 
+					{
 						e.printStackTrace();
 					}
 				}
