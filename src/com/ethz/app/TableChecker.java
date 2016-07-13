@@ -12,6 +12,8 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.whispersystems.curve25519.Curve25519;
 
+import com.ethz.app.env.ENV;
+
 public class TableChecker 
 {
 	
@@ -32,7 +34,7 @@ public class TableChecker
 	{
 		FirefoxCacheExtract ffce = new FirefoxCacheExtract();
 		ffce.getFirefoxCacheFile();
-		ffce.conncetDatabase("tildem-table");
+		ffce.conncetDatabase(ENV.DATABASE_TABLE);
 
 		JSONObject jObject = new JSONObject(ffce.jsonData);
 

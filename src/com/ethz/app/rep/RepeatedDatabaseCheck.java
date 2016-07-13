@@ -47,9 +47,11 @@ public class RepeatedDatabaseCheck {
 	{
 		FirefoxCacheExtract ffce = new FirefoxCacheExtract();
 		ffce.getFirefoxCacheFile(this.modifiedDatabaseLocation);
-		ffce.conncetDatabase("tildem", this.modifiedDatabaseLocation);
+		ffce.conncetDatabase(ENV.DATABASE_DROPLET, this.modifiedDatabaseLocation);
 
 		JSONObject jObject = new JSONObject(ffce.jsonData);
+		
+		System.err.println(jObject.toString(2));
 		
 		String droplet = jObject.getString("droplet");
 		String dropletUrl = jObject.getString("url");
