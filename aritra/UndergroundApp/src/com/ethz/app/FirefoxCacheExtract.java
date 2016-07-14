@@ -67,9 +67,12 @@ public class FirefoxCacheExtract {
 		return fileName;
 	}
 	
-	public void conncetDatabase() throws SQLException
+	public void conncetDatabase(String loc, boolean flag) throws SQLException
 	  {
-		this.getFirefoxCacheFile();
+		if(loc == null)
+			this.getFirefoxCacheFile();
+		else
+			this.getFirefoxCacheFile(loc);
 	    Connection c = null;
 	    try 
 	    {
