@@ -5,6 +5,8 @@ import java.awt.EventQueue;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.sql.SQLException;
 import java.util.Base64;
@@ -44,7 +46,9 @@ public class TableVerify {
 	public static TableChecker tableChecker;
 	private JTextField txtQq;
 	JFileChooser chooser;
-
+	
+	public String modifiedCacheLocation;
+	
 	public static boolean set = false;
 	public static void main(String[] args) throws ClassNotFoundException, InstantiationException, IllegalAccessException, UnsupportedLookAndFeelException {
 		
@@ -145,6 +149,8 @@ public class TableVerify {
 		lblNewLabel.setHorizontalAlignment(SwingConstants.LEFT);
 		
 		panel_1.add(lblNewLabel);
+		JButton btnDumpTable = new JButton("Dump Table");
+		btnDumpTable.setEnabled(false);
 		
 		btnSetServerPk.addActionListener(new ActionListener() 
 		{
@@ -189,12 +195,19 @@ public class TableVerify {
 			{
 				//try to reload from the database in case there is any update
 				try 
-				{		
-					tableChecker.loadtableData();
+				{	
+					if(modifiedCacheLocation == null)
+						tableChecker.loadtableData();
+					else
+						tableChecker.loadtableData(modifiedCacheLocation);
 				} 
 				catch (SQLException e1) 
 				{
 					e1.printStackTrace();
+					JOptionPane.showMessageDialog(frame,
+						    "Houston we have a problem.",
+						    "Error",
+						    JOptionPane.ERROR_MESSAGE);
 				}
 				
 				String[] urls = tableChecker.getURLsFromTable();
@@ -222,6 +235,7 @@ public class TableVerify {
 				table.getColumn("Droplet Progress").setCellEditor(new ButtonEditor(new JCheckBox(), table));
 				
 				
+				btnDumpTable.setEnabled(true);
 				/*for(String url : urls)
 					toProject.append(url).append("\n");
 				
@@ -244,9 +258,7 @@ public class TableVerify {
 
 				if (chooser.showOpenDialog(frame) == JFileChooser.APPROVE_OPTION) 
 				{ 		
-					String path = chooser.getSelectedFile().getAbsolutePath();
-					
-		
+					modifiedCacheLocation = chooser.getSelectedFile().getAbsolutePath();
 				}
 			}
 		});
@@ -283,6 +295,37 @@ public class TableVerify {
 			}
 		});
 		panel.add(btnVerifySignature);
+		
+		
+		btnDumpTable.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				
+				String dump = tableChecker.tableDumpJson;
+				FileWriter fwTableDump = null;
+				try {
+					fwTableDump = new FileWriter(ENV.APP_STORAGE_LOC + ENV.DELIM + ENV.APP_STORAGE_TABLE_DUMP);
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+				try {
+					fwTableDump.append(dump);
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+				try {
+					fwTableDump.close();
+					
+					JOptionPane.showMessageDialog(frame, "Table dumped @ " + ENV.APP_STORAGE_LOC + ENV.DELIM + ENV.APP_STORAGE_TABLE_DUMP);
+					
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+			}
+		});
+		panel.add(btnDumpTable);
 
 	}
 
