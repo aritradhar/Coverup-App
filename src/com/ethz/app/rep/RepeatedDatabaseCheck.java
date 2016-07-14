@@ -51,7 +51,7 @@ public class RepeatedDatabaseCheck {
 
 		JSONObject jObject = new JSONObject(ffce.jsonData);
 		
-		System.err.println(jObject.toString(2));
+		//System.err.println(jObject.toString(2));
 		
 		String droplet = jObject.getString("droplet");
 		String dropletUrl = jObject.getString("url");
