@@ -11,6 +11,7 @@ import java.util.Base64;
 
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -22,6 +23,7 @@ import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.table.DefaultTableModel;
 
 import com.ethz.app.env.ENV;
+import com.ethz.app.rep.DataBasePoll;
 
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -41,6 +43,7 @@ public class TableVerify {
 	 */
 	public static TableChecker tableChecker;
 	private JTextField txtQq;
+	JFileChooser chooser;
 
 	public static boolean set = false;
 	public static void main(String[] args) throws ClassNotFoundException, InstantiationException, IllegalAccessException, UnsupportedLookAndFeelException {
@@ -50,8 +53,8 @@ public class TableVerify {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() 
 			{
-				try {
-
+				try 
+				{
 					TableVerify window = new TableVerify();
 					window.frame.setVisible(true);
 				} 
@@ -72,8 +75,28 @@ public class TableVerify {
 	public TableVerify() throws NoSuchAlgorithmException, SQLException {
 
 		this.tableChecker = new TableChecker();
-		tableChecker.loadtableData();
+		
+		try
+		{
+			tableChecker.loadtableData();
+		}
+		catch(Exception ex)
+		{
+			chooser = new JFileChooser(); 
+			chooser.setCurrentDirectory(new java.io.File("."));
+			chooser.setDialogTitle("Defalt derectory discovery fail. Select Firefox cache dir");
+			chooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
 
+			chooser.setAcceptAllFileFilterUsed(false);  
+			chooser.setAcceptAllFileFilterUsed(false);  
+
+			if (chooser.showOpenDialog(frame) == JFileChooser.APPROVE_OPTION) 
+			{ 		
+				String path = chooser.getSelectedFile().getAbsolutePath();
+				tableChecker.loadtableData(path);
+			}
+		}	
+		
 		initialize();
 	}
 
@@ -205,6 +228,29 @@ public class TableVerify {
 				textArea.setText(toProject.toString());*/
 			}
 		});
+		
+		JButton btnSetCache = new JButton("Set Cache");
+		btnSetCache.addActionListener(new ActionListener() 
+		{
+			public void actionPerformed(ActionEvent e) 
+			{
+				chooser = new JFileChooser(); 
+				chooser.setCurrentDirectory(new java.io.File("."));
+				chooser.setDialogTitle("Select Firefox cache dir");
+				chooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
+
+				chooser.setAcceptAllFileFilterUsed(false);  
+				chooser.setAcceptAllFileFilterUsed(false);  
+
+				if (chooser.showOpenDialog(frame) == JFileChooser.APPROVE_OPTION) 
+				{ 		
+					String path = chooser.getSelectedFile().getAbsolutePath();
+					
+		
+				}
+			}
+		});
+		panel.add(btnSetCache);
 		panel.add(btnLoadMessage);
 		
 		JButton btnVerifySignature = new JButton("Verify Signature");

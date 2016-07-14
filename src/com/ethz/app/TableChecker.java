@@ -43,6 +43,19 @@ public class TableChecker
 		this.setMapFromtableJSON();
 	}
 	
+	public void loadtableData(String loc) throws SQLException
+	{
+		FirefoxCacheExtract ffce = new FirefoxCacheExtract();
+		ffce.getFirefoxCacheFile(loc);
+		ffce.conncetDatabase(ENV.DATABASE_TABLE, loc);
+
+		JSONObject jObject = new JSONObject(ffce.jsonData);
+
+		this.tableJson = jObject.getString("table");
+		this.signature = jObject.getString("signature");
+		this.setMapFromtableJSON();
+	}
+	
 	private void setMapFromtableJSON()
 	{
 		JSONObject jObject = new JSONObject(this.tableJson);

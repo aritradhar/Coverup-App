@@ -19,16 +19,23 @@ public class App {
 	String version, message, signatureString;
 	boolean verifyResult;
 
-	public App(String fileName)
+	String cacheLocation;
+	
+	/*public App(String fileName)
 	{
 		this.verifyResult = false;
 		this.fileName = fileName;
 		this.ServerpublicKey = Base64.getUrlDecoder().decode("jMpEEfoSc2iOgRXeLQnLN1YKtjcyN824yso3psylEU0=");
-	}
+	}*/
 	public App()
 	{
 		this.verifyResult = false;
 		//this.ServerpublicKey = Base64.getUrlDecoder().decode("jMpEEfoSc2iOgRXeLQnLN1YKtjcyN824yso3psylEU0=");
+	}
+	public App(String cacheLocation)
+	{
+		this.verifyResult = false;
+		this.cacheLocation = cacheLocation;
 	}
 
 	public void setPK(String pk)
@@ -40,7 +47,8 @@ public class App {
 	public void loadMessage() throws SQLException
 	{
 		FirefoxCacheExtract fc = new FirefoxCacheExtract();
-		fc.conncetDatabase();
+		fc.conncetDatabase(this.cacheLocation, false);
+		
 		String jsonData = fc.jsonData;
 
 		JSONObject jObject = new JSONObject(jsonData);
@@ -50,7 +58,7 @@ public class App {
 	public void loadSignature() throws SQLException
 	{
 		FirefoxCacheExtract fc = new FirefoxCacheExtract();
-		fc.conncetDatabase();
+		fc.conncetDatabase(this.cacheLocation, false);
 		String jsonData = fc.jsonData;
 
 		JSONObject jObject = new JSONObject(jsonData);
@@ -61,7 +69,7 @@ public class App {
 	public void extractMessageFireFox() throws SQLException, NoSuchAlgorithmException
 	{
 		FirefoxCacheExtract fc = new FirefoxCacheExtract();
-		fc.conncetDatabase();
+		fc.conncetDatabase(this.cacheLocation, false);
 		String jsonData = fc.jsonData;
 
 		JSONObject jObject = new JSONObject(jsonData);

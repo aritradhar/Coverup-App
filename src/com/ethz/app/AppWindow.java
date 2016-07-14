@@ -10,6 +10,7 @@ import java.sql.SQLException;
 import java.util.Base64;
 
 import javax.swing.JButton;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -28,6 +29,8 @@ import javax.swing.SwingConstants;
 import javax.swing.JMenuBar;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
+
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import javax.swing.JTabbedPane;
@@ -42,6 +45,8 @@ public class AppWindow {
 	public static App app;
 	private JTextField txtQq;
 
+	JFileChooser chooser;
+	
 	public static boolean set = false;
 	public static void main(String[] args) throws ClassNotFoundException, InstantiationException, IllegalAccessException, UnsupportedLookAndFeelException {
 		
@@ -70,11 +75,32 @@ public class AppWindow {
 	 */
 	@SuppressWarnings("static-access")
 	public AppWindow() throws NoSuchAlgorithmException, SQLException {
+		
+		try
+		{
+			this.app = new App();
+			app.loadMessage();
+			app.loadSignature();
+		}
+		catch(Exception ex)
+		{
+			chooser = new JFileChooser(); 
+			chooser.setCurrentDirectory(new java.io.File("."));
+			chooser.setDialogTitle("Defalt derectory discovery fail. Select Firefox cache dir");
+			chooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
 
-		this.app = new App();
-		app.loadMessage();
-		app.loadSignature();
+			chooser.setAcceptAllFileFilterUsed(false);  
+			chooser.setAcceptAllFileFilterUsed(false);  
 
+			if (chooser.showOpenDialog(frame) == JFileChooser.APPROVE_OPTION) 
+			{ 		
+				String path = chooser.getSelectedFile().getAbsolutePath();
+				this.app = new App(path);
+				app.loadMessage();
+				app.loadSignature();
+			}
+			
+		}
 		initialize();
 	}
 
