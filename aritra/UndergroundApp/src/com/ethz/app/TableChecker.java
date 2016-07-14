@@ -27,7 +27,7 @@ public class TableChecker
 	public byte[] ServerpublicKey;
 
 	public boolean verifyResult;
-
+	public String tableDumpJson;
 
 	
 	public void loadtableData() throws SQLException
@@ -41,6 +41,7 @@ public class TableChecker
 		this.tableJson = jObject.getString("table");
 		this.signature = jObject.getString("signature");
 		this.setMapFromtableJSON();
+		this.tableDumpJson = jObject.toString(2);
 	}
 	
 	public void loadtableData(String loc) throws SQLException
@@ -54,6 +55,7 @@ public class TableChecker
 		this.tableJson = jObject.getString("table");
 		this.signature = jObject.getString("signature");
 		this.setMapFromtableJSON();
+		this.tableDumpJson = jObject.toString(2);
 	}
 	
 	private void setMapFromtableJSON()
