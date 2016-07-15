@@ -386,6 +386,7 @@ public class AssembleFrame {
 				
 				try 
 				{
+					//for standalone run seed is null.
 					
 					Fountain fountain = new Fountain(decodedData, ENV.FOUNTAIN_CHUNK_SIZE, fountainSeed);
 					
