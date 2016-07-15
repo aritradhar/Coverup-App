@@ -160,6 +160,10 @@ public class DataBasePoll extends JFrame {
 							//System.out.println(DataBasePoll.databaseFileLocation);
 							textArea.append("\n".concat(t.messaage.toString()));
 						} 
+						catch(NullPointerException ex)
+						{
+							textArea.append("\n".concat("Table not exists"));		
+						}
 						
 						catch(RuntimeException ex)
 						{
