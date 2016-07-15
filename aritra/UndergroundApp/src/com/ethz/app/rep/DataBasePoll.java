@@ -4,9 +4,9 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.EventQueue;
 import java.awt.FlowLayout;
+import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Base64;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
@@ -66,13 +66,31 @@ public class DataBasePoll extends JFrame {
 		frame.setTitle("Database polling");
 		frame.setBounds(100, 100, 783, 510);
 		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-	
+		
+		
+		frame.addWindowListener(new java.awt.event.WindowAdapter() 
+		{
+		    @Override
+		    public void windowClosing(java.awt.event.WindowEvent windowEvent) {
+		    	try
+		    	{
+		    		executor.shutdown();
+		    	}
+		    	catch(Exception ex)
+		    	{
+		    		
+		    	}
+		    }
+		});
 
 		JScrollPane scrollPane = new JScrollPane();
 		frame.getContentPane().add(scrollPane, BorderLayout.CENTER);
 
 		JTextArea textArea = new JTextArea();
-		textArea.setForeground(Color.BLACK);;
+		textArea.setForeground(Color.GREEN);;
+		textArea.setBackground(Color.BLACK);
+		Font font = new Font("Consolas", Font.PLAIN, 18);
+		textArea.setFont(font);
 		textArea.setLineWrap(true);
 		textArea.setEditable(false);
 		DefaultCaret caret = (DefaultCaret)textArea.getCaret();
