@@ -6,6 +6,7 @@ import java.security.NoSuchAlgorithmException;
 import java.sql.SQLException;
 import java.util.Base64;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.json.JSONArray;
@@ -58,6 +59,29 @@ public class TableChecker
 		this.tableDumpJson = jObject.toString(2);
 	}
 	
+	
+	public List<String[]> multipleProviderRows; 
+	/**
+	 * Experimental
+	 * @param loc
+	 * @throws SQLException
+	 */
+	public void loadtableDataMultipleProvider(String loc) throws SQLException
+	{
+		FirefoxCacheExtract ffce = new FirefoxCacheExtract();
+		ffce.getFirefoxCacheFile(loc);
+		this.multipleProviderRows = ffce.conncetDatabase(ENV.DATABASE_TABLE_COL, loc, false);
+
+		for(String[] row : this.multipleProviderRows)
+		{
+			JSONObject tableJson = new JSONObject(row[0]);
+
+			this.tableJson = tableJson.getString("table");
+			this.signature = tableJson.getString("signature");
+			this.setMapFromtableJSON(tableJson);
+		}
+	}
+	
 	private void setMapFromtableJSON()
 	{
 		JSONObject jObject = new JSONObject(this.tableJson);
@@ -73,6 +97,26 @@ public class TableChecker
 			URL_JSON_TABLE_MAP.put(key, tableRowJSONObject);
 		}
 	}
+	
+	/**
+	 * Experimental for multiple providers
+	 * @param jObject
+	 */
+	private void setMapFromtableJSON(JSONObject jObject)
+	{
+		JSONArray tabelDataArray = jObject.getJSONArray("table");
+		
+		for(int i = 0; i < tabelDataArray.length(); i++)
+		{
+			JSONObject jObIn = tabelDataArray.getJSONObject(i);	
+			String key = jObIn.getString("key");
+			String value = jObIn.getString("value");
+			JSONObject tableRowJSONObject = new JSONObject(value);
+			
+			URL_JSON_TABLE_MAP.put(key, tableRowJSONObject);
+		}
+	}
+	
 
 	public String[] getURLsFromTable()
 	{
