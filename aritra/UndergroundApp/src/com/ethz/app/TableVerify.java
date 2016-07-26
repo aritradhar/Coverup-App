@@ -51,6 +51,7 @@ public class TableVerify {
 	private JTextField txtQq;
 	JFileChooser chooser;
 	
+	
 	public String modifiedCacheLocation;
 	
 	public static boolean set = false;
@@ -170,7 +171,7 @@ public class TableVerify {
 		JPanel panelMid = new JPanel();
 		frame.getContentPane().add(panelMid, BorderLayout.CENTER);
 		
-		table = new JTable(0, 2);
+		table = new JTable(0, 3);
 		table.setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
 		
 		JScrollPane scrollPane = new JScrollPane(table, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
@@ -225,13 +226,14 @@ public class TableVerify {
 				
 				String[] urls = tableChecker.getURLsFromTable();
 				
-				Object[][] tableModelData = new Object[urls.length][2];
+				Object[][] tableModelData = new Object[urls.length][3];
 				
 				int i = 0;
 				for(String url : urls)
 				{
-					tableModelData[i][0] = url;
-					tableModelData[i][1] = "Go";
+					tableModelData[i][0] = (TableChecker.URL_SOURCE_TABLE_MAP.containsKey(url)) ? TableChecker.URL_SOURCE_TABLE_MAP.get(url) : ":P";
+					tableModelData[i][1] = url;
+					tableModelData[i][2] = "Go";
 					i++;
 				}
 				
@@ -240,7 +242,7 @@ public class TableVerify {
 				
 				//model.setDataVector(GetTable.getTableData(jsonString), new Object[]{"Link", "Select", "Flag"});
 				
-				model.setDataVector(tableModelData, new Object[]{"URL", "Droplet Progress"});
+				model.setDataVector(tableModelData, new Object[]{"source","URL", "Droplet Progress"});
 				
 				//System.out.println(table.getValueAt(0, 0));
 				

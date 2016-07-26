@@ -20,6 +20,8 @@ public class TableChecker
 	
 	//this map has to be alive through out application life cycle
 	public static Map<String, JSONObject> URL_JSON_TABLE_MAP = new HashMap<>();;
+	public static Map<String, String> URL_SOURCE_TABLE_MAP = new HashMap<>();;
+	
 	
 	public String tableJson;
 	public String signature;
@@ -79,7 +81,7 @@ public class TableChecker
 
 			this.tableJson = jObject.getString("table");
 			this.signature = jObject.getString("signature");
-			this.setMapFromtableJSONMultipleProvider(new JSONObject(this.tableJson));
+			this.setMapFromtableJSONMultipleProvider(new JSONObject(this.tableJson), row[1]);
 		}
 	}
 	
@@ -100,7 +102,7 @@ public class TableChecker
 
 			this.tableJson = jObject.getString("table");
 			this.signature = jObject.getString("signature");
-			this.setMapFromtableJSONMultipleProvider(new JSONObject(this.tableJson));
+			this.setMapFromtableJSONMultipleProvider(new JSONObject(this.tableJson), row[1]);
 		}
 	}
 	
@@ -124,7 +126,7 @@ public class TableChecker
 	 * Experimental for multiple providers
 	 * @param jObject
 	 */
-	private void setMapFromtableJSONMultipleProvider(JSONObject jObject)
+	private void setMapFromtableJSONMultipleProvider(JSONObject jObject, String sourceKey)
 	{
 		JSONArray tabelDataArray = jObject.getJSONArray("table");
 		
@@ -136,6 +138,7 @@ public class TableChecker
 			JSONObject tableRowJSONObject = new JSONObject(value);
 			
 			URL_JSON_TABLE_MAP.put(key, tableRowJSONObject);
+			URL_SOURCE_TABLE_MAP.put(key, sourceKey);
 		}
 	}
 	
