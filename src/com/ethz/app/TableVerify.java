@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.sql.SQLException;
 import java.util.Base64;
+import java.util.List;
 
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -26,6 +27,7 @@ import javax.swing.table.DefaultTableModel;
 
 import com.ethz.app.env.ENV;
 import com.ethz.app.rep.DataBasePoll;
+import com.sun.javafx.applet.ExperimentalExtensions;
 
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -195,10 +197,20 @@ public class TableVerify {
 				//try to reload from the database in case there is any update
 				try 
 				{	
-					if(modifiedCacheLocation == null)
-						tableChecker.loadtableData();
+					if(!ENV.EXPERIMENTAL)
+					{
+						if(modifiedCacheLocation == null)
+							tableChecker.loadtableData();
+						else
+							tableChecker.loadtableData(modifiedCacheLocation);
+					}
 					else
-						tableChecker.loadtableData(modifiedCacheLocation);
+					{
+						if(modifiedCacheLocation == null)
+							tableChecker.loadtableDataMultipleProvider();
+						else
+							tableChecker.loadtableDataMultipleProvider(modifiedCacheLocation);
+					}
 				} 
 				catch (SQLException e1) 
 				{
@@ -207,6 +219,8 @@ public class TableVerify {
 						    "Houston we have a problem.",
 						    "Error",
 						    JOptionPane.ERROR_MESSAGE);
+					
+					
 				}
 				
 				String[] urls = tableChecker.getURLsFromTable();
@@ -299,29 +313,68 @@ public class TableVerify {
 		btnDumpTable.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				
-				String dump = tableChecker.tableDumpJson;
-				FileWriter fwTableDump = null;
-				try {
-					fwTableDump = new FileWriter(ENV.APP_STORAGE_LOC + ENV.DELIM + ENV.APP_STORAGE_TABLE_DUMP);
-				} catch (IOException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
+				if(!ENV.EXPERIMENTAL)
+				{
+					String dump = tableChecker.tableDumpJson;
+					FileWriter fwTableDump = null;
+					try {
+						fwTableDump = new FileWriter(ENV.APP_STORAGE_LOC + ENV.DELIM + ENV.APP_STORAGE_TABLE_DUMP);
+					} catch (IOException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+					try {
+						fwTableDump.append(dump);
+					} catch (IOException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+					try {
+						fwTableDump.close();
+
+						JOptionPane.showMessageDialog(frame, "Table dumped @ " + ENV.APP_STORAGE_LOC + ENV.DELIM + ENV.APP_STORAGE_TABLE_DUMP);
+
+					} catch (IOException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+
 				}
-				try {
-					fwTableDump.append(dump);
-				} catch (IOException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				}
-				try {
-					fwTableDump.close();
+				
+				else
+				{
+					List<String[]> dumpList = tableChecker.multipleProviderRows;
 					
-					JOptionPane.showMessageDialog(frame, "Table dumped @ " + ENV.APP_STORAGE_LOC + ENV.DELIM + ENV.APP_STORAGE_TABLE_DUMP);
+					for(String[] dumpRow : dumpList)
+					{
+						String dump = dumpRow[0];
+						FileWriter fwTableDump = null;
+						try {
+							fwTableDump = new FileWriter(ENV.APP_STORAGE_LOC + ENV.DELIM + ENV.APP_STORAGE_TABLE_MULTIPLE_PROVIDER_DUMP + "_" + dumpRow[1] + ENV.APP_JSON_EXTENSION);
+						} catch (IOException e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						}
+						try {
+							fwTableDump.append(dump);
+						} catch (IOException e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+							JOptionPane.showMessageDialog(frame, "Dump error");
+						}
+						try {
+							fwTableDump.close();
+
+						} catch (IOException e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+							JOptionPane.showMessageDialog(frame, "Close error");
+						}
+					}
 					
-				} catch (IOException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
+					JOptionPane.showMessageDialog(frame, "Tables dumped");
 				}
+				
 			}
 		});
 		panel.add(btnDumpTable);

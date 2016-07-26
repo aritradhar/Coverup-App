@@ -61,6 +61,28 @@ public class TableChecker
 	
 	
 	public List<String[]> multipleProviderRows; 
+	
+	/**
+	 * Experimental 
+	 * @throws SQLException
+	 */
+	public void loadtableDataMultipleProvider() throws SQLException
+	{
+		FirefoxCacheExtract ffce = new FirefoxCacheExtract();
+		ffce.getFirefoxCacheFile();
+		this.multipleProviderRows = ffce.conncetDatabaseMultipleProvider(ENV.DATABASE_TABLE_COL);
+
+		
+		for(String[] row : this.multipleProviderRows)
+		{
+			JSONObject jObject = new JSONObject(row[0]);
+
+			this.tableJson = jObject.getString("table");
+			this.signature = jObject.getString("signature");
+			this.setMapFromtableJSONMultipleProvider(new JSONObject(this.tableJson));
+		}
+	}
+	
 	/**
 	 * Experimental
 	 * @param loc
@@ -70,15 +92,15 @@ public class TableChecker
 	{
 		FirefoxCacheExtract ffce = new FirefoxCacheExtract();
 		ffce.getFirefoxCacheFile(loc);
-		this.multipleProviderRows = ffce.conncetDatabase(ENV.DATABASE_TABLE_COL, loc, false);
+		this.multipleProviderRows = ffce.conncetDatabaseMultipleProvider(ENV.DATABASE_TABLE_COL, loc);
 
 		for(String[] row : this.multipleProviderRows)
 		{
-			JSONObject tableJson = new JSONObject(row[0]);
+			JSONObject jObject = new JSONObject(row[0]);
 
-			this.tableJson = tableJson.getString("table");
-			this.signature = tableJson.getString("signature");
-			this.setMapFromtableJSON(tableJson);
+			this.tableJson = jObject.getString("table");
+			this.signature = jObject.getString("signature");
+			this.setMapFromtableJSONMultipleProvider(new JSONObject(this.tableJson));
 		}
 	}
 	
@@ -102,7 +124,7 @@ public class TableChecker
 	 * Experimental for multiple providers
 	 * @param jObject
 	 */
-	private void setMapFromtableJSON(JSONObject jObject)
+	private void setMapFromtableJSONMultipleProvider(JSONObject jObject)
 	{
 		JSONArray tabelDataArray = jObject.getJSONArray("table");
 		

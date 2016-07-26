@@ -137,7 +137,7 @@ public class FirefoxCacheExtract {
 	 * @throws SQLException
 	 */
 	
-	public List<String[]> conncetDatabase(String key, String loc, boolean flag) throws SQLException
+	public List<String[]> conncetDatabaseMultipleProvider(String key, String loc) throws SQLException
 	{
 		this.getFirefoxCacheFile(loc);
 		 Connection c = null;
@@ -171,6 +171,48 @@ public class FirefoxCacheExtract {
 			
 			return out;
 	}
+	
+	/**
+	 * Experimental
+	 * @param key
+	 * @return
+	 * @throws SQLException
+	 */
+	public List<String[]> conncetDatabaseMultipleProvider(String key) throws SQLException
+	{
+		this.getFirefoxCacheFile();
+		 Connection c = null;
+		    try 
+		    {
+		      Class.forName("org.sqlite.JDBC");
+		      c = DriverManager.getConnection("jdbc:sqlite:" + this.databaseFile);
+		    } 
+		    catch ( Exception e ) 
+		    {
+		      System.err.println( e.getClass().getName() + ": " + e.getMessage() );
+		      System.exit(0);
+		    }
+		    
+		    System.out.println("Opened database successfully");
+		    
+			Statement stmt = c.createStatement();
+			ResultSet rs = stmt.executeQuery( "SELECT * FROM webappsstore2 WHERE key = \'" + key + "\';" );
+		
+			List<String[]> out = new ArrayList<>();
+			
+			while(rs.next())
+			{
+				String[] arr = new String[2];
+				arr[0] = rs.getString("value");
+				arr[1] = rs.getString("originKey");
+				out.add(arr);
+			}	
+			stmt.close();
+			c.close();
+			
+			return out;
+	}
+	
 	
 	public String conncetDatabase(String key) throws SQLException
 	  {
