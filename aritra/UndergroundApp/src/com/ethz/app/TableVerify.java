@@ -322,13 +322,13 @@ public class TableVerify {
 					try {
 						fwTableDump = new FileWriter(ENV.APP_STORAGE_LOC + ENV.DELIM + ENV.APP_STORAGE_TABLE_DUMP);
 					} catch (IOException e1) {
-						// TODO Auto-generated catch block
+						JOptionPane.showMessageDialog(frame, "Error in file");
 						e1.printStackTrace();
 					}
 					try {
 						fwTableDump.append(dump);
 					} catch (IOException e1) {
-						// TODO Auto-generated catch block
+						JOptionPane.showMessageDialog(frame, "Error in file");					
 						e1.printStackTrace();
 					}
 					try {
@@ -352,15 +352,15 @@ public class TableVerify {
 						String dump = dumpRow[0];
 						FileWriter fwTableDump = null;
 						try {
-							fwTableDump = new FileWriter(ENV.APP_STORAGE_LOC + ENV.DELIM + ENV.APP_STORAGE_TABLE_MULTIPLE_PROVIDER_DUMP + "_" + dumpRow[1] + ENV.APP_JSON_EXTENSION);
+							fwTableDump = new FileWriter(ENV.APP_STORAGE_LOC + 
+									ENV.DELIM + ENV.APP_STORAGE_TABLE_MULTIPLE_PROVIDER_DUMP + "_" + dumpRow[1].replaceAll("\\.", "_").replaceAll(":", "_") + ENV.APP_JSON_EXTENSION);
 						} catch (IOException e1) {
-							// TODO Auto-generated catch block
+							JOptionPane.showMessageDialog(frame, "Error in file");
 							e1.printStackTrace();
 						}
 						try {
 							fwTableDump.append(dump);
 						} catch (IOException e1) {
-							// TODO Auto-generated catch block
 							e1.printStackTrace();
 							JOptionPane.showMessageDialog(frame, "Dump error");
 						}
