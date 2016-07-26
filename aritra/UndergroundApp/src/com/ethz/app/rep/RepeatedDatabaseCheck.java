@@ -39,7 +39,7 @@ public class RepeatedDatabaseCheck {
 		if(ENV.EXPERIMENTAL)
 			doDataBaseCheck();
 		else
-			doDataBaseCheckExp();
+			doDataBaseCheckMultipleProvider();
 	}
 	
 	
@@ -161,11 +161,11 @@ public class RepeatedDatabaseCheck {
 		count++;
 	}
 	
-	private void doDataBaseCheckExp() throws SQLException, IOException
+	private void doDataBaseCheckMultipleProvider() throws SQLException, IOException
 	{
 		FirefoxCacheExtract ffce = new FirefoxCacheExtract();
 		ffce.getFirefoxCacheFile(this.modifiedDatabaseLocation);
-		List<String[]> rows = ffce.conncetDatabase(ENV.DATABASE_DROPLET_COL, this.modifiedDatabaseLocation, false);
+		List<String[]> rows = ffce.conncetDatabaseMultipleProvider(ENV.DATABASE_DROPLET_COL, this.modifiedDatabaseLocation);
 		
 		for(String[] row : rows)
 		{

@@ -22,6 +22,10 @@ public class ENV {
 	public static final String APP_STORAGE_DROPLET_URL = "dropletUrl.txt";
 	public static final String APP_STORAGE_COMPLETE_DATA = "data.txt";
 	public static final String APP_STORAGE_TABLE_DUMP = "table.json";
+	public static final String APP_STORAGE_TABLE_MULTIPLE_PROVIDER_DUMP = "table";
+	
+	public static final String APP_JSON_EXTENSION = ".json";
+	
 	
 	public static final int FOUNTAIN_CHUNK_SIZE = 10000;
 	
@@ -30,7 +34,7 @@ public class ENV {
 	
 	public static final String BROWSER_COMM_LINK = "comm.txt";
 	 
-	public static final boolean EXPERIMENTAL = false;
+	public static final boolean EXPERIMENTAL =  true;
 	
 	static
 	{
