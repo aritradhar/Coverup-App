@@ -25,12 +25,12 @@ public class ENV {
 	
 	public static final int FOUNTAIN_CHUNK_SIZE = 10000;
 	
-	public static final String DATABASE_TABLE = "BQVZ-tildem-table";
-	public static final String DATABASE_DROPLET = "BQVZ-tildem";
+	public static final String DATABASE_TABLE_COL = "BQVZ-tildem-table";
+	public static final String DATABASE_DROPLET_COL = "BQVZ-tildem";
 	
 	public static final String BROWSER_COMM_LINK = "comm.txt";
 	 
-	
+	public static final boolean EXPERIMENTAL = false;
 	
 	static
 	{

@@ -33,6 +33,8 @@ import javax.swing.JOptionPane;
 
 
 import javax.swing.SwingConstants;
+import java.awt.Component;
+import javax.swing.Box;
 
 public class TableVerify {
 	
@@ -115,9 +117,53 @@ public class TableVerify {
 		frame.setBounds(100, 100, 666, 584);
 		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		
+		
+		JPanel panel_1 = new JPanel();
+		frame.getContentPane().add(panel_1, BorderLayout.NORTH);	
+		
+		txtQq = new JTextField();
+		txtQq.setToolTipText("");
+		txtQq.setHorizontalAlignment(SwingConstants.LEFT);
+		panel_1.add(txtQq);
+		txtQq.setColumns(25);
+		
+				JButton btnSetServerPk = new JButton("Set Server PK");
+				panel_1.add(btnSetServerPk);
+				
+				JLabel lblNewLabel = new JLabel("Using no PK");
+				lblNewLabel.setHorizontalAlignment(SwingConstants.LEFT);
+				
+				panel_1.add(lblNewLabel);
+				
+				btnSetServerPk.addActionListener(new ActionListener() 
+				{
+					
+					public void actionPerformed(ActionEvent e) 
+					{
 
+						String pkText = txtQq.getText();
+						if(pkText == null || pkText.length() == 0)
+						{
+							lblNewLabel.setText("PK not set");
+						}
+						else
+						{
+							try
+							{
+								tableChecker.setPK(pkText);
+								lblNewLabel.setText("PK set : " + Base64.getUrlEncoder().encodeToString(tableChecker.ServerpublicKey));
+							}
+							catch(Exception ex)
+							{
+								lblNewLabel.setText("Invalid PK");
+							}
+
+						}
+					}
+				});
+			
 		JPanel panel = new JPanel();
-		frame.getContentPane().add(panel, BorderLayout.SOUTH);;
+		frame.getContentPane().add(panel, BorderLayout.SOUTH);
 		
 		JPanel panelMid = new JPanel();
 		frame.getContentPane().add(panelMid, BorderLayout.CENTER);
@@ -127,57 +173,10 @@ public class TableVerify {
 		
 		JScrollPane scrollPane = new JScrollPane(table, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		panelMid.add(scrollPane);
-		
-		
-		JPanel panel_1 = new JPanel();
-		FlowLayout flowLayout = (FlowLayout) panel_1.getLayout();
-		flowLayout.setAlignment(FlowLayout.LEFT);
-		scrollPane.setColumnHeaderView(panel_1);	
-		
-		txtQq = new JTextField();
-		txtQq.setToolTipText("");
-		txtQq.setHorizontalAlignment(SwingConstants.LEFT);
-		panel_1.add(txtQq);
-		txtQq.setColumns(25);
 
 		JButton btnLoadMessage;
-
-		JButton btnSetServerPk = new JButton("Set Server PK");
-		panel_1.add(btnSetServerPk);
-		
-		JLabel lblNewLabel = new JLabel("Using no PK");
-		lblNewLabel.setHorizontalAlignment(SwingConstants.LEFT);
-		
-		panel_1.add(lblNewLabel);
 		JButton btnDumpTable = new JButton("Dump Table");
 		btnDumpTable.setEnabled(false);
-		
-		btnSetServerPk.addActionListener(new ActionListener() 
-		{
-			
-			public void actionPerformed(ActionEvent e) 
-			{
-
-				String pkText = txtQq.getText();
-				if(pkText == null || pkText.length() == 0)
-				{
-					lblNewLabel.setText("PK not set");
-				}
-				else
-				{
-					try
-					{
-						tableChecker.setPK(pkText);
-						lblNewLabel.setText("PK set : " + Base64.getUrlEncoder().encodeToString(tableChecker.ServerpublicKey));
-					}
-					catch(Exception ex)
-					{
-						lblNewLabel.setText("Invalid PK");
-					}
-
-				}
-			}
-		});
 		
 		
 

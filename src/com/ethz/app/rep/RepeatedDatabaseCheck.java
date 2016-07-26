@@ -8,6 +8,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.sql.SQLException;
 import java.util.Base64;
+import java.util.List;
 
 import org.json.JSONObject;
 import org.whispersystems.curve25519.Curve25519;
@@ -34,7 +35,11 @@ public class RepeatedDatabaseCheck {
 		
 		this.messaage = new StringBuffer();
 		this.doTableCheck();
-		this.doDataBaseCheck();
+		
+		if(ENV.EXPERIMENTAL)
+			doDataBaseCheck();
+		else
+			doDataBaseCheckExp();
 	}
 	
 	
@@ -50,15 +55,23 @@ public class RepeatedDatabaseCheck {
 			throw ex;
 		}
 	}
-	
-	
 	private void doDataBaseCheck() throws SQLException, IOException
 	{
 		FirefoxCacheExtract ffce = new FirefoxCacheExtract();
 		ffce.getFirefoxCacheFile(this.modifiedDatabaseLocation);
-		ffce.conncetDatabase(ENV.DATABASE_DROPLET, this.modifiedDatabaseLocation);
-
-		JSONObject jObject = new JSONObject(ffce.jsonData);
+		String jsonData = ffce.conncetDatabase(ENV.DATABASE_DROPLET_COL, this.modifiedDatabaseLocation);
+		
+		JSONObject jObject = new JSONObject(jsonData);
+		doDataBaseCheck(jObject);
+	}
+	
+	private void doDataBaseCheck(JSONObject jObject) throws SQLException, IOException
+	{
+		/*FirefoxCacheExtract ffce = new FirefoxCacheExtract();
+		ffce.getFirefoxCacheFile(this.modifiedDatabaseLocation);
+		String jsonData = ffce.conncetDatabase(ENV.DATABASE_DROPLET, this.modifiedDatabaseLocation);
+		
+		JSONObject jObject = new JSONObject(jsonData);*/
 		
 		//System.err.println(jObject.toString(2));
 		
@@ -146,6 +159,19 @@ public class RepeatedDatabaseCheck {
 		if(count % 4 == 3)
 			this.messaage.append("\n----------------/----------------\n");
 		count++;
+	}
+	
+	private void doDataBaseCheckExp() throws SQLException, IOException
+	{
+		FirefoxCacheExtract ffce = new FirefoxCacheExtract();
+		ffce.getFirefoxCacheFile(this.modifiedDatabaseLocation);
+		List<String[]> rows = ffce.conncetDatabase(ENV.DATABASE_DROPLET_COL, this.modifiedDatabaseLocation, false);
+		
+		for(String[] row : rows)
+		{
+			JSONObject jObject = new JSONObject(row[0]);
+			doDataBaseCheck(jObject);
+		}
 	}
 	
 	
