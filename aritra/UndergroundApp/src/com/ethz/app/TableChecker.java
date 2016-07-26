@@ -34,7 +34,7 @@ public class TableChecker
 	{
 		FirefoxCacheExtract ffce = new FirefoxCacheExtract();
 		ffce.getFirefoxCacheFile();
-		ffce.conncetDatabase(ENV.DATABASE_TABLE);
+		ffce.conncetDatabase(ENV.DATABASE_TABLE_COL);
 
 		JSONObject jObject = new JSONObject(ffce.jsonData);
 
@@ -48,7 +48,7 @@ public class TableChecker
 	{
 		FirefoxCacheExtract ffce = new FirefoxCacheExtract();
 		ffce.getFirefoxCacheFile(loc);
-		ffce.conncetDatabase(ENV.DATABASE_TABLE, loc);
+		ffce.conncetDatabase(ENV.DATABASE_TABLE_COL, loc);
 
 		JSONObject jObject = new JSONObject(ffce.jsonData);
 
