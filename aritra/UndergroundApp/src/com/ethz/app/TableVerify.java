@@ -208,6 +208,16 @@ public class TableVerify {
 
 		btnLoadMessage = new JButton("Load Table");
 
+		JButton btnSetCache = new JButton("Set Cache");
+		panel.add(btnSetCache);
+		panel.add(btnLoadMessage);
+		
+		
+		JButton btnVerifySignature = new JButton("Verify Signature");
+		btnVerifySignature.setEnabled(false);
+		panel.add(btnVerifySignature);
+		
+		
 		btnLoadMessage.addActionListener(new ActionListener() 
 		{
 			public void actionPerformed(ActionEvent e) 
@@ -271,6 +281,7 @@ public class TableVerify {
 				
 				table.setVisible(true);
 				
+				btnVerifySignature.setEnabled(true);
 				btnDumpTable.setEnabled(true);
 				/*for(String url : urls)
 					toProject.append(url).append("\n");
@@ -279,7 +290,7 @@ public class TableVerify {
 			}
 		});
 		
-		JButton btnSetCache = new JButton("Set Cache");
+		
 		btnSetCache.addActionListener(new ActionListener() 
 		{
 			public void actionPerformed(ActionEvent e) 
@@ -298,19 +309,25 @@ public class TableVerify {
 				}
 			}
 		});
-		panel.add(btnSetCache);
-		panel.add(btnLoadMessage);
 		
-		JButton btnVerifySignature = new JButton("Verify Signature");
+		
 		btnVerifySignature.addActionListener(new ActionListener() {
 			
 			public void actionPerformed(ActionEvent e) {
 
+			
+				
 				if(!ENV.EXPERIMENTAL)
 				{
 					try {
-						tableChecker.verifyMessage();
+						boolean ret = tableChecker.verifyMessage();
 
+						if(!ret)
+						{
+							JOptionPane.showMessageDialog(frame, "Error! PK not set");
+							return;
+						}
+						
 						if(tableChecker.verifyResult)
 							JOptionPane.showMessageDialog(frame, "Table verification successful!!");
 
@@ -328,7 +345,12 @@ public class TableVerify {
 				else
 				{
 					try {
-						tableChecker.verifyMessageMultipleProvider();
+						boolean ret = tableChecker.verifyMessageMultipleProvider();
+						if(!ret)
+						{
+							JOptionPane.showMessageDialog(frame, "Error! PK not set");
+							return;
+						}
 						
 						List<String> failedSigOriginKeys = TableChecker.verifyMessageList();
 						
@@ -355,7 +377,7 @@ public class TableVerify {
 				
 			}
 		});
-		panel.add(btnVerifySignature);
+		
 		
 		
 		btnDumpTable.addActionListener(new ActionListener() {
