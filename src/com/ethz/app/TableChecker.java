@@ -164,8 +164,11 @@ public class TableChecker
 		this.ServerpublicKey = Base64.getUrlDecoder().decode(this.publicKeyString);
 	}
 
-	public void verifyMessage() throws NoSuchAlgorithmException
+	public boolean verifyMessage() throws NoSuchAlgorithmException
 	{
+		if(this.ServerpublicKey == null)
+			return false;
+		
 		byte[] theTableBytes = tableJson.getBytes(StandardCharsets.UTF_8);
 
 
@@ -174,9 +177,13 @@ public class TableChecker
 		byte[] signatureBytes = Base64.getUrlDecoder().decode(this.signature);
 		
 		this.verifyResult = Curve25519.getInstance("best").verifySignature(this.ServerpublicKey, hashtableBytes, signatureBytes);
+		
+		return true;
 	}
-	public void verifyMessageMultipleProvider() throws NoSuchAlgorithmException
+	public boolean verifyMessageMultipleProvider() throws NoSuchAlgorithmException
 	{
+		if(this.ServerpublicKey == null)
+			return false;
 		
 		for(String sourceKey : SOURCE_KEY_TABLE_SIGNATURE_MAP.keySet())
 		{
@@ -192,6 +199,8 @@ public class TableChecker
 			boolean _verifyResult = Curve25519.getInstance("best").verifySignature(this.ServerpublicKey, hashtableBytes, signatureBytes);
 			SOURCE_KEY_SIGNATURE_VERIFY_MAP.put(sourceKey, _verifyResult);
 		}
+		
+		return true;
 	}
 	
 	public static List<String> verifyMessageList()
