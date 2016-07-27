@@ -168,15 +168,12 @@ public class TableVerify {
 		JPanel panel = new JPanel();
 		frame.getContentPane().add(panel, BorderLayout.SOUTH);
 		
-		JPanel panelMid = new JPanel();
-		frame.getContentPane().add(panelMid, BorderLayout.CENTER);
+		/*JPanel panelMid = new JPanel();
+		frame.getContentPane().add(panelMid, BorderLayout.CENTER);*/
 		
 		
 		
 		DefaultTableModel model = new DefaultTableModel() { 
-			/**
-			 * 
-			 */
 			private static final long serialVersionUID = 1L;
 			String[] col = {"source","URL", "View Data", "progress"};
 			
@@ -195,7 +192,7 @@ public class TableVerify {
 		table.setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
 		
 		JScrollPane scrollPane = new JScrollPane(table, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-		panelMid.add(scrollPane);
+		frame.add(scrollPane);
 
 		JButton btnLoadMessage;
 		JButton btnDumpTable = new JButton("Dump Table");
