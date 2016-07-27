@@ -8,9 +8,13 @@ import java.awt.event.ActionListener;
 import javax.swing.DefaultCellEditor;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
+import javax.swing.JProgressBar;
 import javax.swing.JTable;
+import javax.swing.Timer;
 import javax.swing.UIManager;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellRenderer;
+import javax.swing.table.TableModel;
 
 import org.json.JSONObject;
 
@@ -144,5 +148,35 @@ class ButtonEditor extends DefaultCellEditor {
     protected void fireEditingStopped() {
     	//button.setText("Selected");
         super.fireEditingStopped();
+    }
+}
+
+class ProgressCellRenderer implements TableCellRenderer, ActionListener {
+
+    JProgressBar bar = new JProgressBar();
+    //Timer timer = new Timer(100, this);
+    JTable table;
+    int column;
+    
+    public ProgressCellRenderer(JTable table) {
+    	this.table = table;
+        bar.setValue(0);
+        bar.setStringPainted(true);
+       // timer.start();
+    }
+
+    @Override
+    public Component getTableCellRendererComponent(JTable table,
+        Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+    	this.column = column;
+        return bar;
+    }
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        TableModel model = table.getModel();
+        for (int row = 0; row < model.getRowCount(); row++) {
+            table.getModel().setValueAt(0, row, column);
+        }
     }
 }

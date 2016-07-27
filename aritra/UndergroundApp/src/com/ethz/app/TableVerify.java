@@ -171,7 +171,27 @@ public class TableVerify {
 		JPanel panelMid = new JPanel();
 		frame.getContentPane().add(panelMid, BorderLayout.CENTER);
 		
-		table = new JTable(0, 3);
+		
+		
+		DefaultTableModel model = new DefaultTableModel() { 
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+			String[] col = {"source","URL", "View Data", "progress"};
+			
+			 @Override 
+	            public int getColumnCount() { 
+	                return col.length; 
+	            } 
+			 
+			@Override 
+            public String getColumnName(int index) { 
+                return col[index]; 
+            } 
+			
+		};
+		table = new JTable(model);
 		table.setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
 		
 		JScrollPane scrollPane = new JScrollPane(table, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
@@ -181,7 +201,7 @@ public class TableVerify {
 		JButton btnDumpTable = new JButton("Dump Table");
 		btnDumpTable.setEnabled(false);
 		
-		
+		table.setVisible(false);
 
 		if(tableChecker == null)
 		{
@@ -226,7 +246,7 @@ public class TableVerify {
 				
 				String[] urls = tableChecker.getURLsFromTable();
 				
-				Object[][] tableModelData = new Object[urls.length][3];
+				Object[][] tableModelData = new Object[urls.length][4];
 				
 				int i = 0;
 				for(String url : urls)
@@ -234,21 +254,25 @@ public class TableVerify {
 					tableModelData[i][0] = (TableChecker.URL_SOURCE_TABLE_MAP.containsKey(url)) ? TableChecker.URL_SOURCE_TABLE_MAP.get(url) : ":P";
 					tableModelData[i][1] = url;
 					tableModelData[i][2] = "Go";
+					tableModelData[i][3] = "Bla";
 					i++;
 				}
 				
 				
-				DefaultTableModel model = (DefaultTableModel) table.getModel();
+				//DefaultTableModel model = (DefaultTableModel) table.getModel();
 				
-				//model.setDataVector(GetTable.getTableData(jsonString), new Object[]{"Link", "Select", "Flag"});
 				
-				model.setDataVector(tableModelData, new Object[]{"source","URL", "Droplet Progress"});
+				model.setDataVector(tableModelData, new Object[]{"source","URL", "View Data", "progress"});
 				
 				//System.out.println(table.getValueAt(0, 0));
 				
-				table.getColumn("Droplet Progress").setCellRenderer(new ButtonRenderer());
-				table.getColumn("Droplet Progress").setCellEditor(new ButtonEditor(new JCheckBox(), table));
+				table.getColumn("View Data").setCellRenderer(new ButtonRenderer());
+				table.getColumn("View Data").setCellEditor(new ButtonEditor(new JCheckBox(), table));
 				
+				ProgressCellRenderer progressCell = new ProgressCellRenderer(table);
+				table.getColumn("progress").setCellRenderer(progressCell);
+				
+				table.setVisible(true);
 				
 				btnDumpTable.setEnabled(true);
 				/*for(String url : urls)
