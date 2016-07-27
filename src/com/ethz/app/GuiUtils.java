@@ -97,7 +97,7 @@ class ButtonEditor extends DefaultCellEditor {
     @Override
     public Object getCellEditorValue() {
         if (isPushed) {
-        	String urlString = table.getValueAt(row, 0).toString();
+        	String urlString = table.getValueAt(row, 1).toString();
 			
         	//test
         	//System.out.println(urlString);
