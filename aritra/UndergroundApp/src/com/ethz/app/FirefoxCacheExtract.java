@@ -111,7 +111,7 @@ public class FirefoxCacheExtract {
 		    catch ( Exception e ) 
 		    {
 		      System.err.println( e.getClass().getName() + ": " + e.getMessage() );
-		      System.exit(0);
+		      return null;
 		    }
 		    
 		    System.out.println("Opened database successfully");
@@ -149,7 +149,7 @@ public class FirefoxCacheExtract {
 		    catch ( Exception e ) 
 		    {
 		      System.err.println( e.getClass().getName() + ": " + e.getMessage() );
-		      System.exit(0);
+		      return null;
 		    }
 		    
 		    System.out.println("Opened database successfully");
@@ -190,7 +190,7 @@ public class FirefoxCacheExtract {
 		    catch ( Exception e ) 
 		    {
 		      System.err.println( e.getClass().getName() + ": " + e.getMessage() );
-		      System.exit(0);
+		      return null;
 		    }
 		    
 		    System.out.println("Opened database successfully");
@@ -226,7 +226,7 @@ public class FirefoxCacheExtract {
 	    catch ( Exception e ) 
 	    {
 	      System.err.println( e.getClass().getName() + ": " + e.getMessage() );
-	      System.exit(0);
+	      return null;
 	    }
 	    
 	    System.out.println("Opened database successfully");
