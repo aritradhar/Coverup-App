@@ -185,8 +185,6 @@ class ProgressCellRender_1 extends JProgressBar implements TableCellRenderer {
 		 this.progress = value;
 		 this.row = row;
 		 this.col = col;
-		 
-		 DefaultTableModel model = (DefaultTableModel) this.table.getModel();
 	 }
 	
     /**
