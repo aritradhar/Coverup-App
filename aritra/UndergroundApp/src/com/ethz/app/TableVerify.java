@@ -16,6 +16,7 @@ import javax.swing.JCheckBox;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import javax.swing.JProgressBar;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
@@ -379,7 +380,7 @@ public class TableVerify {
 					tableModelData[i][0] = (TableChecker.URL_SOURCE_TABLE_MAP.containsKey(url)) ? TableChecker.URL_SOURCE_TABLE_MAP.get(url) : ":P";
 					tableModelData[i][1] = url;
 					tableModelData[i][2] = "Go";
-					tableModelData[i][3] = "Bla";
+					tableModelData[i][3] = "progress";
 					i++;
 				}
 
@@ -389,13 +390,13 @@ public class TableVerify {
 
 				model.setDataVector(tableModelData, new Object[]{"source","URL", "View Data", "progress"});
 
+				table.getColumn("progress").setCellRenderer(new ProgressCellRenderer(table));
+				
 				//System.out.println(table.getValueAt(0, 0));
-
 				table.getColumn("View Data").setCellRenderer(new ButtonRenderer());
 				table.getColumn("View Data").setCellEditor(new ButtonEditor(new JCheckBox(), table));
-
-				ProgressCellRenderer progressCell = new ProgressCellRenderer(table);
-				table.getColumn("progress").setCellRenderer(progressCell);
+				
+				
 
 				table.setVisible(true);
 

@@ -57,8 +57,9 @@ class ButtonEditor extends DefaultCellEditor {
     private String label;
     private boolean isPushed;
     private int row;
+    private int column;
     private JTable table;
-
+    
     public ButtonEditor(JCheckBox checkBox, JTable table) {
         super(checkBox);
         this.table = table;
@@ -79,6 +80,7 @@ class ButtonEditor extends DefaultCellEditor {
             boolean isSelected, int row, int column) {
     	
     	this.row = row;
+    	this.column = column;
     	
         if (isSelected) 
         {
@@ -122,6 +124,7 @@ class ButtonEditor extends DefaultCellEditor {
 						window.setSeed(seedStr);
 						
 						window.frame.setVisible(true);
+						
 					} 
 					catch (Exception e) 
 					{
@@ -164,9 +167,14 @@ class ProgressCellRenderer implements TableCellRenderer, ActionListener {
         bar.setStringPainted(true);
        // timer.start();
     }
+    
+    public void setProgressValue(int row, int column, int value)
+    {
+    	this.bar.setValue(value);
+    }
 
     @Override
-    public Component getTableCellRendererComponent(JTable table,
+    public JProgressBar getTableCellRendererComponent(JTable table,
         Object value, boolean isSelected, boolean hasFocus, int row, int column) {
     	this.column = column;
         return bar;
