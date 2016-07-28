@@ -181,6 +181,18 @@ public class TableVerify {
 			}
 		});
 		mnSettings.add(mntmShowPollingWindow);
+		
+		JMenu mnHelp = new JMenu("Help");
+		menuBar.add(mnHelp);
+		
+		JMenuItem mntmAbout = new JMenuItem("About");
+		mntmAbout.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				
+				JOptionPane.showMessageDialog(frame, ENV.ABOUT_MESSAGE);
+			}
+		});
+		mnHelp.add(mntmAbout);
 
 		///
 
