@@ -43,7 +43,7 @@ public class AssembleFrame {
 	String urlString;
 	boolean independent;
 	public byte[] fountainSeed;
-	
+	public JProgressBar progressBar; 
 	public byte[] decodedData;
 	
 	public static boolean glassDone = false;
@@ -80,6 +80,14 @@ public class AssembleFrame {
 	public AssembleFrame() {
 		this.independent = true;
 		initialize();
+	}
+	
+	public int GetProgress()
+	{
+		if(this.progressBar == null)
+			return 0;
+		else
+			return this.progressBar.getValue();
 	}
 	
 	public void setSeed(String seedStr)
@@ -159,7 +167,7 @@ public class AssembleFrame {
 		panel.add(btnAssemble);
 
 		JButton btnDisplay = new JButton("Assemble");
-		JProgressBar progressBar = new JProgressBar();
+		progressBar = new JProgressBar();
 		progressBar.setStringPainted(true);
 		JButton btnNewButton = new JButton("Make Droplets");
 		btnNewButton.setEnabled(false);
