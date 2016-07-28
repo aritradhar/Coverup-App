@@ -61,7 +61,13 @@ public class DataBasePollPresetPK extends JFrame {
 		});
 	}
 
-
+	
+	public void stopPoll()
+	{
+		executor.shutdown();
+		frame.dispose();
+	}
+	
 	public DataBasePollPresetPK(String serverPublicKey) {
 
 		RepeatedDatabaseCheck.ServerPublickey = Base64.getUrlDecoder().decode(serverPublicKey);
