@@ -120,6 +120,8 @@ public class DataBasePoll extends JFrame {
 		//lblNewLabel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
 		panel_1.add(lblNewLabel);
 		
+		
+		
 		JPanel panel = new JPanel();
 		frame.getContentPane().add(panel, BorderLayout.SOUTH);
 		

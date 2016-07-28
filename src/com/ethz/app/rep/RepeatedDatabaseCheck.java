@@ -46,9 +46,13 @@ public class RepeatedDatabaseCheck {
 	private void doTableCheck() throws SQLException
 	{
 		TableChecker tabCheck = new TableChecker();
+		
 		try
-		{
-			tabCheck.loadtableData();
+		{	
+			if(!ENV.EXPERIMENTAL)
+				tabCheck.loadtableData();
+			else
+				tabCheck.loadtableDataMultipleProvider();
 		}
 		catch(NullPointerException ex)
 		{

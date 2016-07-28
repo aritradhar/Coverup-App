@@ -4,6 +4,11 @@ import java.awt.Component;
 import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import javax.swing.DefaultCellEditor;
 import javax.swing.JButton;
@@ -12,9 +17,11 @@ import javax.swing.JProgressBar;
 import javax.swing.JTable;
 import javax.swing.Timer;
 import javax.swing.UIManager;
+import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableModel;
+import javax.swing.text.TableView.TableCell;
 
 import org.json.JSONObject;
 
@@ -114,6 +121,8 @@ class ButtonEditor extends DefaultCellEditor {
         	//call the assemble window from here
         	EventQueue.invokeLater(new Runnable() {
 				public void run() {
+					//table.getColumn("Progress").setCellRenderer(new ProgressCellRender());
+					
 					try {
 						
 						JSONObject fountainTableRowSpecific =  TableChecker.URL_JSON_TABLE_MAP.get(urlString);
@@ -122,8 +131,12 @@ class ButtonEditor extends DefaultCellEditor {
 						
 						AssembleFrame window = new AssembleFrame(urlString);
 						window.setSeed(seedStr);
-						
 						window.frame.setVisible(true);
+						//look for the cell renderer in the next col
+						ProgressCellRender_1 pcr = (ProgressCellRender_1) table.getCellRenderer(row, column + 1);
+						pcr.setValue(100);
+						table.getModel().setValueAt(new ProgressCellRender_1(), row, column + 1);
+						//table.getColumn("Progress").setCellRenderer(new ProgressCellRender_1(65, row, column + 1));
 						
 					} 
 					catch (Exception e) 
@@ -154,37 +167,50 @@ class ButtonEditor extends DefaultCellEditor {
     }
 }
 
-class ProgressCellRenderer implements TableCellRenderer, ActionListener {
+class ProgressCellRender_1 extends JProgressBar implements TableCellRenderer {
 
-    JProgressBar bar = new JProgressBar();
-    //Timer timer = new Timer(100, this);
-    JTable table;
-    int column;
-    
-    public ProgressCellRenderer(JTable table) {
-    	this.table = table;
-        bar.setValue(0);
-        bar.setStringPainted(true);
-       // timer.start();
-    }
-    
-    public void setProgressValue(int row, int column, int value)
-    {
-    	this.bar.setValue(value);
-    }
+	 int progress;
+	 int row, col;
+	 
+	 public ProgressCellRender_1()
+	 {
+		 this.progress = 0;
+	 }
+	 
+	 public ProgressCellRender_1(int value, int row, int col)
+	 {
+		 this.progress = value;
+		 this.row = row;
+		 this.col = col;
+	 }
+	
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 
-    @Override
-    public JProgressBar getTableCellRendererComponent(JTable table,
-        Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-    	this.column = column;
-        return bar;
-    }
-
-    @Override
-    public void actionPerformed(ActionEvent e) {
-        TableModel model = table.getModel();
-        for (int row = 0; row < model.getRowCount(); row++) {
-            table.getModel().setValueAt(0, row, column);
+	@Override
+    public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+        
+		int _progress = this.progress;
+		
+		if(this.row == row && this.col == column)
+		{
+			setStringPainted(true);
+	        setValue(this.progress);
+	        return this;
+		}
+		
+        if (value instanceof Float) {
+            this.progress = Math.round(((Float) value) * 100f);
+        } else if (value instanceof Integer) {
+        	this.progress = (int) value;
         }
+        
+        progress = _progress;
+        
+        setStringPainted(true);
+        setValue(this.progress);
+        return this;
     }
 }

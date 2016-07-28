@@ -2,6 +2,7 @@ package com.ethz.app;
 
 import java.awt.BorderLayout;
 import java.awt.EventQueue;
+import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.FileWriter;
@@ -118,7 +119,7 @@ public class TableVerify {
 	{
 		frame = new JFrame();
 		frame.setTitle("Server Fountain Table");
-		frame.setBounds(100, 100, 680, 848);
+		frame.setBounds(100, 100, 823, 848);
 		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
 		//menubar
@@ -158,7 +159,7 @@ public class TableVerify {
 						JOptionPane.PLAIN_MESSAGE,
 						null,
 						null,
-						"ham");
+						"1000");
 
 				try
 				{
@@ -190,7 +191,7 @@ public class TableVerify {
 		mntmAbout.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				
-				JOptionPane.showMessageDialog(frame, ENV.ABOUT_MESSAGE);
+				JOptionPane.showMessageDialog(frame, ENV.ABOUT_MESSAGE, "about", JOptionPane.PLAIN_MESSAGE);
 			}
 		});
 		mnHelp.add(mntmAbout);
@@ -198,6 +199,8 @@ public class TableVerify {
 		///
 
 		JPanel panel_1 = new JPanel();
+		FlowLayout flowLayout = (FlowLayout) panel_1.getLayout();
+		flowLayout.setAlignment(FlowLayout.LEFT);
 		frame.getContentPane().add(panel_1, BorderLayout.NORTH);	
 
 		txtQq = new JTextField();
@@ -251,7 +254,7 @@ public class TableVerify {
 
 		DefaultTableModel model = new DefaultTableModel() { 
 			private static final long serialVersionUID = 1L;
-			String[] col = {"source","URL", "View Data", "progress"};
+			String[] col = {"source","URL", "View Data", "Progress"};
 
 			@Override 
 			public int getColumnCount() { 
@@ -288,17 +291,18 @@ public class TableVerify {
 
 				if(!startPolling)
 				{
+					if(pkText == null || pkText.length() == 0)
+					{
+						JOptionPane.showMessageDialog(frame, "Server public key is not set");
+						return;
+					}
+					
 					EventQueue.invokeLater(new Runnable() 
 					{
 						public void run() 
 						{
 							try 
 							{
-								if(pkText == null || pkText.length() == 0)
-								{
-									JOptionPane.showMessageDialog(frame, "Server public key is not set");
-									return;
-								}
 								dPool = new DataBasePollPresetPK(pkText);
 								mntmShowPollingWindow.setEnabled(true);
 								//dPool.frame.setVisible(true);
@@ -315,6 +319,9 @@ public class TableVerify {
 				}
 				else
 				{
+					
+					dPool.stopPoll();
+					
 					mntmShowPollingWindow.setEnabled(false);
 					btnStartPolling.setText("Start Polling");
 					startPolling = false;
@@ -380,7 +387,7 @@ public class TableVerify {
 					tableModelData[i][0] = (TableChecker.URL_SOURCE_TABLE_MAP.containsKey(url)) ? TableChecker.URL_SOURCE_TABLE_MAP.get(url) : ":P";
 					tableModelData[i][1] = url;
 					tableModelData[i][2] = "Go";
-					tableModelData[i][3] = "progress";
+					tableModelData[i][3] = null;
 					i++;
 				}
 
@@ -388,16 +395,15 @@ public class TableVerify {
 				//DefaultTableModel model = (DefaultTableModel) table.getModel();
 
 
-				model.setDataVector(tableModelData, new Object[]{"source","URL", "View Data", "progress"});
+				model.setDataVector(tableModelData, new Object[]{"source","URL", "View Data", "Progress"});
 
-				table.getColumn("progress").setCellRenderer(new ProgressCellRenderer(table));
+				table.getColumn("Progress").setCellRenderer(new ProgressCellRender_1());
 				
 				//System.out.println(table.getValueAt(0, 0));
 				table.getColumn("View Data").setCellRenderer(new ButtonRenderer());
 				table.getColumn("View Data").setCellEditor(new ButtonEditor(new JCheckBox(), table));
 				
-				
-
+			
 				table.setVisible(true);
 
 				btnVerifySignature.setEnabled(true);
