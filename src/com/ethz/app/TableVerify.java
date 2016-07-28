@@ -25,6 +25,7 @@ import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.table.DefaultTableModel;
 
 import com.ethz.app.env.ENV;
+import com.ethz.app.rep.DataBasePollPresetPK;
 
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -35,7 +36,7 @@ import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 
 public class TableVerify {
-	
+
 	private JTable table;
 
 	public JFrame frame;
@@ -46,15 +47,18 @@ public class TableVerify {
 	public static TableChecker tableChecker;
 	private JTextField txtQq;
 	JFileChooser chooser;
-	
-	
+	public int databasePollingRate;
+	public static boolean startPolling = false;
+	public String pkText;
 	public String modifiedCacheLocation;
+
+	private DataBasePollPresetPK dPool;
 	
 	public static boolean set = false;
 	public static void main(String[] args) throws ClassNotFoundException, InstantiationException, IllegalAccessException, UnsupportedLookAndFeelException {
-		
+
 		UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());	
-			
+
 		EventQueue.invokeLater(new Runnable() {
 			public void run() 
 			{
@@ -80,7 +84,7 @@ public class TableVerify {
 	public TableVerify() throws NoSuchAlgorithmException, SQLException {
 
 		this.tableChecker = new TableChecker();
-		
+
 		try
 		{
 			tableChecker.loadtableData();
@@ -101,7 +105,7 @@ public class TableVerify {
 				tableChecker.loadtableData(path);
 			}
 		}	
-		
+
 		initialize();
 	}
 
@@ -115,102 +119,211 @@ public class TableVerify {
 		frame.setTitle("Server Fountain Table");
 		frame.setBounds(100, 100, 680, 848);
 		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+
+		//menubar
+		JMenuBar menuBar = new JMenuBar();
+		frame.setJMenuBar(menuBar);
+
+		JMenu mnSettings = new JMenu("Settings");
+		menuBar.add(mnSettings);
+
+		JMenuItem mntmCacheLocation = new JMenuItem("Set Cache Location");
+		mntmCacheLocation.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+
+				chooser = new JFileChooser(); 
+				chooser.setCurrentDirectory(new java.io.File("."));
+				chooser.setDialogTitle("Select Firefox cache dir");
+				chooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
+
+				chooser.setAcceptAllFileFilterUsed(false);  
+
+				if (chooser.showOpenDialog(frame) == JFileChooser.APPROVE_OPTION) 
+				{ 		
+					modifiedCacheLocation = chooser.getSelectedFile().getAbsolutePath();
+				}
+			}
+		});
+		mnSettings.add(mntmCacheLocation);
+
+		JMenuItem mntmSetPollingRate = new JMenuItem("Set Polling Rate");
+		mntmSetPollingRate.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+
+				String pollingRateString = (String)JOptionPane.showInputDialog(
+						frame,
+						"Set Database polling rate (ms), Default = 1000 ms",
+						"Polling rate",
+						JOptionPane.PLAIN_MESSAGE,
+						null,
+						null,
+						"ham");
+
+				try
+				{
+					DataBasePollPresetPK.pollingRate = Integer.parseInt(pollingRateString);
+				}
+				catch(Exception ex)
+				{
+					JOptionPane.showMessageDialog(frame, "Invalid polling rate");
+				}
+			}
+		});
+		mnSettings.add(mntmSetPollingRate);
 		
+		JMenuItem mntmShowPollingWindow = new JMenuItem("Show Polling Window");
+		mntmShowPollingWindow.setEnabled(false);
 		
+		mntmShowPollingWindow.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				
+				dPool.frame.setVisible(true);
+			}
+		});
+		mnSettings.add(mntmShowPollingWindow);
+
+		///
+
 		JPanel panel_1 = new JPanel();
 		frame.getContentPane().add(panel_1, BorderLayout.NORTH);	
-		
+
 		txtQq = new JTextField();
 		txtQq.setToolTipText("");
 		txtQq.setHorizontalAlignment(SwingConstants.LEFT);
 		panel_1.add(txtQq);
 		txtQq.setColumns(25);
-		
-				JButton btnSetServerPk = new JButton("Set Server PK");
-				panel_1.add(btnSetServerPk);
-				
-				JLabel lblNewLabel = new JLabel("Using no PK");
-				lblNewLabel.setHorizontalAlignment(SwingConstants.LEFT);
-				
-				panel_1.add(lblNewLabel);
-				
-				btnSetServerPk.addActionListener(new ActionListener() 
+
+		JButton btnSetServerPk = new JButton("Set Server PK");
+		panel_1.add(btnSetServerPk);
+
+		JLabel lblNewLabel = new JLabel("Using no PK");
+		lblNewLabel.setHorizontalAlignment(SwingConstants.LEFT);
+
+		panel_1.add(lblNewLabel);
+
+		btnSetServerPk.addActionListener(new ActionListener() 
+		{
+
+			public void actionPerformed(ActionEvent e) 
+			{
+
+				pkText = txtQq.getText();
+				if(pkText == null || pkText.length() == 0)
 				{
-					
-					public void actionPerformed(ActionEvent e) 
+					lblNewLabel.setText("PK not set");
+				}
+				else
+				{
+					try
 					{
-
-						String pkText = txtQq.getText();
-						if(pkText == null || pkText.length() == 0)
-						{
-							lblNewLabel.setText("PK not set");
-						}
-						else
-						{
-							try
-							{
-								tableChecker.setPK(pkText);
-								lblNewLabel.setText("PK set : " + Base64.getUrlEncoder().encodeToString(tableChecker.ServerpublicKey));
-							}
-							catch(Exception ex)
-							{
-								lblNewLabel.setText("Invalid PK");
-							}
-
-						}
+						tableChecker.setPK(pkText);
+						lblNewLabel.setText("PK set : " + Base64.getUrlEncoder().encodeToString(tableChecker.ServerpublicKey));
 					}
-				});
-			
+					catch(Exception ex)
+					{
+						lblNewLabel.setText("Invalid PK");
+					}
+
+				}
+			}
+		});
+
 		JPanel panel = new JPanel();
 		frame.getContentPane().add(panel, BorderLayout.SOUTH);
-		
+
 		/*JPanel panelMid = new JPanel();
 		frame.getContentPane().add(panelMid, BorderLayout.CENTER);*/
-		
-		
-		
+
+
+
 		DefaultTableModel model = new DefaultTableModel() { 
 			private static final long serialVersionUID = 1L;
 			String[] col = {"source","URL", "View Data", "progress"};
-			
-			 @Override 
-	            public int getColumnCount() { 
-	                return col.length; 
-	            } 
-			 
+
 			@Override 
-            public String getColumnName(int index) { 
-                return col[index]; 
-            } 
-			
+			public int getColumnCount() { 
+				return col.length; 
+			} 
+
+			@Override 
+			public String getColumnName(int index) { 
+				return col[index]; 
+			} 
+
 		};
 		table = new JTable(model);
 		table.setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
-		
+
 		JScrollPane scrollPane = new JScrollPane(table, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		frame.getContentPane().add(scrollPane);
 
 		JButton btnLoadMessage;
 		JButton btnDumpTable = new JButton("Dump Table");
 		btnDumpTable.setEnabled(false);
-		
+
 		table.setVisible(false);
 
 		if(tableChecker == null)
 		{
 			System.err.println("NULL app");
 		}
+
+		//TODO
+		JButton btnStartPolling = new JButton("Start Polling");
+		btnStartPolling.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+
+				if(!startPolling)
+				{
+					EventQueue.invokeLater(new Runnable() 
+					{
+						public void run() 
+						{
+							try 
+							{
+								if(pkText == null || pkText.length() == 0)
+								{
+									JOptionPane.showMessageDialog(frame, "Server public key is not set");
+									return;
+								}
+								dPool = new DataBasePollPresetPK(pkText);
+								mntmShowPollingWindow.setEnabled(true);
+								//dPool.frame.setVisible(true);
+							} 
+							catch (Exception e) 
+							{
+								e.printStackTrace();
+							}
+						}
+					});
+					btnStartPolling.setText("Stop Polling");
+					startPolling = true;
+
+				}
+				else
+				{
+					mntmShowPollingWindow.setEnabled(false);
+					btnStartPolling.setText("Start Polling");
+					startPolling = false;
+					
+					
+				}
+
+
+			}
+		});
+		panel.add(btnStartPolling);
 		//app.verifyMessage();
 
 		btnLoadMessage = new JButton("Load Table");
 		panel.add(btnLoadMessage);
-		
-		
+
+
 		JButton btnVerifySignature = new JButton("Verify Signature");
 		btnVerifySignature.setEnabled(false);
 		panel.add(btnVerifySignature);
-		
-		
+
+
 		btnLoadMessage.addActionListener(new ActionListener() 
 		{
 			public void actionPerformed(ActionEvent e) 
@@ -237,17 +350,17 @@ public class TableVerify {
 				{
 					e1.printStackTrace();
 					JOptionPane.showMessageDialog(frame,
-						    "Houston we have a problem.",
-						    "Error",
-						    JOptionPane.ERROR_MESSAGE);
-					
+							"Houston we have a problem.",
+							"Error",
+							JOptionPane.ERROR_MESSAGE);
+
 					return;
 				}
-				
+
 				String[] urls = tableChecker.getURLsFromTable();
-				
+
 				Object[][] tableModelData = new Object[urls.length][4];
-				
+
 				int i = 0;
 				for(String url : urls)
 				{
@@ -257,39 +370,39 @@ public class TableVerify {
 					tableModelData[i][3] = "Bla";
 					i++;
 				}
-				
-				
+
+
 				//DefaultTableModel model = (DefaultTableModel) table.getModel();
-				
-				
+
+
 				model.setDataVector(tableModelData, new Object[]{"source","URL", "View Data", "progress"});
-				
+
 				//System.out.println(table.getValueAt(0, 0));
-				
+
 				table.getColumn("View Data").setCellRenderer(new ButtonRenderer());
 				table.getColumn("View Data").setCellEditor(new ButtonEditor(new JCheckBox(), table));
-				
+
 				ProgressCellRenderer progressCell = new ProgressCellRenderer(table);
 				table.getColumn("progress").setCellRenderer(progressCell);
-				
+
 				table.setVisible(true);
-				
+
 				btnVerifySignature.setEnabled(true);
 				btnDumpTable.setEnabled(true);
 				/*for(String url : urls)
 					toProject.append(url).append("\n");
-				
+
 				textArea.setText(toProject.toString());*/
 			}
 		});
-		
-		
+
+
 		btnVerifySignature.addActionListener(new ActionListener() {
-			
+
 			public void actionPerformed(ActionEvent e) {
 
-			
-				
+
+
 				if(!ENV.EXPERIMENTAL)
 				{
 					try {
@@ -300,7 +413,7 @@ public class TableVerify {
 							JOptionPane.showMessageDialog(frame, "Error! PK not set");
 							return;
 						}
-						
+
 						if(tableChecker.verifyResult)
 							JOptionPane.showMessageDialog(frame, "Table verification successful!!");
 
@@ -314,7 +427,7 @@ public class TableVerify {
 						JOptionPane.showMessageDialog(frame, "Exception happened in signature verification");
 					}
 				}
-				
+
 				else
 				{
 					try {
@@ -324,9 +437,9 @@ public class TableVerify {
 							JOptionPane.showMessageDialog(frame, "Error! PK not set");
 							return;
 						}
-						
+
 						List<String> failedSigOriginKeys = TableChecker.verifyMessageList();
-						
+
 						if(failedSigOriginKeys.size() == 0)
 							JOptionPane.showMessageDialog(frame, "Table verification successful!!");
 						else
@@ -334,10 +447,10 @@ public class TableVerify {
 							StringBuffer stb = new StringBuffer();
 							for(String key : failedSigOriginKeys)
 								stb.append(key).append("\n");
-							
+
 							JOptionPane.showMessageDialog(frame, "Table verification fail for keys : \n" + stb.toString());
 						}
-						
+
 					} catch (NullPointerException e1) {
 						JOptionPane.showMessageDialog(frame, "Error! PK not set");
 						e1.printStackTrace();
@@ -345,17 +458,17 @@ public class TableVerify {
 						e1.printStackTrace();
 						JOptionPane.showMessageDialog(frame, "Exception happened in signature verification");
 					}
-					
+
 				}
-				
+
 			}
 		});
-		
-		
-		
+
+
+
 		btnDumpTable.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				
+
 				if(!ENV.EXPERIMENTAL)
 				{
 					String dump = tableChecker.tableDumpJson;
@@ -378,17 +491,17 @@ public class TableVerify {
 						JOptionPane.showMessageDialog(frame, "Table dumped @ " + ENV.APP_STORAGE_LOC + ENV.DELIM + ENV.APP_STORAGE_TABLE_DUMP);
 
 					} catch (IOException e1) {
-						
+
 						JOptionPane.showMessageDialog(frame, "Error in closing file!");
 						e1.printStackTrace();
 					}
 
 				}
-				
+
 				else
 				{
 					List<String[]> dumpList = tableChecker.multipleProviderRows;
-					
+
 					for(String[] dumpRow : dumpList)
 					{
 						String dump = dumpRow[0];
@@ -414,38 +527,13 @@ public class TableVerify {
 							JOptionPane.showMessageDialog(frame, "Close error");
 						}
 					}
-					
+
 					JOptionPane.showMessageDialog(frame, "Tables dumped");
 				}
-				
+
 			}
 		});
 		panel.add(btnDumpTable);
-		
-		JMenuBar menuBar = new JMenuBar();
-		frame.setJMenuBar(menuBar);
-		
-		JMenu mnSettings = new JMenu("Settings");
-		menuBar.add(mnSettings);
-		
-		JMenuItem mntmCacheLocation = new JMenuItem("Set Cache Location");
-		mntmCacheLocation.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				
-				chooser = new JFileChooser(); 
-				chooser.setCurrentDirectory(new java.io.File("."));
-				chooser.setDialogTitle("Select Firefox cache dir");
-				chooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
-
-				chooser.setAcceptAllFileFilterUsed(false);  
-
-				if (chooser.showOpenDialog(frame) == JFileChooser.APPROVE_OPTION) 
-				{ 		
-					modifiedCacheLocation = chooser.getSelectedFile().getAbsolutePath();
-				}
-			}
-		});
-		mnSettings.add(mntmCacheLocation);
 
 	}
 

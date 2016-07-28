@@ -36,7 +36,8 @@ public class DataBasePollPresetPK extends JFrame {
 	public JFrame frame;
 	private ScheduledThreadPoolExecutor executor;
 	private static String databaseFileLocation;
-
+	public static volatile int pollingRate = 1000;
+	
 	JFileChooser chooser;
 
 	public static void main(String[] args) throws ClassNotFoundException, InstantiationException, IllegalAccessException, UnsupportedLookAndFeelException {
@@ -49,7 +50,7 @@ public class DataBasePollPresetPK extends JFrame {
 			{
 				try 
 				{
-					DataBasePollPresetPK dPool = new DataBasePollPresetPK("somePkinBase64");
+					DataBasePollPresetPK dPool = new DataBasePollPresetPK("90I1INgfeam-0JwxP2Vfgw9eSQGQjz3WxLO1wu1n8Cg=");
 					dPool.frame.setVisible(true);
 				} 
 				catch (Exception e) 
@@ -68,10 +69,10 @@ public class DataBasePollPresetPK extends JFrame {
 		frame = new JFrame();
 		frame.setTitle("Database polling");
 		frame.setBounds(100, 100, 783, 510);
-		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+		//frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
 
-		frame.addWindowListener(new java.awt.event.WindowAdapter() 
+		/*frame.addWindowListener(new java.awt.event.WindowAdapter() 
 		{
 			@Override
 			public void windowClosing(java.awt.event.WindowEvent windowEvent) {
@@ -84,7 +85,7 @@ public class DataBasePollPresetPK extends JFrame {
 
 				}
 			}
-		});
+		});*/
 
 		JScrollPane scrollPane = new JScrollPane();
 		frame.getContentPane().add(scrollPane, BorderLayout.CENTER);
@@ -144,7 +145,7 @@ public class DataBasePollPresetPK extends JFrame {
 		//Taking an instance of class contains your repeated method.
 
 		executor = new ScheduledThreadPoolExecutor(10);
-		executor.scheduleAtFixedRate(myRunnable, 0, 1000, TimeUnit.MILLISECONDS);
+		executor.scheduleAtFixedRate(myRunnable, 0, pollingRate, TimeUnit.MILLISECONDS);
 
 	}
 
