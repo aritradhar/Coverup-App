@@ -154,7 +154,8 @@ public class TableVerify {
 
 				String pollingRateString = (String)JOptionPane.showInputDialog(
 						frame,
-						"Set Database polling rate (ms), Default = 1000 ms",
+						"Set Database polling rate (ms), Default = 1000 ms, current = " + DataBasePollPresetPK.pollingRate + " ms"
+								+ "\nRestart polling o take effect",
 						"Polling rate",
 						JOptionPane.PLAIN_MESSAGE,
 						null,
@@ -195,7 +196,7 @@ public class TableVerify {
 			}
 		});
 		mnHelp.add(mntmAbout);
-
+		
 		///
 
 		JPanel panel_1 = new JPanel();
@@ -265,8 +266,14 @@ public class TableVerify {
 			public String getColumnName(int index) { 
 				return col[index]; 
 			} 
+			
+			@Override
+		    public boolean isCellEditable(int row, int column) {
+		        return false;
+		    }
 
 		};
+		
 		table = new JTable(model);
 		table.setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
 

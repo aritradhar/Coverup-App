@@ -19,6 +19,7 @@ import javax.swing.Timer;
 import javax.swing.UIManager;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableModel;
 import javax.swing.text.TableView.TableCell;
@@ -171,6 +172,8 @@ class ProgressCellRender_1 extends JProgressBar implements TableCellRenderer {
 
 	 int progress;
 	 int row, col;
+	 JTable table;
+	 
 	 
 	 public ProgressCellRender_1()
 	 {
@@ -182,6 +185,8 @@ class ProgressCellRender_1 extends JProgressBar implements TableCellRenderer {
 		 this.progress = value;
 		 this.row = row;
 		 this.col = col;
+		 
+		 DefaultTableModel model = (DefaultTableModel) this.table.getModel();
 	 }
 	
     /**
@@ -192,6 +197,7 @@ class ProgressCellRender_1 extends JProgressBar implements TableCellRenderer {
 	@Override
     public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
         
+		this.table = table;
 		int _progress = this.progress;
 		
 		if(this.row == row && this.col == column)
