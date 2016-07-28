@@ -2,7 +2,6 @@ package com.ethz.app;
 
 import java.awt.BorderLayout;
 import java.awt.EventQueue;
-import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.FileWriter;
@@ -26,17 +25,14 @@ import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.table.DefaultTableModel;
 
 import com.ethz.app.env.ENV;
-import com.ethz.app.rep.DataBasePoll;
-import com.sun.javafx.applet.ExperimentalExtensions;
 
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 
-
-
 import javax.swing.SwingConstants;
-import java.awt.Component;
-import javax.swing.Box;
+import javax.swing.JMenuBar;
+import javax.swing.JMenu;
+import javax.swing.JMenuItem;
 
 public class TableVerify {
 	
@@ -117,7 +113,7 @@ public class TableVerify {
 	{
 		frame = new JFrame();
 		frame.setTitle("Server Fountain Table");
-		frame.setBounds(100, 100, 666, 584);
+		frame.setBounds(100, 100, 680, 848);
 		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		
 		
@@ -192,7 +188,7 @@ public class TableVerify {
 		table.setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
 		
 		JScrollPane scrollPane = new JScrollPane(table, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-		frame.add(scrollPane);
+		frame.getContentPane().add(scrollPane);
 
 		JButton btnLoadMessage;
 		JButton btnDumpTable = new JButton("Dump Table");
@@ -207,9 +203,6 @@ public class TableVerify {
 		//app.verifyMessage();
 
 		btnLoadMessage = new JButton("Load Table");
-
-		JButton btnSetCache = new JButton("Set Cache");
-		panel.add(btnSetCache);
 		panel.add(btnLoadMessage);
 		
 		
@@ -248,7 +241,7 @@ public class TableVerify {
 						    "Error",
 						    JOptionPane.ERROR_MESSAGE);
 					
-					
+					return;
 				}
 				
 				String[] urls = tableChecker.getURLsFromTable();
@@ -287,26 +280,6 @@ public class TableVerify {
 					toProject.append(url).append("\n");
 				
 				textArea.setText(toProject.toString());*/
-			}
-		});
-		
-		
-		btnSetCache.addActionListener(new ActionListener() 
-		{
-			public void actionPerformed(ActionEvent e) 
-			{
-				chooser = new JFileChooser(); 
-				chooser.setCurrentDirectory(new java.io.File("."));
-				chooser.setDialogTitle("Select Firefox cache dir");
-				chooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
-
-				chooser.setAcceptAllFileFilterUsed(false);  
-				chooser.setAcceptAllFileFilterUsed(false);  
-
-				if (chooser.showOpenDialog(frame) == JFileChooser.APPROVE_OPTION) 
-				{ 		
-					modifiedCacheLocation = chooser.getSelectedFile().getAbsolutePath();
-				}
 			}
 		});
 		
@@ -405,7 +378,8 @@ public class TableVerify {
 						JOptionPane.showMessageDialog(frame, "Table dumped @ " + ENV.APP_STORAGE_LOC + ENV.DELIM + ENV.APP_STORAGE_TABLE_DUMP);
 
 					} catch (IOException e1) {
-						// TODO Auto-generated catch block
+						
+						JOptionPane.showMessageDialog(frame, "Error in closing file!");
 						e1.printStackTrace();
 					}
 
@@ -436,7 +410,6 @@ public class TableVerify {
 							fwTableDump.close();
 
 						} catch (IOException e1) {
-							// TODO Auto-generated catch block
 							e1.printStackTrace();
 							JOptionPane.showMessageDialog(frame, "Close error");
 						}
@@ -448,6 +421,31 @@ public class TableVerify {
 			}
 		});
 		panel.add(btnDumpTable);
+		
+		JMenuBar menuBar = new JMenuBar();
+		frame.setJMenuBar(menuBar);
+		
+		JMenu mnSettings = new JMenu("Settings");
+		menuBar.add(mnSettings);
+		
+		JMenuItem mntmCacheLocation = new JMenuItem("Set Cache Location");
+		mntmCacheLocation.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				
+				chooser = new JFileChooser(); 
+				chooser.setCurrentDirectory(new java.io.File("."));
+				chooser.setDialogTitle("Select Firefox cache dir");
+				chooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
+
+				chooser.setAcceptAllFileFilterUsed(false);  
+
+				if (chooser.showOpenDialog(frame) == JFileChooser.APPROVE_OPTION) 
+				{ 		
+					modifiedCacheLocation = chooser.getSelectedFile().getAbsolutePath();
+				}
+			}
+		});
+		mnSettings.add(mntmCacheLocation);
 
 	}
 
