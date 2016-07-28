@@ -45,4 +45,11 @@ public class ENV {
 	
 	public static final boolean COMPRESSION_SUPPORT = false;
 	
+	
+	
+	
+	public static final String ABOUT_MESSAGE = "To those who can hear me, I say - do not despair. \n The misery that is now upon us is but the passing of greed - "
+			+ "\nthe bitterness of men who fear the way of human progress. \nThe hate of men will pass,"
+			+ " and dictators die, and the power they took from the people \n will return to the people.\nAnd so long as men die, liberty will never perish. .....\n"
+			+ "- Charlie Chaplin (he Great Dictator)";
 }
