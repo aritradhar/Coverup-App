@@ -11,10 +11,13 @@ import java.util.List;
 import java.util.Map;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.whispersystems.curve25519.Curve25519;
 
+import com.ethz.app.binUtils.BinUtils;
 import com.ethz.app.env.ENV;
+import com.ethz.app.rep.RepeatedDatabaseCheck;
 
 public class TableChecker 
 {
@@ -44,8 +47,19 @@ public class TableChecker
 		ffce.getFirefoxCacheFile();
 		ffce.conncetDatabase(ENV.DATABASE_TABLE_COL);
 
-		JSONObject jObject = new JSONObject(ffce.jsonData);
-
+		JSONObject jObject = null;
+		
+		try
+		{
+			jObject = new JSONObject(ffce.jsonData);
+		}
+		catch(JSONException ex)
+		{
+			String binTableConvertedJson = BinUtils.tableBinToTableJson(Base64.getDecoder().decode(ffce.jsonData), RepeatedDatabaseCheck.ServerPublickey);
+			if(binTableConvertedJson != null)
+				jObject = new JSONObject(binTableConvertedJson);
+		}
+		
 		this.tableJson = jObject.getString("table");
 		this.signature = jObject.getString("signature");
 		this.setMapFromtableJSON();
