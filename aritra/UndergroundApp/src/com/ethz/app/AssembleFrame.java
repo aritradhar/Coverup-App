@@ -156,11 +156,13 @@ public class AssembleFrame {
 				if (chooser.showOpenDialog(frame) == JFileChooser.APPROVE_OPTION) 
 				{ 		
 					JSONDirPath = chooser.getSelectedFile().getAbsolutePath();
-					lblNewLabel.setText("JSON folder : " + JSONDirPath);
+					
+					if(JSONDirPath != null)
+						lblNewLabel.setText("JSON folder : " + JSONDirPath);
 				}
 				else 
 				{
-					lblNewLabel.setText("JSON folder not selected" + JSONDirPath);
+					lblNewLabel.setText("JSON folder not selected");
 
 				}
 			}
@@ -400,8 +402,16 @@ public class AssembleFrame {
 					new File(dropletLocationSpecific_bin).mkdir();
 				
 				String counterS = (String)JOptionPane.showInputDialog(frame, "Enter droplet count", "Droplet Generate", JOptionPane.PLAIN_MESSAGE, null, null, "50");
-				int dropletCounter = Integer.parseInt(counterS);
 				
+				int dropletCounter = 50;
+				try
+				{
+					dropletCounter = Integer.parseInt(counterS);
+				}
+				catch(Exception ex)
+				{
+					JOptionPane.showMessageDialog(frame, "Invalid droplet count, default value = 50");
+				}
 				try 
 				{
 					//for standalone run seed is null.
@@ -427,6 +437,7 @@ public class AssembleFrame {
 				
 				catch (Exception e1)
 				{
+					JOptionPane.showMessageDialog(frame, "Error!! Droplets are not generated.\n Runit from Table app");
 					e1.printStackTrace();
 				}
 				
