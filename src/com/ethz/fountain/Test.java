@@ -46,7 +46,7 @@ public class Test {
 		
 		Fountain fountain = new Fountain(data, 10, seed);
 		
-		byte[] d = fountain.droplet().toByteArray_1();
+		byte[] d = fountain.droplet().toByteArray();
 		System.err.println( convertByteArrayToHexString(d));
 		if(true){
 			return;
