@@ -6,16 +6,11 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.security.InvalidAlgorithmParameterException;
-import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
 import java.util.Arrays;
 import java.util.Base64;
 import java.util.Random;
-
-import javax.crypto.NoSuchPaddingException;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -48,19 +43,10 @@ public class Test {
 		
 		byte[] d = fountain.droplet().toByteArray();
 		System.err.println( convertByteArrayToHexString(d));
-		if(true){
+		{
 			return;
 		}
 		/* END Testing Droplet.toByteArray() */
-		
-		
-		FileWriter logWriter = new FileWriter("ResultsTest.log", false);
-		File file = new File("C:\\Droplets");
-
-		System.out.println("Deleting droplets..");
-		if(file.exists())
-			for(File f : file.listFiles())
-				f.delete();
 		
 		//byte[] seed = new byte[10];
 		//Arrays.fill(seed, (byte) 0x00);
@@ -100,30 +86,6 @@ public class Test {
 
 
 		};*/
-
-		int[][] testvector = { 
-				{10000,100000}
-		};
-
-
-		//for(int i1 = 0; i1 < 1000; i1 ++)
-		//{
-			for(int i = 0; i < testvector.length; i++)
-			{
-				test(testvector[i][0], testvector[i][1], false, logWriter);
-
-				/*System.out.println("Deleting droplets..");
-			if(file.exists())
-				for(File f : file.listFiles())
-					f.delete();
-			System.out.println("deleted");*/
-
-			}	
-			//test(1000, 1000000, true, logWriter);
-	//	}
-		
-		//System.out.println(total/1000);
-		logWriter.close();
 
 	}
 
