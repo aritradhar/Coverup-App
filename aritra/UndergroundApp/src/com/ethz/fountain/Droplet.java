@@ -36,7 +36,7 @@ public class Droplet {
 		this.chunkNums = Util.randChunkNums(rand, this.num_chunks);	
 	}
 	
-	public byte[] toByteArray_1() {
+	public byte[] toByteArray() {
 		
 		byte[] seedLenBytes = ByteBuffer.allocate(Integer.BYTES).putInt(this.seed.length).array();
 		byte[] num_chunksBytes = ByteBuffer.allocate(Integer.BYTES).putInt(this.num_chunks).array();

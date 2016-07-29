@@ -415,12 +415,12 @@ public class AssembleFrame {
 						fw.close();
 						
 						FileOutputStream fw_bin = new FileOutputStream(dropletLocationSpecific_bin + ENV.DELIM + i  + ".bin");
-						fw_bin.write(fountain.droplet().toByteArray_1());
+						fw_bin.write(fountain.droplet().toByteArray());
 						fw_bin.close();
 					}
 					
 					JOptionPane.showMessageDialog(frame,
-						    "Droplets dumped in : " + dropletLocationSpecific + "and " + dropletLocationSpecific_bin,
+						    "Droplets dumped in : \n" + "JSON : "+dropletLocationSpecific + "\n BIN : " + dropletLocationSpecific_bin,
 						    "Droplets generated",
 						    JOptionPane.PLAIN_MESSAGE);
 				}
