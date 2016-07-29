@@ -1,5 +1,7 @@
 package com.ethz.app.binUtils;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
@@ -58,7 +60,7 @@ public class BinUtils {
 		return jObject.toString(2);
 	}
 	
-	public static String dropletBinToDropletJson(byte[] dropletBytes, byte[] serverPublicKey)
+	public static String dropletBinToDropletJson(byte[] dropletBytes, byte[] serverPublicKey, StringBuffer messageLog)
 	{
 		JSONObject jObject = new JSONObject();
 		
@@ -95,9 +97,9 @@ public class BinUtils {
 		
 		//bind droplet json
 		JSONObject dropletJson = new JSONObject();
-		jObject.put("seed", Base64.getUrlEncoder().encodeToString(seedBytes));
-		jObject.put("num_chunks", num_chunks);
-		jObject.put("data", Base64.getUrlEncoder().encodeToString(data));
+		dropletJson.put("seed", Base64.getUrlEncoder().encodeToString(seedBytes));
+		dropletJson.put("num_chunks", num_chunks);
+		dropletJson.put("data", Base64.getUrlEncoder().encodeToString(data));
 		
 		
 		byte[] urlLenBytes = new byte[Integer.BYTES];
@@ -162,7 +164,21 @@ public class BinUtils {
 		jObject.put("droplet", dropletJson.toString());
 		jObject.put("signature", signatureBase64);	
 		
+		
+		System.out.println(dropletJson.toString(2));
 		return jObject.toString(2);
+	}
+	
+	public static void main(String[] args) throws Exception {
+		
+		BufferedReader br = new BufferedReader(new FileReader("binResp.txt"));
+		String s = br.readLine();
+		br.close();
+		
+		String j = dropletBinToDropletJson(Base64.getDecoder().decode(s), Base64.getUrlDecoder().decode("90I1INgfeam-0JwxP2Vfgw9eSQGQjz3WxLO1wu1n8Cg="), new StringBuffer());
+		
+		System.out.println(j);
+		
 	}
 
 }
