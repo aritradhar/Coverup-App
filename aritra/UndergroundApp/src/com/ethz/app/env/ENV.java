@@ -17,6 +17,7 @@ public class ENV {
 	
 	public static final String APP_STORAGE_LOC = "APP_DATA";
 	public static final String APP_STORAGE_BROWSER_COMM_DROPLET_LOC = "DROPLET";
+	public static final String APP_STORAGE_BROWSER_COMM_DROPLET_BIN_LOC = "DROPLET_BIN";
 	
 	public static final String APP_STORAGE_COMPLETED_DROPLET_FILE = "info.txt";
 	public static final String APP_STORAGE_DROPLET_URL = "dropletUrl.txt";

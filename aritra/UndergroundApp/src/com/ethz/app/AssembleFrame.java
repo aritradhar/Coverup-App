@@ -8,6 +8,7 @@ import java.awt.event.ActionListener;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -380,14 +381,23 @@ public class AssembleFrame {
 			public void actionPerformed(ActionEvent e) 
 			{
 				String dropletLocation = ENV.APP_STORAGE_LOC + ENV.DELIM + ENV.APP_STORAGE_BROWSER_COMM_DROPLET_LOC;
+				String dropletLocation_bin = ENV.APP_STORAGE_LOC + ENV.DELIM + ENV.APP_STORAGE_BROWSER_COMM_DROPLET_BIN_LOC;
+				
 				if(!new File(dropletLocation).exists())
 					new File(dropletLocation).mkdir();
 				
+				if(!new File(dropletLocation_bin).exists())
+					new File(dropletLocation_bin).mkdir();
+				
 				
 				String dropletLocationSpecific = dropletLocation + ENV.DELIM + new File(JSONDirPath).getName();
+				String dropletLocationSpecific_bin = dropletLocation_bin + ENV.DELIM + new File(JSONDirPath).getName();
 				
 				if(!new File(dropletLocationSpecific).exists())
 					new File(dropletLocationSpecific).mkdir();
+				
+				if(!new File(dropletLocationSpecific_bin).exists())
+					new File(dropletLocationSpecific_bin).mkdir();
 				
 				String counterS = (String)JOptionPane.showInputDialog(frame, "Enter droplet count", "Droplet Generate", JOptionPane.PLAIN_MESSAGE, null, null, "50");
 				int dropletCounter = Integer.parseInt(counterS);
@@ -403,10 +413,14 @@ public class AssembleFrame {
 						FileWriter fw = new FileWriter(dropletLocationSpecific + ENV.DELIM + i  + ".json");
 						fw.write(fountain.droplet().toString());
 						fw.close();
+						
+						FileOutputStream fw_bin = new FileOutputStream(dropletLocationSpecific_bin + ENV.DELIM + i  + ".bin");
+						fw_bin.write(fountain.droplet().toByteArray_1());
+						fw_bin.close();
 					}
 					
 					JOptionPane.showMessageDialog(frame,
-						    "Droplets dumped in : " + dropletLocationSpecific,
+						    "Droplets dumped in : " + dropletLocationSpecific + "and " + dropletLocationSpecific_bin,
 						    "Droplets generated",
 						    JOptionPane.PLAIN_MESSAGE);
 				}
