@@ -268,9 +268,13 @@ public class TableVerify {
 			} 
 			
 			@Override
-		    public boolean isCellEditable(int row, int column) {
-		        return false;
-		    }
+			public boolean isCellEditable(int row, int column) {
+				if(column != 2)
+					return false;
+				else
+					return true;
+				
+			}
 
 		};
 		

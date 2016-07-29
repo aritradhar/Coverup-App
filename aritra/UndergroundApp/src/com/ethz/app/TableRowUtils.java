@@ -35,6 +35,7 @@ class ButtonRenderer extends JButton implements TableCellRenderer {
 
 	public ButtonRenderer() {
         setOpaque(true);
+        
     }
 
     @Override
