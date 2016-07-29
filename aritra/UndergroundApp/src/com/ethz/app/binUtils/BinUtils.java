@@ -10,6 +10,7 @@ import java.util.Base64;
 
 import org.json.JSONObject;
 import org.whispersystems.curve25519.Curve25519;
+import org.whispersystems.curve25519.java.Arrays;
 
 public class BinUtils {
 	
