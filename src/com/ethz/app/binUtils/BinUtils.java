@@ -32,13 +32,17 @@ public class BinUtils {
 		byte[] tableByte = new byte[tableLen];
 		System.arraycopy(tableBytes, fixedPacketSizeByte.length + tableLenBytes.length, tableByte, 0, tableLen);
 		
+		//System.out.println("HT : " + Base64.getUrlEncoder().encodeToString(tableByte));
+		
+		
 		byte[] signatureBytes = new byte[64];
 		System.arraycopy(tableBytes, fixedPacketSizeByte.length + tableLenBytes.length + tableLen, signatureBytes, 
 				0, signatureBytes.length);
 		try 
 		{
 			MessageDigest md = MessageDigest.getInstance("SHA-256");
-			byte[] hashtableBytes = md.digest(tableLenBytes);
+			byte[] hashtableBytes = md.digest(tableByte);
+			
 			boolean signatureVerify = Curve25519.getInstance("best").verifySignature(serverPublicKey, hashtableBytes, signatureBytes);
 			if(!signatureVerify)
 				return null;
