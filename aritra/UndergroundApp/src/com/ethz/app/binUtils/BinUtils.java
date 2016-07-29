@@ -165,7 +165,7 @@ public class BinUtils {
 		jObject.put("signature", signatureBase64);	
 		
 		
-		System.out.println(dropletJson.toString(2));
+		//System.out.println(dropletJson.toString(2));
 		return jObject.toString(2);
 	}
 	
@@ -175,7 +175,11 @@ public class BinUtils {
 		String s = br.readLine();
 		br.close();
 		
-		String j = dropletBinToDropletJson(Base64.getDecoder().decode(s), Base64.getUrlDecoder().decode("90I1INgfeam-0JwxP2Vfgw9eSQGQjz3WxLO1wu1n8Cg="), new StringBuffer());
+		//String j = dropletBinToDropletJson(Base64.getDecoder().decode(s), Base64.getUrlDecoder().decode("90I1INgfeam-0JwxP2Vfgw9eSQGQjz3WxLO1wu1n8Cg="), new StringBuffer());
+		
+		//System.out.println(j);
+		
+		String j = tableBinToTableJson(Base64.getDecoder().decode(s), Base64.getUrlDecoder().decode("90I1INgfeam-0JwxP2Vfgw9eSQGQjz3WxLO1wu1n8Cg="));
 		
 		System.out.println(j);
 		
