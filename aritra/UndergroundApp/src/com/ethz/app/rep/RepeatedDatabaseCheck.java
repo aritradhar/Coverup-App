@@ -163,6 +163,8 @@ public class RepeatedDatabaseCheck {
 			this.messaage.append("\n----------------/----------------\n");
 		count++;
 
+
+
 	}
 
 	private void doDataBaseCheck(JSONObject jObject) throws IOException
@@ -273,12 +275,13 @@ public class RepeatedDatabaseCheck {
 			try
 			{
 				jObject = new JSONObject(row[0]);
+				doDataBaseCheck(jObject);
 			}
 			catch(JSONException ex)
 			{
-
+				this.doDataBaseCheckBin(row[0]);
 			}
-			doDataBaseCheck(jObject);
+			
 		}
 	}
 
