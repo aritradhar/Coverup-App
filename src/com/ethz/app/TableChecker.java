@@ -96,10 +96,24 @@ public class TableChecker
 		
 		for(String[] row : this.multipleProviderRows)
 		{
-			JSONObject jObject = new JSONObject(row[0]);
-
-			this.tableJson = jObject.getString("table");
-			this.signature = jObject.getString("signature");
+			JSONObject jObject_local = null;
+			
+			try
+			{
+				jObject_local = new JSONObject(row[0]);
+			}
+			catch(JSONException ex)
+			{
+				//handle as binary
+				String binTableConvertedJson = BinUtils.tableBinToTableJson(
+						Base64.getDecoder().decode(ffce.jsonData), 
+						RepeatedDatabaseCheck.ServerPublickey);
+				
+				if(binTableConvertedJson != null)
+					jObject_local = new JSONObject(binTableConvertedJson);
+			}
+			this.tableJson = jObject_local.getString("table");
+			this.signature = jObject_local.getString("signature");
 			SOURCE_KEY_TABLE_SIGNATURE_MAP.put(row[1], new String[]{this.tableJson, this.signature});
 			this.setMapFromtableJSONMultipleProvider(new JSONObject(this.tableJson), row[1]);
 		}

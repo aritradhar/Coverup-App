@@ -236,7 +236,8 @@ public class AssembleFrame {
 									
 									//textArea.setText(Base64.getUrlEncoder().encodeToString(decodedData));
 									textArea.setText(new String(decodedData));
-									progressBar.setValue(100);
+									progressBar.setValue(100);						
+									
 									glassDone = true;
 									
 									//put this information in APP_STORAGE_LOC
@@ -250,6 +251,8 @@ public class AssembleFrame {
 											fountainUrl = stTemp;
 										}
 										brUrl.close();
+										
+										ValRow.progress_map.put(fountainUrl, 100);
 
 										FileWriter compl_fw = new FileWriter(ENV.APP_STORAGE_LOC + ENV.DELIM + ENV.APP_STORAGE_COMPLETED_DROPLET_FILE, true);
 										compl_fw.append(fountainUrl + "\n");
