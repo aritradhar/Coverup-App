@@ -20,35 +20,35 @@ import com.ethz.app.binUtils.BinUtils;
 import com.ethz.app.env.ENV;
 
 public class RepeatedDatabaseCheck {
-	
+
 	public static long count = 0;
-	
+
 	public static byte[] ServerPublickey;
 	StringBuffer messaage;
-	
+
 	public static String changedDBLoc = "";
 	public String modifiedDatabaseLocation;
-	
-	
+
+
 	public RepeatedDatabaseCheck(String modifiedDatabaseLocation) throws Exception 
 	{
 		this.modifiedDatabaseLocation = modifiedDatabaseLocation;
 		System.out.println("Run");
-		
+
 		this.messaage = new StringBuffer();
 		this.doTableCheck();
-		
+
 		if(ENV.EXPERIMENTAL)
 			doDataBaseCheck();
 		else
 			doDataBaseCheckMultipleProvider();
 	}
-	
-	
+
+
 	private void doTableCheck() throws SQLException
 	{
 		TableChecker tabCheck = new TableChecker();
-		
+
 		try
 		{	
 			if(!ENV.EXPERIMENTAL)
@@ -66,7 +66,7 @@ public class RepeatedDatabaseCheck {
 		FirefoxCacheExtract ffce = new FirefoxCacheExtract();
 		ffce.getFirefoxCacheFile(this.modifiedDatabaseLocation);
 		String jsonData = ffce.conncetDatabase(ENV.DATABASE_DROPLET_COL, this.modifiedDatabaseLocation);
-		
+
 		try
 		{
 			JSONObject jObject = new JSONObject(jsonData);
@@ -77,149 +77,61 @@ public class RepeatedDatabaseCheck {
 		{
 			doDataBaseCheckBin(jsonData);
 		}
-		
+
 	}
-	
+
 	private void doDataBaseCheckBin(String jsonData) throws IOException
 	{
-		String jsonBinData = BinUtils.dropletBinToDropletJson(Base64.getDecoder().decode(jsonData), RepeatedDatabaseCheck.ServerPublickey, this.messaage);
-		if(jsonBinData != null)
+		String jsonBinData = null;
+		try
 		{
-			JSONObject jObject = new JSONObject(jsonBinData);
-			
-			String droplet = jObject.getString("droplet");
-			String dropletUrl = jObject.getString("url");
-			
-			JSONObject tableJSONData = TableChecker.URL_JSON_TABLE_MAP.get(dropletUrl);
-			String dropletLocation =  tableJSONData.get("dropletLoc").toString();
-			
-			this.messaage.append("\ndroplet location : ").append(dropletLocation);
-			
-			String dropletStr = droplet.concat(dropletUrl);
-			byte[] dropletByte = dropletStr.getBytes(StandardCharsets.UTF_8);
-			
-			byte[] hashtableBytes = null;
-			try 
-			{		
-				MessageDigest md = MessageDigest.getInstance("SHA-256");
-				hashtableBytes = md.digest(dropletByte);
-			}
-			catch(NoSuchAlgorithmException ex)
-			{
-				ex.printStackTrace();
-			}
-			
-			
-			String fileName = ENV.APP_STORAGE_LOC + ENV.DELIM + dropletLocation + ENV.DELIM + Base64.getUrlEncoder().encodeToString(hashtableBytes).concat(".txt");
-			String dropletUrlFileName =  ENV.APP_STORAGE_LOC + ENV.DELIM + dropletLocation + ENV.DELIM + ENV.APP_STORAGE_DROPLET_URL;
-			
-			if(!new File(ENV.APP_STORAGE_LOC + ENV.DELIM + dropletLocation).exists())
-			{
-				new File(ENV.APP_STORAGE_LOC + ENV.DELIM + dropletLocation).mkdir();
-			}
-			
-			File file = new File(fileName);
-			File dropletUrlFile = new File(dropletUrlFileName);
-			
-			if(!file.exists())
-			{
-				FileWriter fw = new FileWriter(fileName);
-				fw.write(droplet);
-				this.messaage.append("\n Droplet dumped in local storage");
-				this.messaage.append("\n Droplet id : " + Base64.getUrlEncoder().encodeToString(hashtableBytes));
-				fw.close();
-			}
-			else
-			{
-				this.messaage.append("\n Droplet id : " + Base64.getUrlEncoder().encodeToString(hashtableBytes));
-				this.messaage.append("\n Droplet exists in loal Storage. Skipped...");
-			}
-			
-			if(!dropletUrlFile.exists())
-			{
-				FileWriter fwUrl = new FileWriter(dropletUrlFile);
-				fwUrl.append(dropletUrl);
-				fwUrl.close();
-			}
-			
-			if(count % 4 == 0)
-				this.messaage.append("\n---------------------------------\n");
-			if(count % 4 == 1)
-				this.messaage.append("\n----------------\\----------------\n");
-			if(count % 4 == 2)
-				this.messaage.append("\n----------------|-----------------\n");
-			if(count % 4 == 3)
-				this.messaage.append("\n----------------/----------------\n");
-			count++;
-			
-			
+			jsonBinData = BinUtils.dropletBinToDropletJson
+					(Base64.getDecoder().decode(jsonData), 
+							RepeatedDatabaseCheck.ServerPublickey, this.messaage);
 		}
-	}
-	
-	private void doDataBaseCheck(JSONObject jObject) throws IOException
-	{
-		/*FirefoxCacheExtract ffce = new FirefoxCacheExtract();
-		ffce.getFirefoxCacheFile(this.modifiedDatabaseLocation);
-		String jsonData = ffce.conncetDatabase(ENV.DATABASE_DROPLET, this.modifiedDatabaseLocation);
-		
-		JSONObject jObject = new JSONObject(jsonData);*/
-		
-		//System.err.println(jObject.toString(2));
-		
+		catch(RuntimeException ex)
+		{
+			this.messaage.append(ex.getMessage());
+			return;
+		}
+
+
+		JSONObject jObject = new JSONObject(jsonBinData);
+
 		String droplet = jObject.getString("droplet");
 		String dropletUrl = jObject.getString("url");
-		
-		String dropletStr = droplet.concat(dropletUrl);
-		
-		byte[] dropletByte = dropletStr.getBytes(StandardCharsets.UTF_8);
-		String signatureString = jObject.getString("signature");
-		byte[] signatureBytes = Base64.getUrlDecoder().decode(signatureString);
-		
-		this.messaage.append("Droplet length : ").append(dropletByte.length);
-		
-		byte[] hashtableBytes = null;
-		try 
-		{
-			
-			MessageDigest md = MessageDigest.getInstance("SHA-256");
-			hashtableBytes = md.digest(dropletByte);
-			
-			//System.out.println("hash " + Base64.getUrlEncoder().encodeToString(hashtableBytes));
-			
-			boolean check = Curve25519.getInstance("best").verifySignature(RepeatedDatabaseCheck.ServerPublickey, hashtableBytes, signatureBytes);
-			
-			if(!check)
-			{
-				this.messaage.append("\nSignature verification failed");
-				throw new RuntimeException("Signature verification failed");
-			}
-			else
-			{
-				this.messaage.append("\nSignature verification success");
-			}
-		} 
-		
-		catch (NoSuchAlgorithmException e) 
-		{
-			e.printStackTrace();
-		}
-		
+
 		JSONObject tableJSONData = TableChecker.URL_JSON_TABLE_MAP.get(dropletUrl);
 		String dropletLocation =  tableJSONData.get("dropletLoc").toString();
-		
+
 		this.messaage.append("\ndroplet location : ").append(dropletLocation);
-		
+
+		String dropletStr = droplet.concat(dropletUrl);
+		byte[] dropletByte = dropletStr.getBytes(StandardCharsets.UTF_8);
+
+		byte[] hashtableBytes = null;
+		try 
+		{		
+			MessageDigest md = MessageDigest.getInstance("SHA-256");
+			hashtableBytes = md.digest(dropletByte);
+		}
+		catch(NoSuchAlgorithmException ex)
+		{
+			ex.printStackTrace();
+		}
+
+
 		String fileName = ENV.APP_STORAGE_LOC + ENV.DELIM + dropletLocation + ENV.DELIM + Base64.getUrlEncoder().encodeToString(hashtableBytes).concat(".txt");
 		String dropletUrlFileName =  ENV.APP_STORAGE_LOC + ENV.DELIM + dropletLocation + ENV.DELIM + ENV.APP_STORAGE_DROPLET_URL;
-		
+
 		if(!new File(ENV.APP_STORAGE_LOC + ENV.DELIM + dropletLocation).exists())
 		{
 			new File(ENV.APP_STORAGE_LOC + ENV.DELIM + dropletLocation).mkdir();
 		}
-		
+
 		File file = new File(fileName);
 		File dropletUrlFile = new File(dropletUrlFileName);
-		
+
 		if(!file.exists())
 		{
 			FileWriter fw = new FileWriter(fileName);
@@ -233,14 +145,111 @@ public class RepeatedDatabaseCheck {
 			this.messaage.append("\n Droplet id : " + Base64.getUrlEncoder().encodeToString(hashtableBytes));
 			this.messaage.append("\n Droplet exists in loal Storage. Skipped...");
 		}
-		
+
 		if(!dropletUrlFile.exists())
 		{
 			FileWriter fwUrl = new FileWriter(dropletUrlFile);
 			fwUrl.append(dropletUrl);
 			fwUrl.close();
 		}
-		
+
+		if(count % 4 == 0)
+			this.messaage.append("\n---------------------------------\n");
+		if(count % 4 == 1)
+			this.messaage.append("\n----------------\\----------------\n");
+		if(count % 4 == 2)
+			this.messaage.append("\n----------------|-----------------\n");
+		if(count % 4 == 3)
+			this.messaage.append("\n----------------/----------------\n");
+		count++;
+
+	}
+
+	private void doDataBaseCheck(JSONObject jObject) throws IOException
+	{
+		/*FirefoxCacheExtract ffce = new FirefoxCacheExtract();
+		ffce.getFirefoxCacheFile(this.modifiedDatabaseLocation);
+		String jsonData = ffce.conncetDatabase(ENV.DATABASE_DROPLET, this.modifiedDatabaseLocation);
+
+		JSONObject jObject = new JSONObject(jsonData);*/
+
+		//System.err.println(jObject.toString(2));
+
+		String droplet = jObject.getString("droplet");
+		String dropletUrl = jObject.getString("url");
+
+		String dropletStr = droplet.concat(dropletUrl);
+
+		byte[] dropletByte = dropletStr.getBytes(StandardCharsets.UTF_8);
+		String signatureString = jObject.getString("signature");
+		byte[] signatureBytes = Base64.getUrlDecoder().decode(signatureString);
+
+		this.messaage.append("Droplet length : ").append(dropletByte.length);
+
+		byte[] hashtableBytes = null;
+		try 
+		{
+
+			MessageDigest md = MessageDigest.getInstance("SHA-256");
+			hashtableBytes = md.digest(dropletByte);
+
+			//System.out.println("hash " + Base64.getUrlEncoder().encodeToString(hashtableBytes));
+
+			boolean check = Curve25519.getInstance("best").verifySignature(RepeatedDatabaseCheck.ServerPublickey, hashtableBytes, signatureBytes);
+
+			if(!check)
+			{
+				this.messaage.append("\nSignature verification failed");
+				throw new RuntimeException("Signature verification failed");
+			}
+			else
+			{
+				this.messaage.append("\nSignature verification success");
+			}
+		} 
+
+		catch (NoSuchAlgorithmException e) 
+		{
+			e.printStackTrace();
+		}
+
+		JSONObject tableJSONData = TableChecker.URL_JSON_TABLE_MAP.get(dropletUrl);
+		String dropletLocation =  tableJSONData.get("dropletLoc").toString();
+
+		this.messaage.append("\ndroplet location : ").append(dropletLocation);
+
+		String fileName = ENV.APP_STORAGE_LOC + ENV.DELIM + dropletLocation + ENV.DELIM + Base64.getUrlEncoder().encodeToString(hashtableBytes).concat(".txt");
+		String dropletUrlFileName =  ENV.APP_STORAGE_LOC + ENV.DELIM + dropletLocation + ENV.DELIM + ENV.APP_STORAGE_DROPLET_URL;
+
+		if(!new File(ENV.APP_STORAGE_LOC + ENV.DELIM + dropletLocation).exists())
+		{
+			new File(ENV.APP_STORAGE_LOC + ENV.DELIM + dropletLocation).mkdir();
+		}
+
+		File file = new File(fileName);
+		File dropletUrlFile = new File(dropletUrlFileName);
+
+		if(!file.exists())
+		{
+			FileWriter fw = new FileWriter(fileName);
+			fw.write(droplet);
+			this.messaage.append("\n Droplet dumped in local storage");
+			this.messaage.append("\n Droplet id : " + Base64.getUrlEncoder().encodeToString(hashtableBytes));
+			fw.close();
+		}
+		else
+		{
+			this.messaage.append("\n Droplet id : " + Base64.getUrlEncoder().encodeToString(hashtableBytes));
+			this.messaage.append("\n Droplet exists in loal Storage. Skipped...");
+		}
+
+		if(!dropletUrlFile.exists())
+		{
+			FileWriter fwUrl = new FileWriter(dropletUrlFile);
+			fwUrl.append(dropletUrl);
+			fwUrl.close();
+		}
+
 		if(count % 4 == 0)
 			this.messaage.append("\n---------------------------------\n");
 		if(count % 4 == 1)
@@ -251,19 +260,27 @@ public class RepeatedDatabaseCheck {
 			this.messaage.append("\n----------------/----------------\n");
 		count++;
 	}
-	
+
 	private void doDataBaseCheckMultipleProvider() throws SQLException, IOException
 	{
 		FirefoxCacheExtract ffce = new FirefoxCacheExtract();
 		ffce.getFirefoxCacheFile(this.modifiedDatabaseLocation);
 		List<String[]> rows = ffce.conncetDatabaseMultipleProvider(ENV.DATABASE_DROPLET_COL, this.modifiedDatabaseLocation);
-		
+
 		for(String[] row : rows)
 		{
-			JSONObject jObject = new JSONObject(row[0]);
+			JSONObject jObject = null;
+			try
+			{
+				jObject = new JSONObject(row[0]);
+			}
+			catch(JSONException ex)
+			{
+
+			}
 			doDataBaseCheck(jObject);
 		}
 	}
-	
-	
+
+
 }

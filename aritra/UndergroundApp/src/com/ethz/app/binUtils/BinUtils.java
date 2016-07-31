@@ -15,7 +15,7 @@ import org.whispersystems.curve25519.java.Arrays;
 public class BinUtils {
 	
 	
-	public static String tableBinToTableJson(byte[] tableBytes, byte[] serverPublicKey)
+	public static String tableBinToTableJson(byte[] tableBytes, byte[] serverPublicKey) throws RuntimeException
 	{
 		/*
 		 * P = fixed packet size
@@ -51,8 +51,7 @@ public class BinUtils {
 
 		catch (NoSuchAlgorithmException e) 
 		{
-			e.printStackTrace();
-			return null;
+			throw new RuntimeException("SHA-256 provider not found");
 		}
 		
 		String tableStr = new String(tableBytes, StandardCharsets.UTF_8);
@@ -66,6 +65,7 @@ public class BinUtils {
 	}
 	
 	public static String dropletBinToDropletJson(byte[] dropletBytes, byte[] serverPublicKey, StringBuffer messageLog)
+	throws RuntimeException
 	{
 		JSONObject jObject = new JSONObject();
 		
@@ -153,15 +153,15 @@ public class BinUtils {
 			boolean verifiyResult =  Curve25519.getInstance("best").verifySignature(serverPublicKey, hashDataToSign, signature);
 			
 			if(!verifiyResult)
-				return null;
+				throw new RuntimeException("Droplet Signbature not verified");
+				
 			
 			signatureBase64 = Base64.getUrlEncoder().encodeToString(signature);
 		} 
 
 		catch (NoSuchAlgorithmException e) 
 		{
-			e.printStackTrace();
-			return null;
+			throw new RuntimeException("SHA-256 provider missing");
 		}
 		
 		jObject.put("url", url);
@@ -180,13 +180,13 @@ public class BinUtils {
 		String s = br.readLine();
 		br.close();
 		
-		//String j = dropletBinToDropletJson(Base64.getDecoder().decode(s), Base64.getUrlDecoder().decode("90I1INgfeam-0JwxP2Vfgw9eSQGQjz3WxLO1wu1n8Cg="), new StringBuffer());
-		
-		//System.out.println(j);
-		
-		String j = tableBinToTableJson(Base64.getDecoder().decode(s), Base64.getUrlDecoder().decode("90I1INgfeam-0JwxP2Vfgw9eSQGQjz3WxLO1wu1n8Cg="));
+		String j = dropletBinToDropletJson(Base64.getDecoder().decode(s), Base64.getUrlDecoder().decode("90I1INgfeam-0JwxP2Vfgw9eSQGQjz3WxLO1wu1n8Cg="), new StringBuffer());
 		
 		System.out.println(j);
+		
+		//String j = tableBinToTableJson(Base64.getDecoder().decode(s), Base64.getUrlDecoder().decode("90I1INgfeam-0JwxP2Vfgw9eSQGQjz3WxLO1wu1n8Cg="));
+		
+		//System.out.println(j);
 		
 	}
 

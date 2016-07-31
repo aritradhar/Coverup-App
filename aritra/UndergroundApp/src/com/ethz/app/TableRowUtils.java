@@ -121,6 +121,7 @@ class ButtonEditor extends DefaultCellEditor {
 			//JOptionPane.showMessageDialog(button, "Database insert success!!");
         	
         	//call the assemble window from here
+        	
         	EventQueue.invokeLater(new Runnable() {
 				public void run() {
 					//table.getColumn("Progress").setCellRenderer(new ProgressCellRender());
@@ -134,10 +135,8 @@ class ButtonEditor extends DefaultCellEditor {
 						AssembleFrame window = new AssembleFrame(urlString);
 						window.setSeed(seedStr);
 						window.frame.setVisible(true);
-						//look for the cell renderer in the next col
-						ProgressCellRender_1 pcr = (ProgressCellRender_1) table.getCellRenderer(row, column + 1);
-						pcr.setValue(100);
-						table.getModel().setValueAt(new ProgressCellRender_1(), row, column + 1);
+							
+						
 						//table.getColumn("Progress").setCellRenderer(new ProgressCellRender_1(65, row, column + 1));
 						
 					} 
@@ -148,7 +147,7 @@ class ButtonEditor extends DefaultCellEditor {
 				}
 			});
         	
-        	
+        	table.getModel().setValueAt(ValRow.progress_map.get(urlString), row, column + 1);
         	
         }
         isPushed = false;
@@ -169,25 +168,13 @@ class ButtonEditor extends DefaultCellEditor {
     }
 }
 
+class ValRow
+{
+	public static volatile Map<String, Integer> progress_map = new HashMap<>();
+}
+
 class ProgressCellRender_1 extends JProgressBar implements TableCellRenderer {
 
-	 int progress;
-	 int row, col;
-	 JTable table;
-	 
-	 
-	 public ProgressCellRender_1()
-	 {
-		 this.progress = 0;
-	 }
-	 
-	 public ProgressCellRender_1(int value, int row, int col)
-	 {
-		 this.progress = value;
-		 this.row = row;
-		 this.col = col;
-	 }
-	
     /**
 	 * 
 	 */
@@ -196,26 +183,19 @@ class ProgressCellRender_1 extends JProgressBar implements TableCellRenderer {
 	@Override
     public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
         
-		this.table = table;
-		int _progress = this.progress;
+		int progress = 0;
 		
-		if(this.row == row && this.col == column)
-		{
-			setStringPainted(true);
-	        setValue(this.progress);
-	        return this;
-		}
-		
-        if (value instanceof Float) {
-            this.progress = Math.round(((Float) value) * 100f);
-        } else if (value instanceof Integer) {
-        	this.progress = (int) value;
+        if (value instanceof Float)
+        {
+            progress = Math.round(((Float) value) * 100f);
+        } 
+        else if (value instanceof Integer) 
+        {
+        	progress = (int) value;
         }
         
-        progress = _progress;
-        
         setStringPainted(true);
-        setValue(this.progress);
+        setValue(progress);
         return this;
     }
 }
