@@ -423,14 +423,15 @@ public class AssembleFrame {
 					
 					for(int i = 0; i < dropletCounter; i++)
 					{
+						Droplet generatedDroplet = fountain.droplet();
 						FileWriter fw = new FileWriter(dropletLocationSpecific + ENV.DELIM + i  + ".json");
-						fw.write(fountain.droplet().toString());
+						fw.write(generatedDroplet.toString());
 						fw.close();
 						
 						FileOutputStream fw_bin = new FileOutputStream(dropletLocationSpecific_bin + ENV.DELIM + i  + ".bin");
-						byte[] ba = fountain.droplet().toByteArray();
+						byte[] ba = generatedDroplet.toByteArray();
 						fw_bin.write(ba);
-						System.out.println(ba.length);
+						//System.out.println(ba.length);
 						fw_bin.close();
 					}
 					
