@@ -428,7 +428,9 @@ public class AssembleFrame {
 						fw.close();
 						
 						FileOutputStream fw_bin = new FileOutputStream(dropletLocationSpecific_bin + ENV.DELIM + i  + ".bin");
-						fw_bin.write(fountain.droplet().toByteArray());
+						byte[] ba = fountain.droplet().toByteArray();
+						fw_bin.write(ba);
+						System.out.println(ba.length);
 						fw_bin.close();
 					}
 					

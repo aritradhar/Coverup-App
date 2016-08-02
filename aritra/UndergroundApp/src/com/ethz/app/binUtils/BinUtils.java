@@ -182,6 +182,7 @@ public class BinUtils {
 		byte[] b = Files.readAllBytes(new File("C:\\Users\\Aritra\\workspace_Mars\\UndergroundApp\\APP_DATA\\DROPLET_BIN\\134211151\\5.bin").toPath());
 		System.out.println(b.length);
 		
+		
 		BufferedReader br = new BufferedReader(new FileReader("binResp.txt"));
 		String s = br.readLine();
 		br.close();
