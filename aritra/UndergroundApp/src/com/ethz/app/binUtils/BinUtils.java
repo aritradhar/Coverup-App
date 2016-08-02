@@ -1,9 +1,11 @@
 package com.ethz.app.binUtils;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileReader;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Base64;
@@ -174,7 +176,11 @@ public class BinUtils {
 		return jObject.toString(2);
 	}
 	
+	//test
 	public static void main(String[] args) throws Exception {
+		
+		byte[] b = Files.readAllBytes(new File("C:\\Users\\Aritra\\workspace_Mars\\UndergroundApp\\APP_DATA\\DROPLET_BIN\\134211151\\5.bin").toPath());
+		System.out.println(b.length);
 		
 		BufferedReader br = new BufferedReader(new FileReader("binResp.txt"));
 		String s = br.readLine();
