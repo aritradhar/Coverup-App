@@ -197,7 +197,7 @@ public class AssembleFrameUtils {
 	
 	
 	
-	public static void assembleDroplets_NonFrame(String JSONDirPath, byte[] decodedData_out) throws RuntimeException
+	public static int assembleDroplets_NonFrame(String JSONDirPath, byte[] decodedData_out) throws RuntimeException
 	{
 		if(JSONDirPath == null)
 			throw new RuntimeException("Path null");
@@ -225,9 +225,7 @@ public class AssembleFrameUtils {
 						while((st = br.readLine()) != null)
 							stb.append(st);
 
-						JSONObject jObject = new JSONObject(stb.toString());
-
-						
+						JSONObject jObject = new JSONObject(stb.toString());				
 						Droplet d = new Droplet(Base64.getUrlDecoder().decode(jObject.get("data").toString()), Base64.getUrlDecoder().decode(jObject.get("seed").toString()), jObject.getInt("num_chunks"));
 						
 						//initialize glass only once
@@ -277,8 +275,8 @@ public class AssembleFrameUtils {
 							{
 								throw new RuntimeException("Exception happened while assembling droplets");
 							}
-
-							break;
+							
+							return 100;
 						}	
 
 						//JOptionPane.showMessageDialog(frame, "Assemble success!!!");
@@ -303,19 +301,27 @@ public class AssembleFrameUtils {
 						}
 					}
 				}
+				int completed = 0, s_size = 0;
+				boolean flag = false;
 				if(!glass.isDone())
 				{
 					byte[][] partialChunks = Glass.chunks;
-					StringBuffer stb = new StringBuffer();	
 					
 					for(byte b[] : partialChunks)
 					{
 						//total += b.length;
-						if(b == null)							
-							stb.append("<_______missing chunk______>");				
-						else				
-							stb.append(new String(b));
+						if(b != null)
+						{
+							flag = true;
+							s_size = b.length;
+							completed += b.length;
+						}
 					}
+					
+					if(flag)
+						return (100 * completed)/(s_size * partialChunks.length);
+					else
+						return 0;
 				}
 				
 			}
@@ -329,6 +335,7 @@ public class AssembleFrameUtils {
 			}
 
 		}
+		return 0;
 	
 	}
 
