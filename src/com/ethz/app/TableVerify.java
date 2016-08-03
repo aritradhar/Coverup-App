@@ -82,14 +82,14 @@ public class TableVerify {
 	 * @throws NoSuchAlgorithmException 
 	 * @throws SQLException 
 	 */
-	@SuppressWarnings("static-access")
+	//@SuppressWarnings("static-access")
 	public TableVerify() throws NoSuchAlgorithmException, SQLException {
 
-		this.tableChecker = new TableChecker();
+		TableVerify.tableChecker = new TableChecker();
 
 		try
 		{
-			tableChecker.loadtableData();
+			TableVerify.tableChecker.loadtableData();
 		}
 		catch(Exception ex)
 		{
@@ -104,7 +104,7 @@ public class TableVerify {
 			if (chooser.showOpenDialog(frame) == JFileChooser.APPROVE_OPTION) 
 			{ 		
 				String path = chooser.getSelectedFile().getAbsolutePath();
-				tableChecker.loadtableData(path);
+				TableVerify.tableChecker.loadtableData(path);
 			}
 		}	
 
@@ -233,7 +233,7 @@ public class TableVerify {
 				{
 					try
 					{
-						tableChecker.setPK(pkText);
+						TableVerify.tableChecker.setPK(pkText);
 						lblNewLabel.setText("PK set : " + Base64.getUrlEncoder().encodeToString(tableChecker.ServerpublicKey));
 					}
 					catch(Exception ex)
@@ -290,7 +290,7 @@ public class TableVerify {
 
 		table.setVisible(false);
 
-		if(tableChecker == null)
+		if(TableVerify.tableChecker == null)
 		{
 			System.err.println("NULL app");
 		}
@@ -366,9 +366,9 @@ public class TableVerify {
 					if(!ENV.EXPERIMENTAL)
 					{
 						if(modifiedCacheLocation == null)
-							tableChecker.loadtableData();
+							TableVerify.tableChecker.loadtableData();
 						else
-							tableChecker.loadtableData(modifiedCacheLocation);
+							TableVerify.tableChecker.loadtableData(modifiedCacheLocation);
 					}
 					else
 					{

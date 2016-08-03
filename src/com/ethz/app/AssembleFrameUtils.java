@@ -76,8 +76,8 @@ public class AssembleFrameUtils {
 
 							byte[] decodedData = glass.getDecodedData();
 							
-							decodedData_out = new byte[decodedData.length];
-							System.arraycopy(decodedData, 0, decodedData_out, 0, decodedData.length);
+							//copy only the non padded data
+							System.arraycopy(decodedData, 0, decodedData_out, 0, decodedData_out.length);
 							
 							JOptionPane.showMessageDialog(frame, "Decoding success\nDroplet utilized : " + counter + ", Total Droplets : " + files.length);
 							
@@ -191,6 +191,142 @@ public class AssembleFrameUtils {
 				JOptionPane.showMessageDialog(frame, "Bad input!!");
 			}
 
+		}
+	
+	}
+	
+	
+	
+	public static void assembleDroplets_NonFrame(String JSONDirPath, byte[] decodedData_out) throws RuntimeException
+	{
+		if(JSONDirPath == null)
+			throw new RuntimeException("Path null");
+
+		else
+		{	
+			File[] files =  new File(AssembleFrame.JSONDirPath).listFiles();		
+			Glass glass = null;
+			try
+			{
+				for(File file : files)
+				{
+					
+					if(file.getName().contains(ENV.APP_STORAGE_DROPLET_URL) || file.getName().contains(ENV.APP_STORAGE_COMPLETE_DATA))
+						continue;
+					
+					//System.out.println(file.getAbsoluteFile());
+					BufferedReader br = null;
+					try 
+					{
+						br = new BufferedReader(new FileReader(file.getAbsoluteFile()));
+						StringBuffer stb = new StringBuffer();
+						String st = "";
+
+						while((st = br.readLine()) != null)
+							stb.append(st);
+
+						JSONObject jObject = new JSONObject(stb.toString());
+
+						
+						Droplet d = new Droplet(Base64.getUrlDecoder().decode(jObject.get("data").toString()), Base64.getUrlDecoder().decode(jObject.get("seed").toString()), jObject.getInt("num_chunks"));
+						
+						//initialize glass only once
+						if(glass == null)
+							glass = new Glass(jObject.getInt("num_chunks"));
+						
+						glass.addDroplet(d);
+						if(glass.isDone())
+						{	
+							byte[] decodedData = glass.getDecodedData();
+							
+							//copy only the non padded data
+							System.arraycopy(decodedData, 0, decodedData_out, 0, decodedData_out.length);
+							
+							//JOptionPane.showMessageDialog(frame, "Decoding success\nDroplet utilized : " + counter + ", Total Droplets : " + files.length);				
+							
+							AssembleFrame.glassDone = true;
+							
+							//put this information in APP_STORAGE_LOC
+							try
+							{
+								String dropletUrlFileName =  AssembleFrame.JSONDirPath + ENV.DELIM + ENV.APP_STORAGE_DROPLET_URL;
+								BufferedReader brUrl = new BufferedReader(new FileReader(dropletUrlFileName));
+								String stTemp = null, fountainUrl = null;
+								while((stTemp = brUrl.readLine()) != null)
+								{
+									fountainUrl = stTemp;
+								}
+								brUrl.close();
+								
+								ValRow.progress_map.put(fountainUrl, 100);
+
+								FileWriter compl_fw = new FileWriter(ENV.APP_STORAGE_LOC + ENV.DELIM + ENV.APP_STORAGE_COMPLETED_DROPLET_FILE, true);
+								compl_fw.append(fountainUrl + "\n");
+								compl_fw.close();
+
+								File completeDataFile = new File(AssembleFrame.JSONDirPath + ENV.DELIM + ENV.APP_STORAGE_COMPLETE_DATA);
+
+								if(!completeDataFile.exists())
+								{
+									FileWriter data_fw = new FileWriter(AssembleFrame.JSONDirPath + ENV.DELIM + ENV.APP_STORAGE_COMPLETE_DATA);
+									data_fw.append(new String(decodedData));
+									data_fw.close();
+								}
+							}
+							catch(Exception ex)
+							{
+								throw new RuntimeException("Exception happened while assembling droplets");
+							}
+
+							break;
+						}	
+
+						//JOptionPane.showMessageDialog(frame, "Assemble success!!!");
+					} 
+					catch (FileNotFoundException e1) 
+					{
+						e1.printStackTrace();
+					} 
+					catch (IOException e1) 
+					{
+						e1.printStackTrace();
+					}
+					finally 
+					{
+						try {
+
+							br.close();
+						} 
+						catch (IOException e1) 
+						{
+							e1.printStackTrace();
+						}
+					}
+				}
+				if(!glass.isDone())
+				{
+					byte[][] partialChunks = Glass.chunks;
+					StringBuffer stb = new StringBuffer();	
+					
+					for(byte b[] : partialChunks)
+					{
+						//total += b.length;
+						if(b == null)							
+							stb.append("<_______missing chunk______>");				
+						else				
+							stb.append(new String(b));
+					}
+				}
+				
+			}
+			catch(NullPointerException ex)
+			{
+				ex.printStackTrace();
+			}
+			catch(Exception ex)
+			{
+				ex.printStackTrace();
+			}
 
 		}
 	

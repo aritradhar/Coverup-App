@@ -46,9 +46,10 @@ public class AssembleFrame {
 	public byte[] fountainSeed;
 	public JProgressBar progressBar; 
 	public byte[] decodedData;
-	
+	public int dataLength;
 	public static boolean glassDone = false;
 	
+	public byte[] decodedDataWOPadding;
 	/**
 	 * Launch the application.
 	 * @throws UnsupportedLookAndFeelException 
@@ -96,9 +97,12 @@ public class AssembleFrame {
 		this.fountainSeed = Base64.getUrlDecoder().decode(seedStr);
 	}
 	
-	public AssembleFrame(String urlString) {
+	public AssembleFrame(String urlString, int dataLength) 
+	{
 		this.urlString = urlString;
+		this.dataLength = dataLength;
 		
+		this.decodedDataWOPadding = new byte[dataLength];
 		JSONObject jObject = TableChecker.URL_JSON_TABLE_MAP.get(urlString);
 		String dropletDirID = jObject.getString("dropletLoc");
 		JSONDirPath = ENV.APP_STORAGE_LOC + ENV.DELIM + dropletDirID;
@@ -179,12 +183,11 @@ public class AssembleFrame {
 		{
 			public void actionPerformed(ActionEvent e) 
 			{
-				AssembleFrameUtils.assembleDroplets(JSONDirPath, frame, decodedData, textArea, progressBar, btnNewButton);
+				AssembleFrameUtils.assembleDroplets(JSONDirPath, frame, decodedDataWOPadding, textArea, progressBar, btnNewButton);
 				
-				if(decodedData == null)
-					System.err.println("NULL");
-				
-				
+				//if(decodedDataWOPadding == null)
+					//System.err.println("NULL");
+				/*				
 				if(JSONDirPath == null)
 					JOptionPane.showMessageDialog(frame, "JSON path not set!");
 
@@ -235,12 +238,13 @@ public class AssembleFrame {
 									//for(int i = 0; i < Glass.chunks.length; i++)
 									//	System.arraycopy(Glass.chunks[i], 0, decodedData, i * 100, 100);
 
-									decodedData = glass.getDecodedData();
+									decodedData = glass.getDecodedData();				
+									System.arraycopy(decodedData, 0, decodedDataWOPadding, 0, dataLength);
 									
 									JOptionPane.showMessageDialog(frame, "Decoding success\nDroplet utilized : " + counter + ", Total Droplets : " + files.length);
 									
 									//textArea.setText(Base64.getUrlEncoder().encodeToString(decodedData));
-									textArea.setText(new String(decodedData));
+									textArea.setText(new String(decodedDataWOPadding));
 									progressBar.setValue(100);						
 									
 									glassDone = true;
@@ -268,7 +272,7 @@ public class AssembleFrame {
 										if(!completeDataFile.exists())
 										{
 											FileWriter data_fw = new FileWriter(JSONDirPath + ENV.DELIM + ENV.APP_STORAGE_COMPLETE_DATA);
-											data_fw.append(new String(decodedData));
+											data_fw.append(new String(decodedDataWOPadding));
 											data_fw.close();
 										}
 									}
@@ -350,7 +354,7 @@ public class AssembleFrame {
 					}
 
 
-				}
+				}*/
 			}
 		});
 		panel.add(btnDisplay);
@@ -424,7 +428,7 @@ public class AssembleFrame {
 				{
 					//for standalone run seed is null.
 					
-					Fountain fountain = new Fountain(decodedData, ENV.FOUNTAIN_CHUNK_SIZE, fountainSeed);
+					Fountain fountain = new Fountain(decodedDataWOPadding, ENV.FOUNTAIN_CHUNK_SIZE, fountainSeed);
 					
 					for(int i = 0; i < dropletCounter; i++)
 					{
