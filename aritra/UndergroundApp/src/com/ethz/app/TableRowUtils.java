@@ -26,6 +26,8 @@ import javax.swing.text.TableView.TableCell;
 
 import org.json.JSONObject;
 
+import com.ethz.app.env.ENV;
+
 class ButtonRenderer extends JButton implements TableCellRenderer {
 
     /**
@@ -137,7 +139,12 @@ class ButtonEditor extends DefaultCellEditor {
 						window.setSeed(seedStr);
 						window.frame.setVisible(true);
 							
-						
+						//automated droplet assemble
+						String dropletDirID = fountainTableRowSpecific.getString("dropletLoc");
+						String JSONDirPath = ENV.APP_STORAGE_LOC + ENV.DELIM + dropletDirID;
+						byte[] decodedData_out = new byte[dataLength];
+						int progress = AssembleFrameUtils.assembleDroplets_NonFrame(JSONDirPath, decodedData_out);
+						table.getModel().setValueAt(progress, row, column + 1);
 						//table.getColumn("Progress").setCellRenderer(new ProgressCellRender_1(65, row, column + 1));
 						
 					} 
@@ -146,10 +153,7 @@ class ButtonEditor extends DefaultCellEditor {
 						e.printStackTrace();
 					}
 				}
-			});
-        	
-        	table.getModel().setValueAt(ValRow.progress_map.get(urlString), row, column + 1);
-        	
+			});       	
         }
         isPushed = false;
         return label;
