@@ -443,7 +443,7 @@ public class AssembleFrame {
 				
 				catch (Exception e1)
 				{
-					JOptionPane.showMessageDialog(frame, "Error!! Droplets are not generated.\n Runit from Table app");
+					JOptionPane.showMessageDialog(frame, "Error!! Droplets are not generated.\n Run it from Table app");
 					e1.printStackTrace();
 				}
 				
