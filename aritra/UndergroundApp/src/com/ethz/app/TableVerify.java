@@ -308,6 +308,7 @@ public class TableVerify {
 						return;
 					}
 					
+					//polling queue
 					EventQueue.invokeLater(new Runnable() 
 					{
 						public void run() 
