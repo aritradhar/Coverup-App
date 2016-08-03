@@ -131,8 +131,9 @@ class ButtonEditor extends DefaultCellEditor {
 						JSONObject fountainTableRowSpecific =  TableChecker.URL_JSON_TABLE_MAP.get(urlString);
 						//get the fountain specific seed and set it to the assembler scope
 						String seedStr = fountainTableRowSpecific.getString("seed");
+						Integer dataLength = fountainTableRowSpecific.getInt("len");
 						
-						AssembleFrame window = new AssembleFrame(urlString);
+						AssembleFrame window = new AssembleFrame(urlString, dataLength);
 						window.setSeed(seedStr);
 						window.frame.setVisible(true);
 							
