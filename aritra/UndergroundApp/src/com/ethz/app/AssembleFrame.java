@@ -179,7 +179,12 @@ public class AssembleFrame {
 		{
 			public void actionPerformed(ActionEvent e) 
 			{
-
+				//AssembleFrameUtils.assembleDroplets(JSONDirPath, frame, decodedData, textArea, progressBar, btnNewButton);
+				
+				if(decodedData == null)
+					System.err.println("NULL");
+				
+				
 				if(JSONDirPath == null)
 					JOptionPane.showMessageDialog(frame, "JSON path not set!");
 
