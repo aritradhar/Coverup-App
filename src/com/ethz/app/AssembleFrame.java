@@ -50,6 +50,7 @@ public class AssembleFrame {
 	public static boolean glassDone = false;
 	
 	public byte[] decodedDataWOPadding;
+	
 	/**
 	 * Launch the application.
 	 * @throws UnsupportedLookAndFeelException 
@@ -145,8 +146,8 @@ public class AssembleFrame {
 		panel_1.add(lblNewLabel);
 
 
-		JButton btnAssemble = new JButton("Locate");
-		btnAssemble.addActionListener(new ActionListener() {
+		JButton btnLocateDropletFolder = new JButton("Locate");
+		btnLocateDropletFolder.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) 
 			{
 
@@ -171,13 +172,14 @@ public class AssembleFrame {
 				}
 			}
 		});
-		panel.add(btnAssemble);
+		panel.add(btnLocateDropletFolder);
 
 		JButton btnDisplay = new JButton("Assemble");
 		progressBar = new JProgressBar();
 		progressBar.setStringPainted(true);
 		JButton btnNewButton = new JButton("Make Droplets");
 		btnNewButton.setEnabled(false);
+		
 		
 		btnDisplay.addActionListener(new ActionListener() 
 		{
