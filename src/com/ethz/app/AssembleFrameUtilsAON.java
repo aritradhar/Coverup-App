@@ -82,7 +82,7 @@ public class AssembleFrameUtilsAON {
 							}
 							catch(Exception ex)
 							{
-								System.err.println("Stand alone run. Table infor not available");
+								System.out.println("Stand alone run. Table info not available");
 							}
 							JOptionPane.showMessageDialog(frame, "Decoding success\nDroplet utilized : " + counter + ", Total Droplets : " + files.length);
 							
