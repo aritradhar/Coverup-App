@@ -46,7 +46,7 @@ public class ENV {
 	
 	public static final boolean COMPRESSION_SUPPORT = false;
 	
-	
+	public static final char[] PROGRESS_SYMB = {'-', '\\', '|', '/'};
 	
 	
 	public static final String ABOUT_MESSAGE = "To those who can hear me, I say - do not despair. \n The misery that is now upon us is but the passing of greed - "
