@@ -464,6 +464,17 @@ public class AssembleFrame {
 		panel.add(btnNewButton);
 		
 		JButton btnDecrypt = new JButton("Decrypt");
+		if(!ENV.AON_SUPPORT)
+			btnDecrypt.setEnabled(false);
+		
+		btnDecrypt.addActionListener(new ActionListener() 
+		{
+			public void actionPerformed(ActionEvent e) 
+			{
+				AssembleFrameUtilsAON.assembleDropletsAON(JSONDirPath, frame, decodedDataWOPadding, textArea, progressBar, btnNewButton);
+			}
+		});
+		
 		panel.add(btnDecrypt);
 	}
 
