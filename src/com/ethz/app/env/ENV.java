@@ -36,6 +36,8 @@ public class ENV {
 	public static final String BROWSER_COMM_LINK = "comm.txt";
 	 
 	public static final boolean EXPERIMENTAL =  true;
+	public static final boolean AON_SUPPORT = true;
+	
 	
 	static
 	{

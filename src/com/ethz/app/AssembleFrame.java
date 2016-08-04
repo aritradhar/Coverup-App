@@ -462,6 +462,9 @@ public class AssembleFrame {
 			}
 		});
 		panel.add(btnNewButton);
+		
+		JButton btnDecrypt = new JButton("Decrypt");
+		panel.add(btnDecrypt);
 	}
 
 }
