@@ -77,8 +77,14 @@ public class AssembleFrameUtils {
 							byte[] decodedData = glass.getDecodedData();
 							
 							//copy only the non padded data
-							System.arraycopy(decodedData, 0, decodedData_out, 0, decodedData_out.length);
-							
+							try
+							{
+								System.arraycopy(decodedData, 0, decodedData_out, 0, decodedData_out.length);
+							}
+							catch(Exception ex)
+							{
+								System.err.println("Stand alone run. Table infor not available");
+							}
 							JOptionPane.showMessageDialog(frame, "Decoding success\nDroplet utilized : " + counter + ", Total Droplets : " + files.length);
 							
 							//textArea.setText(Base64.getUrlEncoder().encodeToString(decodedData));
