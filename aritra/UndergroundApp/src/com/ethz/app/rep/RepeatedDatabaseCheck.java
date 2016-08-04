@@ -21,7 +21,7 @@ import com.ethz.app.env.ENV;
 
 public class RepeatedDatabaseCheck {
 
-	public static long count = 0;
+	public static int count = 0;
 
 	public static byte[] ServerPublickey;
 	StringBuffer messaage;
@@ -153,17 +153,9 @@ public class RepeatedDatabaseCheck {
 			fwUrl.close();
 		}
 
-		if(count % 4 == 0)
-			this.messaage.append("\n---------------------------------\n");
-		if(count % 4 == 1)
-			this.messaage.append("\n----------------\\----------------\n");
-		if(count % 4 == 2)
-			this.messaage.append("\n----------------|-----------------\n");
-		if(count % 4 == 3)
-			this.messaage.append("\n----------------/----------------\n");
+		count %= 4;
+		this.messaage.append("\n---------------" + ENV.PROGRESS_SYMB[count] + "-----------------\n");
 		count++;
-
-
 
 	}
 
@@ -252,14 +244,8 @@ public class RepeatedDatabaseCheck {
 			fwUrl.close();
 		}
 
-		if(count % 4 == 0)
-			this.messaage.append("\n---------------------------------\n");
-		if(count % 4 == 1)
-			this.messaage.append("\n----------------\\----------------\n");
-		if(count % 4 == 2)
-			this.messaage.append("\n----------------|-----------------\n");
-		if(count % 4 == 3)
-			this.messaage.append("\n----------------/----------------\n");
+		count %= 4;
+		this.messaage.append("\n---------------" + ENV.PROGRESS_SYMB[count] + "-----------------\n");
 		count++;
 	}
 
