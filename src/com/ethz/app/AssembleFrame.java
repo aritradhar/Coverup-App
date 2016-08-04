@@ -174,14 +174,14 @@ public class AssembleFrame {
 		});
 		panel.add(btnLocateDropletFolder);
 
-		JButton btnDisplay = new JButton("Assemble");
+		JButton btnAssembleDroplets = new JButton("Assemble");
 		progressBar = new JProgressBar();
 		progressBar.setStringPainted(true);
 		JButton btnNewButton = new JButton("Make Droplets");
 		btnNewButton.setEnabled(false);
 		
 		
-		btnDisplay.addActionListener(new ActionListener() 
+		btnAssembleDroplets.addActionListener(new ActionListener() 
 		{
 			public void actionPerformed(ActionEvent e) 
 			{
@@ -359,7 +359,7 @@ public class AssembleFrame {
 				}*/
 			}
 		});
-		panel.add(btnDisplay);
+		panel.add(btnAssembleDroplets);
 		panel.add(progressBar);
 		
 		JButton decompressButton = new JButton("Decompress");
