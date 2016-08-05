@@ -12,6 +12,7 @@ import java.sql.SQLException;
 import java.util.Base64;
 import java.util.List;
 
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JFileChooser;
@@ -121,6 +122,8 @@ public class TableVerify {
 		frame = new JFrame();
 		frame.setTitle("Server Fountain Table");
 		frame.setBounds(100, 100, 823, 848);
+		ImageIcon frameIcon = new ImageIcon("assets//doge.png");
+		frame.setIconImage(frameIcon.getImage());
 		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
 		//menubar
@@ -193,7 +196,7 @@ public class TableVerify {
 		mntmAbout.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				
-				JOptionPane.showMessageDialog(frame, ENV.ABOUT_MESSAGE, "about", JOptionPane.PLAIN_MESSAGE);
+				JOptionPane.showMessageDialog(frame, ENV.ABOUT_MESSAGE, "about", JOptionPane.INFORMATION_MESSAGE, frameIcon);
 			}
 		});
 		mnHelp.add(mntmAbout);
@@ -205,7 +208,7 @@ public class TableVerify {
 		flowLayout.setAlignment(FlowLayout.LEFT);
 		frame.getContentPane().add(panel_1, BorderLayout.NORTH);	
 
-		txtQq = new JTextField();
+		txtQq = new JTextField("90I1INgfeam-0JwxP2Vfgw9eSQGQjz3WxLO1wu1n8Cg=");
 		txtQq.setToolTipText("");
 		txtQq.setHorizontalAlignment(SwingConstants.LEFT);
 		panel_1.add(txtQq);
