@@ -38,7 +38,7 @@ public class RepeatedDatabaseCheck {
 		this.messaage = new StringBuffer();
 		this.doTableCheck();
 
-		if(ENV.EXPERIMENTAL)
+		if(!ENV.EXPERIMENTAL)
 			doDataBaseCheck();
 		else
 			doDataBaseCheckMultipleProvider();
@@ -82,6 +82,7 @@ public class RepeatedDatabaseCheck {
 
 	private void doDataBaseCheckBin(String jsonData) throws IOException
 	{
+		System.err.println("here");
 		String jsonBinData = null;
 		try
 		{
@@ -125,9 +126,8 @@ public class RepeatedDatabaseCheck {
 		String dropletUrlFileName =  ENV.APP_STORAGE_LOC + ENV.DELIM + dropletLocation + ENV.DELIM + ENV.APP_STORAGE_DROPLET_URL;
 
 		if(!new File(ENV.APP_STORAGE_LOC + ENV.DELIM + dropletLocation).exists())
-		{
 			new File(ENV.APP_STORAGE_LOC + ENV.DELIM + dropletLocation).mkdir();
-		}
+		
 
 		File file = new File(fileName);
 		File dropletUrlFile = new File(dropletUrlFileName);
