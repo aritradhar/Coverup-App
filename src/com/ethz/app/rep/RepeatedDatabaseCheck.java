@@ -82,7 +82,7 @@ public class RepeatedDatabaseCheck {
 
 	private void doDataBaseCheckBin(String jsonData) throws IOException
 	{
-		System.err.println("here");
+		//System.err.println("here");
 		String jsonBinData = null;
 		try
 		{
