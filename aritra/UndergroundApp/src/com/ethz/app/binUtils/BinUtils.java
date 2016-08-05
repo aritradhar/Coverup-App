@@ -48,7 +48,7 @@ public class BinUtils {
 			
 			boolean signatureVerify = Curve25519.getInstance("best").verifySignature(serverPublicKey, hashtableBytes, signatureBytes);
 			if(!signatureVerify)
-				return null;
+				throw new RuntimeException("Signature could not be verified");
 		} 
 
 		catch (NoSuchAlgorithmException e) 
@@ -156,8 +156,7 @@ public class BinUtils {
 			
 			if(!verifiyResult)
 				throw new RuntimeException("Droplet Signbature not verified");
-				
-			
+							
 			signatureBase64 = Base64.getUrlEncoder().encodeToString(signature);
 		} 
 
@@ -179,8 +178,8 @@ public class BinUtils {
 	//test
 	public static void main(String[] args) throws Exception {
 		
-		byte[] b = Files.readAllBytes(new File("C:\\Users\\Aritra\\workspace_Mars\\UndergroundApp\\APP_DATA\\DROPLET_BIN\\134211151\\5.bin").toPath());
-		System.out.println(b.length);
+		//byte[] b = Files.readAllBytes(new File("C:\\Users\\Aritra\\workspace_Mars\\UndergroundApp\\APP_DATA\\DROPLET_BIN\\134211151\\5.bin").toPath());
+		//System.out.println(b.length);
 		
 		
 		BufferedReader br = new BufferedReader(new FileReader("binResp.txt"));

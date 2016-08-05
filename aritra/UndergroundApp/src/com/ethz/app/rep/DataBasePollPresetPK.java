@@ -40,6 +40,7 @@ public class DataBasePollPresetPK extends JFrame {
 	
 	JFileChooser chooser;
 
+	//test main.
 	public static void main(String[] args) throws ClassNotFoundException, InstantiationException, IllegalAccessException, UnsupportedLookAndFeelException {
 
 		//UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());	
