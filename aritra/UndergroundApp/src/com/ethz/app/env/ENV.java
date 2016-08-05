@@ -22,6 +22,7 @@ public class ENV {
 	public static final String APP_STORAGE_COMPLETED_DROPLET_FILE = "info.txt";
 	public static final String APP_STORAGE_DROPLET_URL = "dropletUrl.txt";
 	public static final String APP_STORAGE_COMPLETE_DATA = "data.txt";
+	public static final String APP_STORAGE_COMPLETE_DATA_AON = "data_dec.txt";
 	public static final String APP_STORAGE_TABLE_DUMP = "table.json";
 	public static final String APP_STORAGE_TABLE_MULTIPLE_PROVIDER_DUMP = "table";
 	
