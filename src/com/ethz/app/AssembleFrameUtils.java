@@ -22,7 +22,8 @@ import com.ethz.fountain.Glass;
 
 public class AssembleFrameUtils {
 	
-	public static void assembleDroplets(String JSONDirPath, JFrame frame, byte[] decodedData_out, JTextArea textArea, JProgressBar progressBar, JButton btnNewButton)
+	public static void assembleDroplets(String JSONDirPath, JFrame frame, 
+			byte[] decodedData_out, JTextArea textArea, JProgressBar progressBar, JButton btnNewButton)
 	{
 		if(JSONDirPath == null)
 			JOptionPane.showMessageDialog(frame, "JSON path not set!");
@@ -40,7 +41,8 @@ public class AssembleFrameUtils {
 				for(File file : files)
 				{
 					
-					if(file.getName().contains(ENV.APP_STORAGE_DROPLET_URL) || file.getName().contains(ENV.APP_STORAGE_COMPLETE_DATA))
+					if(file.getName().contains(ENV.APP_STORAGE_DROPLET_URL) || file.getName().contains(ENV.APP_STORAGE_COMPLETE_DATA) ||
+							file.getName().contains(ENV.APP_STORAGE_COMPLETE_DATA_AON) )
 						continue;
 					
 					//System.out.println(file.getAbsoluteFile());
@@ -68,14 +70,7 @@ public class AssembleFrameUtils {
 						counter++;
 						if(glass.isDone())
 						{	
-							//TODO: this size has to be dynamic depends on the data size which is to be preshared in the table
-							//byte[] decodedData = new byte[1000];
-
-							//for(int i = 0; i < Glass.chunks.length; i++)
-							//	System.arraycopy(Glass.chunks[i], 0, decodedData, i * 100, 100);
-
-							byte[] decodedData = glass.getDecodedData();
-							
+							byte[] decodedData = glass.getDecodedData();						
 							//copy only the non padded data
 							try
 							{
@@ -201,8 +196,7 @@ public class AssembleFrameUtils {
 	
 	}
 	
-	
-	
+		
 	public static int assembleDroplets_NonFrame(String JSONDirPath, byte[] decodedData_out) throws RuntimeException
 	{
 		if(JSONDirPath == null)
@@ -217,10 +211,10 @@ public class AssembleFrameUtils {
 				for(File file : files)
 				{
 					
-					if(file.getName().contains(ENV.APP_STORAGE_DROPLET_URL) || file.getName().contains(ENV.APP_STORAGE_COMPLETE_DATA))
+					if(file.getName().contains(ENV.APP_STORAGE_DROPLET_URL) || file.getName().contains(ENV.APP_STORAGE_COMPLETE_DATA) ||
+							file.getName().contains(ENV.APP_STORAGE_COMPLETE_DATA_AON))
 						continue;
 					
-					//System.out.println(file.getAbsoluteFile());
 					BufferedReader br = null;
 					try 
 					{
@@ -245,11 +239,8 @@ public class AssembleFrameUtils {
 							
 							//copy only the non padded data
 							System.arraycopy(decodedData, 0, decodedData_out, 0, decodedData_out.length);
-							
-							//JOptionPane.showMessageDialog(frame, "Decoding success\nDroplet utilized : " + counter + ", Total Droplets : " + files.length);				
-							
-							AssembleFrame.glassDone = true;
-							
+														
+							AssembleFrame.glassDone = true;						
 							//put this information in APP_STORAGE_LOC
 							try
 							{
@@ -284,12 +275,6 @@ public class AssembleFrameUtils {
 							
 							return 100;
 						}	
-
-						//JOptionPane.showMessageDialog(frame, "Assemble success!!!");
-					} 
-					catch (FileNotFoundException e1) 
-					{
-						e1.printStackTrace();
 					} 
 					catch (IOException e1) 
 					{
@@ -331,15 +316,10 @@ public class AssembleFrameUtils {
 				}
 				
 			}
-			catch(NullPointerException ex)
-			{
-				ex.printStackTrace();
-			}
 			catch(Exception ex)
 			{
 				ex.printStackTrace();
 			}
-
 		}
 		return 0;
 	

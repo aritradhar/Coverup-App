@@ -40,7 +40,8 @@ public class AssembleFrameUtilsAON {
 				for(File file : files)
 				{
 					
-					if(file.getName().contains(ENV.APP_STORAGE_DROPLET_URL) || file.getName().contains(ENV.APP_STORAGE_COMPLETE_DATA))
+					if(file.getName().contains(ENV.APP_STORAGE_DROPLET_URL) || file.getName().contains(ENV.APP_STORAGE_COMPLETE_DATA) ||
+							file.getName().contains(ENV.APP_STORAGE_COMPLETE_DATA_AON))
 						continue;
 					
 					//System.out.println(file.getAbsoluteFile());
@@ -110,11 +111,11 @@ public class AssembleFrameUtilsAON {
 								compl_fw.append(fountainUrl + "\n");
 								compl_fw.close();
 
-								File completeDataFile = new File(AssembleFrame.JSONDirPath + ENV.DELIM + ENV.APP_STORAGE_COMPLETE_DATA);
+								File completeDataFile = new File(AssembleFrame.JSONDirPath + ENV.DELIM + ENV.APP_STORAGE_COMPLETE_DATA_AON);
 
 								if(!completeDataFile.exists())
 								{
-									FileWriter data_fw = new FileWriter(AssembleFrame.JSONDirPath + ENV.DELIM + ENV.APP_STORAGE_COMPLETE_DATA);
+									FileWriter data_fw = new FileWriter(AssembleFrame.JSONDirPath + ENV.DELIM + ENV.APP_STORAGE_COMPLETE_DATA_AON);
 									data_fw.append(new String(decodedData));
 									data_fw.close();
 								}
@@ -216,7 +217,8 @@ public class AssembleFrameUtilsAON {
 				for(File file : files)
 				{
 					
-					if(file.getName().contains(ENV.APP_STORAGE_DROPLET_URL) || file.getName().contains(ENV.APP_STORAGE_COMPLETE_DATA))
+					if(file.getName().contains(ENV.APP_STORAGE_DROPLET_URL) || file.getName().contains(ENV.APP_STORAGE_COMPLETE_DATA) ||
+							file.getName().contains(ENV.APP_STORAGE_COMPLETE_DATA_AON))
 						continue;
 					
 					//System.out.println(file.getAbsoluteFile());
@@ -267,11 +269,11 @@ public class AssembleFrameUtilsAON {
 								compl_fw.append(fountainUrl + "\n");
 								compl_fw.close();
 
-								File completeDataFile = new File(AssembleFrame.JSONDirPath + ENV.DELIM + ENV.APP_STORAGE_COMPLETE_DATA);
+								File completeDataFile = new File(AssembleFrame.JSONDirPath + ENV.DELIM + ENV.APP_STORAGE_COMPLETE_DATA_AON);
 
 								if(!completeDataFile.exists())
 								{
-									FileWriter data_fw = new FileWriter(AssembleFrame.JSONDirPath + ENV.DELIM + ENV.APP_STORAGE_COMPLETE_DATA);
+									FileWriter data_fw = new FileWriter(AssembleFrame.JSONDirPath + ENV.DELIM + ENV.APP_STORAGE_COMPLETE_DATA_AON);
 									data_fw.append(new String(decodedData));
 									data_fw.close();
 								}
