@@ -30,22 +30,38 @@ public class RepeatedDatabaseCheck {
 	public String modifiedDatabaseLocation;
 
 
-	public RepeatedDatabaseCheck(String modifiedDatabaseLocation) throws Exception 
+	public RepeatedDatabaseCheck(String modifiedDatabaseLocation) throws SQLException, IOException 
 	{
 		this.modifiedDatabaseLocation = modifiedDatabaseLocation;
-		System.out.println("Run");
+		//System.out.println("Run");
 
 		this.messaage = new StringBuffer();
-		this.doTableCheck();
-
-		if(!ENV.EXPERIMENTAL)
-			doDataBaseCheck();
+		boolean tableSuccess = false;
+		
+		try
+		{
+			tableSuccess = this.doTableCheck();
+		}
+		catch(SQLException ex)
+		{
+			tableSuccess = false;
+		}
+		
+		if(tableSuccess)
+		{
+			if(!ENV.EXPERIMENTAL)
+				doDataBaseCheck();
+			else
+				doDataBaseCheckMultipleProvider();
+		}
+		
 		else
-			doDataBaseCheckMultipleProvider();
+			this.messaage.append("Table error\n---------------------");
+		
 	}
 
 
-	private void doTableCheck() throws SQLException
+	private boolean doTableCheck() throws SQLException
 	{
 		TableChecker tabCheck = new TableChecker();
 
@@ -56,10 +72,12 @@ public class RepeatedDatabaseCheck {
 			else
 				tabCheck.loadtableDataMultipleProvider();
 		}
-		catch(NullPointerException ex)
+		catch(Exception ex)
 		{
-			throw ex;
+			return false;
 		}
+		
+		return true;
 	}
 	private void doDataBaseCheck() throws SQLException, IOException
 	{

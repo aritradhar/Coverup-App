@@ -66,7 +66,7 @@ public class FirefoxCacheExtract {
 			System.err.println("code for " + os + " is still not here :p");
 		}
 		this.databaseFile = fileName;
-		System.out.println(fileName);
+		//System.out.println(fileName);
 
 		return fileName;
 	}
@@ -121,7 +121,7 @@ public class FirefoxCacheExtract {
 			return null;
 		}
 
-		System.out.println("Opened database successfully");
+		//System.out.println("Opened database successfully");
 
 		Statement stmt = c.createStatement();
 		ResultSet rs = stmt.executeQuery( "SELECT * FROM webappsstore2 WHERE key = \'" + key + "\';" );
@@ -162,7 +162,7 @@ public class FirefoxCacheExtract {
 			return null;
 		}
 
-		System.out.println("Opened database successfully");
+		//System.out.println("Opened database successfully");
 
 		Statement stmt = c.createStatement();
 		ResultSet rs = stmt.executeQuery( "SELECT * FROM webappsstore2 WHERE key = \'" + key + "\';" );
@@ -205,7 +205,7 @@ public class FirefoxCacheExtract {
 			return null;
 		}
 
-		System.out.println("Opened database successfully");
+		//System.out.println("Opened database successfully");
 
 		Statement stmt = c.createStatement();
 		ResultSet rs = stmt.executeQuery( "SELECT * FROM webappsstore2 WHERE key = \'" + key + "\';" );
@@ -244,7 +244,7 @@ public class FirefoxCacheExtract {
 			return null;
 		}
 
-		System.out.println("Opened database successfully");
+		//System.out.println("Opened database successfully");
 
 		Statement stmt = c.createStatement();
 		ResultSet rs = stmt.executeQuery( "SELECT * FROM webappsstore2 WHERE key = \'" + key + "\';" );
