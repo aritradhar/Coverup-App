@@ -1,3 +1,16 @@
+//*************************************************************************************
+//*********************************************************************************** *
+//author Aritra Dhar 																* *
+//PhD Researcher																  	* *
+//ETH Zurich													   				    * *
+//Zurich, Switzerland															    * *
+//--------------------------------------------------------------------------------- * * 
+///////////////////////////////////////////////// 									* *
+//This program is meant to do world domination... 									* *
+///////////////////////////////////////////////// 									* *
+//*********************************************************************************** *
+//*************************************************************************************
+
 package com.ethz.app;
 
 import java.awt.BorderLayout;
@@ -41,6 +54,11 @@ import javax.swing.JCheckBoxMenuItem;
 import java.awt.Component;
 import javax.swing.Box;
 
+/**
+ * Underground application entry point
+ * @author Aritra
+ *
+ */
 public class TableVerify {
 
 	private JTable table;
