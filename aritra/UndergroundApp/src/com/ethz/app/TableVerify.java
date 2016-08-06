@@ -38,6 +38,8 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JCheckBoxMenuItem;
+import java.awt.Component;
+import javax.swing.Box;
 
 public class TableVerify {
 
@@ -166,13 +168,22 @@ public class TableVerify {
 						null,
 						"1000");
 
-				try
+				if(pollingRateString == null)
 				{
-					DataBasePollPresetPK.pollingRate = Integer.parseInt(pollingRateString);
+					JOptionPane.showMessageDialog(frame, "Choosing  Default = 1000 ms polling rate");
+					DataBasePollPresetPK.pollingRate = 1000;
 				}
-				catch(Exception ex)
+				else
 				{
-					JOptionPane.showMessageDialog(frame, "Invalid polling rate");
+					try
+					{
+						DataBasePollPresetPK.pollingRate = Integer.parseInt(pollingRateString);
+					}
+					catch(Exception ex)
+					{
+						JOptionPane.showMessageDialog(frame, "Invalid polling rate, Choosing  Default = 1000 ms polling rate");
+						DataBasePollPresetPK.pollingRate = 1000;
+					}
 				}
 			}
 		});
@@ -298,6 +309,7 @@ public class TableVerify {
 		{
 			System.err.println("NULL app");
 		}
+		JLabel progressLabel = new JLabel("|");
 
 		//TODO
 		JButton btnStartPolling = new JButton("Start Polling");
@@ -320,6 +332,7 @@ public class TableVerify {
 							try 
 							{
 								dPool = new DataBasePollPresetPK(pkText);
+								dPool.setProgressLabel(progressLabel);
 								mntmShowPollingWindow.setEnabled(true);
 								//dPool.frame.setVisible(true);
 							} 
@@ -348,6 +361,16 @@ public class TableVerify {
 
 			}
 		});
+		
+		
+		
+		panel.add(progressLabel);
+		
+		Component horizontalStrut_1 = Box.createHorizontalStrut(20);
+		panel.add(horizontalStrut_1);
+		
+		Component horizontalStrut = Box.createHorizontalStrut(20);
+		panel.add(horizontalStrut);
 		panel.add(btnStartPolling);
 		//app.verifyMessage();
 
@@ -569,6 +592,9 @@ public class TableVerify {
 			}
 		});
 		panel.add(btnDumpTable);
+		
+		Component horizontalStrut_2 = Box.createHorizontalStrut(20);
+		panel.add(horizontalStrut_2);
 
 	}
 
