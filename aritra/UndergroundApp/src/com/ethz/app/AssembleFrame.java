@@ -462,7 +462,7 @@ public class AssembleFrame {
 					}
 					
 					JOptionPane.showMessageDialog(frame,
-						    "Droplets dumped in : \n" + "JSON : "+dropletLocationSpecific + "\n BIN : " + dropletLocationSpecific_bin,
+						    "Droplets dumped in : \n" + "JSON : "+ dropletLocationSpecific + "\n BIN : " + dropletLocationSpecific_bin,
 						    "Droplets generated",
 						    JOptionPane.PLAIN_MESSAGE);
 				}
