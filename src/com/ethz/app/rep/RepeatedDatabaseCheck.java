@@ -56,7 +56,11 @@ public class RepeatedDatabaseCheck {
 		}
 		
 		else
-			this.messaage.append("Table error\n---------------------");
+		{
+			this.messaage.append("Table error");
+			count %= 4;
+			this.messaage.append("\n---------------" + ENV.PROGRESS_SYMB[count++] + "---------------");
+		}
 		
 	}
 
@@ -155,6 +159,7 @@ public class RepeatedDatabaseCheck {
 			FileWriter fw = new FileWriter(fileName);
 			fw.write(droplet);
 			this.messaage.append("\n Droplet dumped in local storage");
+			this.messaage.append("\n Dump location : " + fileName);
 			this.messaage.append("\n Droplet id : " + Base64.getUrlEncoder().encodeToString(hashtableBytes));
 			fw.close();
 		}
@@ -172,9 +177,7 @@ public class RepeatedDatabaseCheck {
 		}
 
 		count %= 4;
-		this.messaage.append("\n---------------" + ENV.PROGRESS_SYMB[count] + "-----------------\n");
-		count++;
-
+		this.messaage.append("\n---------------" + ENV.PROGRESS_SYMB[count++] + "---------------");
 	}
 
 	private void doDataBaseCheck(JSONObject jObject) throws IOException
@@ -211,12 +214,12 @@ public class RepeatedDatabaseCheck {
 
 			if(!check)
 			{
-				this.messaage.append("\nSignature verification failed");
+				this.messaage.append("\n Signature verification failed");
 				throw new RuntimeException("Signature verification failed");
 			}
 			else
 			{
-				this.messaage.append("\nSignature verification success");
+				this.messaage.append("\n Signature verification success");
 			}
 		} 
 
@@ -228,7 +231,7 @@ public class RepeatedDatabaseCheck {
 		JSONObject tableJSONData = TableChecker.URL_JSON_TABLE_MAP.get(dropletUrl);
 		String dropletLocation =  tableJSONData.get("dropletLoc").toString();
 
-		this.messaage.append("\ndroplet location : ").append(dropletLocation);
+		this.messaage.append("\n droplet location : ").append(dropletLocation);
 
 		String fileName = ENV.APP_STORAGE_LOC + ENV.DELIM + dropletLocation + ENV.DELIM + Base64.getUrlEncoder().encodeToString(hashtableBytes).concat(".txt");
 		String dropletUrlFileName =  ENV.APP_STORAGE_LOC + ENV.DELIM + dropletLocation + ENV.DELIM + ENV.APP_STORAGE_DROPLET_URL;
@@ -263,8 +266,7 @@ public class RepeatedDatabaseCheck {
 		}
 
 		count %= 4;
-		this.messaage.append("\n---------------" + ENV.PROGRESS_SYMB[count] + "-----------------\n");
-		count++;
+		this.messaage.append("\n---------------" + ENV.PROGRESS_SYMB[count++] + "---------------");
 	}
 
 	private void doDataBaseCheckMultipleProvider() throws SQLException, IOException

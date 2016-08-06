@@ -26,6 +26,7 @@ import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.text.DefaultCaret;
 
 import com.ethz.app.TableVerify;
+import com.ethz.app.env.ENV;
 
 public class DataBasePollPresetPK extends JFrame {
 
@@ -37,6 +38,8 @@ public class DataBasePollPresetPK extends JFrame {
 	private ScheduledThreadPoolExecutor executor;
 	private static String databaseFileLocation;
 	public static volatile int pollingRate = 1000;
+	public JLabel progressLabel;
+	public static int progress = 0;
 	
 	JFileChooser chooser;
 
@@ -67,6 +70,11 @@ public class DataBasePollPresetPK extends JFrame {
 	{
 		executor.shutdown();
 		frame.dispose();
+	}
+	
+	public void setProgressLabel(JLabel progressLabel)
+	{
+		this.progressLabel = progressLabel;
 	}
 	
 	public DataBasePollPresetPK(String serverPublicKey) {
@@ -122,6 +130,8 @@ public class DataBasePollPresetPK extends JFrame {
 				{
 
 					RepeatedDatabaseCheck t = new RepeatedDatabaseCheck(DataBasePollPresetPK.databaseFileLocation);
+					progress %= 4;
+					progressLabel.setText(new String(new char[]{ENV.PROGRESS_SYMB[progress++]}));
 					//System.out.println(DataBasePoll.databaseFileLocation);
 					textArea.append("\n".concat(t.messaage.toString()));
 				} 
