@@ -79,6 +79,7 @@ public class TableVerify {
 	private DataBasePollPresetPK dPool;
 	
 	public static boolean set = false;
+	
 	public static void main(String[] args) throws ClassNotFoundException, InstantiationException, IllegalAccessException, UnsupportedLookAndFeelException {
 
 		UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());	
@@ -144,9 +145,9 @@ public class TableVerify {
 		frame.setBounds(100, 100, 823, 848);
 		ImageIcon frameIcon = new ImageIcon("assets//doge.png");
 		frame.setIconImage(frameIcon.getImage());
-		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-		//menubar
+		//menu bar
 		JMenuBar menuBar = new JMenuBar();
 		frame.setJMenuBar(menuBar);
 
@@ -217,6 +218,10 @@ public class TableVerify {
 			}
 		});
 		mnSettings.add(mntmShowPollingWindow);
+		
+		JCheckBoxMenuItem menuBackgroundAssembling = new JCheckBoxMenuItem("Background Assembling");
+		mnSettings.add(menuBackgroundAssembling);
+		
 		
 		JMenu mnHelp = new JMenu("Help");
 		menuBar.add(mnHelp);

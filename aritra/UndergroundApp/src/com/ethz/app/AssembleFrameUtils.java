@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.util.Base64;
 
 import javax.swing.JButton;
+import javax.swing.JEditorPane;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JProgressBar;
@@ -36,7 +37,7 @@ import com.ethz.fountain.Glass;
 public class AssembleFrameUtils {
 	
 	public static void assembleDroplets(String JSONDirPath, JFrame frame, 
-			byte[] decodedData_out, JTextArea textArea, JProgressBar progressBar, JButton btnNewButton)
+			byte[] decodedData_out, JEditorPane textArea, JProgressBar progressBar, JButton btnNewButton)
 	{
 		if(JSONDirPath == null)
 			JOptionPane.showMessageDialog(frame, "JSON path not set!");
