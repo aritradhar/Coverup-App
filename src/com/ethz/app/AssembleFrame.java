@@ -16,6 +16,7 @@ package com.ethz.app;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.EventQueue;
+import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.BufferedReader;
@@ -29,6 +30,7 @@ import java.util.Base64;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JEditorPane;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -72,7 +74,7 @@ public class AssembleFrame {
 	 * @throws InstantiationException 
 	 * @throws ClassNotFoundException 
 	 */
-	public static void main(String[] args) throws ClassNotFoundException, InstantiationException, IllegalAccessException, UnsupportedLookAndFeelException 
+/*	public static void main(String[] args) throws ClassNotFoundException, InstantiationException, IllegalAccessException, UnsupportedLookAndFeelException 
 	{
 		UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());	
 
@@ -89,7 +91,7 @@ public class AssembleFrame {
 				}
 			}
 		});
-	}
+	}*/
 
 	/**
 	 * Create the application.
@@ -145,9 +147,10 @@ public class AssembleFrame {
 		JScrollPane scrollPane = new JScrollPane();
 		frame.getContentPane().add(scrollPane, BorderLayout.CENTER);
 
-		JTextArea textArea = new JTextArea();
-		textArea.setForeground(Color.BLACK);;
-		textArea.setLineWrap(true);
+		JEditorPane textArea = new JEditorPane("text/html", "");
+		textArea.setForeground(Color.BLACK);
+		textArea.setFont(new Font("Consolas",Font.PLAIN, 32));
+		//textArea.setLineWrap(true);
 		textArea.setEditable(false);
 		scrollPane.setViewportView(textArea);
 
