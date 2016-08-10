@@ -40,7 +40,7 @@ public class TableChecker
 	//url -> source keys
 	public static Map<String, List<String>> URL_SOURCE_TABLE_MAP = new HashMap<>();
 	//sourceKey ->url
-	public static Map<String,String> SOURCE_KEY_YRL_MAP = new HashMap<>();
+	public static Map<String,List<String>> SOURCE_KEY_URL_MAP = new HashMap<>();
 	//source key -> table | signature
 	public static Map<String, String[]> SOURCE_KEY_TABLE_SIGNATURE_MAP = new HashMap<>();
 	//source key -> signature verification result
@@ -202,10 +202,29 @@ public class TableChecker
 				sourceKeys.add(sourceKey);
 			}
 			
-			SOURCE_KEY_YRL_MAP.put(sourceKey, key);
+			List<String> urls = new ArrayList<>();
+			if(!SOURCE_KEY_URL_MAP.containsKey(sourceKey))
+			{
+				urls.add(key);
+				SOURCE_KEY_URL_MAP.put(sourceKey, urls);
+			}
+			else
+			{
+				urls = SOURCE_KEY_URL_MAP.get(sourceKey);
+				urls.add(key);
+			}
 		}
 	}
 	
+	public int getRowCount()
+	{
+		int toReturn = 0;
+		
+		for(String sourcekey : SOURCE_KEY_URL_MAP.keySet())
+			toReturn += SOURCE_KEY_URL_MAP.get(sourcekey).size();
+		
+		return toReturn;
+	}
 
 	public String[] getURLsFromTable()
 	{
@@ -214,9 +233,9 @@ public class TableChecker
 		return toReturn;
 	}
 	
-	public String[] getOriginKeyssFromTable()
+	public String[] getOriginKeysFromTable()
 	{
-		String[] toReturn = TableChecker.SOURCE_KEY_YRL_MAP.keySet().toArray(new String[0]);
+		String[] toReturn = TableChecker.SOURCE_KEY_URL_MAP.keySet().toArray(new String[0]);
 		
 		return toReturn;
 	}
