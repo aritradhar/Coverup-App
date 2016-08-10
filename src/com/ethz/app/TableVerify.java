@@ -440,8 +440,10 @@ public class TableVerify {
 				}
 
 				String[] urls = tableChecker.getURLsFromTable();
-
-				Object[][] tableModelData = new Object[urls.length][4];
+				String[] sourceKeys = tableChecker.getOriginKeysFromTable();
+				
+				/*
+				 * Object[][] tableModelData = new Object[urls.length][4];
 
 				int i = 0;
 				for(String url : urls)
@@ -451,6 +453,23 @@ public class TableVerify {
 					tableModelData[i][2] = "Go";
 					tableModelData[i][3] = null;
 					i++;
+				}*/
+				
+				Object[][] tableModelData = new Object[tableChecker.getRowCount()][4];
+
+				//System.out.println(tableChecker.getRowCount());
+				
+				int i = 0;
+				for(String sourceKey : sourceKeys)
+				{
+					for(String url : TableChecker.SOURCE_KEY_URL_MAP.get(sourceKey))
+					{
+						tableModelData[i][0] = sourceKey;
+						tableModelData[i][1] = url;
+						tableModelData[i][2] = "Go";
+						tableModelData[i][3] = null;
+						i++;
+					}
 				}
 
 
