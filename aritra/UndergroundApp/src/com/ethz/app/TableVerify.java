@@ -41,6 +41,8 @@ import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.table.DefaultTableModel;
 
+import org.json.JSONObject;
+
 import com.ethz.app.env.ENV;
 import com.ethz.app.rep.DataBasePollPresetPK;
 
@@ -604,7 +606,6 @@ public class TableVerify {
 
 					for(String[] dumpRow : dumpList)
 					{
-						String dump = dumpRow[0];
 						FileWriter fwTableDump = null;
 						try {
 							//due to the provider name I am calculating sha256 of the table name and keep it as the file name.
@@ -626,7 +627,7 @@ public class TableVerify {
 							JOptionPane.showMessageDialog(frame, "Some problem");
 						}
 						try {
-							fwTableDump.append(dump);
+							fwTableDump.append(dumpRow[1] + "\n" + new JSONObject(dumpRow[0]).toString(2));
 						} catch (IOException e1) {
 							e1.printStackTrace();
 							JOptionPane.showMessageDialog(frame, "Dump error");
