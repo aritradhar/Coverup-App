@@ -20,8 +20,10 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -38,9 +40,9 @@ public class TableChecker
 	//this map has to be alive through out application life cycle
 	public static Map<String, JSONObject> URL_JSON_TABLE_MAP = new HashMap<>();
 	//url -> source keys
-	public static Map<String, List<String>> URL_SOURCE_TABLE_MAP = new HashMap<>();
+	public static Map<String, Set<String>> URL_SOURCE_TABLE_MAP = new HashMap<>();
 	//sourceKey ->url
-	public static Map<String,List<String>> SOURCE_KEY_URL_MAP = new HashMap<>();
+	public static Map<String,Set<String>> SOURCE_KEY_URL_MAP = new HashMap<>();
 	//source key -> table | signature
 	public static Map<String, String[]> SOURCE_KEY_TABLE_SIGNATURE_MAP = new HashMap<>();
 	//source key -> signature verification result
@@ -190,7 +192,7 @@ public class TableChecker
 			
 			URL_JSON_TABLE_MAP.put(key, tableRowJSONObject);
 			
-			List<String> sourceKeys = new ArrayList<>();
+			Set<String> sourceKeys = new HashSet<>();
 			if(!URL_SOURCE_TABLE_MAP.containsKey(key))
 			{			
 				sourceKeys.add(sourceKey);
@@ -202,7 +204,7 @@ public class TableChecker
 				sourceKeys.add(sourceKey);
 			}
 			
-			List<String> urls = new ArrayList<>();
+			Set<String> urls = new HashSet<>();
 			if(!SOURCE_KEY_URL_MAP.containsKey(sourceKey))
 			{
 				urls.add(key);
