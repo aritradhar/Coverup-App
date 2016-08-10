@@ -20,6 +20,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.sql.SQLException;
 import java.util.Base64;
@@ -472,7 +473,6 @@ public class TableVerify {
 					}
 				}
 
-
 				//DefaultTableModel model = (DefaultTableModel) table.getModel();
 
 
@@ -607,11 +607,23 @@ public class TableVerify {
 						String dump = dumpRow[0];
 						FileWriter fwTableDump = null;
 						try {
+							//due to the provider name I am calculating sha256 of the table name and keep it as the file name.
+							//I will also add the provider name on the first row of the table
+							
+							byte[] providerNameBytes = dumpRow[1].getBytes();
+							MessageDigest digest = MessageDigest.getInstance("SHA-256");
+							byte[] hashBytes = digest.digest(providerNameBytes);
+							String fileName = Base64.getUrlEncoder().encodeToString(hashBytes);
+									
 							fwTableDump = new FileWriter(ENV.APP_STORAGE_LOC + 
-									ENV.DELIM + ENV.APP_STORAGE_TABLE_MULTIPLE_PROVIDER_DUMP + "_" + dumpRow[1].replaceAll("\\.", "_").replaceAll(":", "_") + ENV.APP_JSON_EXTENSION);
+									ENV.DELIM + ENV.APP_STORAGE_TABLE_MULTIPLE_PROVIDER_DUMP 
+									+ "_" + fileName
+									+ ENV.APP_JSON_EXTENSION);
 						} catch (IOException e1) {
 							JOptionPane.showMessageDialog(frame, "Error in file");
 							e1.printStackTrace();
+						} catch (NoSuchAlgorithmException e1) {
+							JOptionPane.showMessageDialog(frame, "Some problem");
 						}
 						try {
 							fwTableDump.append(dump);

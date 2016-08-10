@@ -39,7 +39,7 @@ public class ENV {
 	public static final String APP_STORAGE_TABLE_DUMP = "table.json";
 	public static final String APP_STORAGE_TABLE_MULTIPLE_PROVIDER_DUMP = "table";
 	
-	public static final String APP_JSON_EXTENSION = ".json";
+	public static final String APP_JSON_EXTENSION = ".table";
 	public static final String APP_BIN_EXTENSION = ".bin";
 	
 	
