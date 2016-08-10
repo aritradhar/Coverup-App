@@ -413,10 +413,11 @@ public class TableVerify {
 		{
 			public void actionPerformed(ActionEvent e) 
 			{
+				//TableVerify.tableChecker = new TableChecker();
 				//try to reload from the database in case there is any update
 				try 
 				{	
-					if(!ENV.EXPERIMENTAL)
+					if(!ENV.MULTIPLE_PROVIDER_SUPPORT)
 					{
 						if(modifiedCacheLocation == null)
 							TableVerify.tableChecker.loadtableData();
@@ -460,7 +461,7 @@ public class TableVerify {
 				
 				Object[][] tableModelData = new Object[tableChecker.getRowCount()][4];
 
-				//System.out.println(tableChecker.getRowCount());
+				System.out.println(tableChecker.getRowCount());
 				
 				int i = 0;
 				for(String sourceKey : sourceKeys)
@@ -505,7 +506,7 @@ public class TableVerify {
 
 
 
-				if(!ENV.EXPERIMENTAL)
+				if(!ENV.MULTIPLE_PROVIDER_SUPPORT)
 				{
 					try {
 						boolean ret = tableChecker.verifyMessage();
@@ -571,7 +572,7 @@ public class TableVerify {
 		btnDumpTable.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 
-				if(!ENV.EXPERIMENTAL)
+				if(!ENV.MULTIPLE_PROVIDER_SUPPORT)
 				{
 					String dump = tableChecker.tableDumpJson;
 					FileWriter fwTableDump = null;
@@ -608,7 +609,7 @@ public class TableVerify {
 					{
 						FileWriter fwTableDump = null;
 						try {
-							//due to the provider name I am calculating sha256 of the table name and keep it as the file name.
+							//Due to the batshit provider names I am calculating sha256 of the provider name and keep it as the file name.
 							//I will also add the provider name on the first row of the table
 							
 							byte[] providerNameBytes = dumpRow[1].getBytes();

@@ -62,7 +62,7 @@ public class RepeatedDatabaseCheck {
 		
 		if(tableSuccess)
 		{
-			if(!ENV.EXPERIMENTAL)
+			if(!ENV.MULTIPLE_PROVIDER_SUPPORT)
 				doDataBaseCheck();
 			else
 				doDataBaseCheckMultipleProvider();
@@ -84,7 +84,7 @@ public class RepeatedDatabaseCheck {
 
 		try
 		{	
-			if(!ENV.EXPERIMENTAL)
+			if(!ENV.MULTIPLE_PROVIDER_SUPPORT)
 				tabCheck.loadtableData();
 			else
 				tabCheck.loadtableDataMultipleProvider();
