@@ -37,8 +37,10 @@ public class TableChecker
 	
 	//this map has to be alive through out application life cycle
 	public static Map<String, JSONObject> URL_JSON_TABLE_MAP = new HashMap<>();
-	//url -> source key
-	public static Map<String, String> URL_SOURCE_TABLE_MAP = new HashMap<>();
+	//url -> source keys
+	public static Map<String, List<String>> URL_SOURCE_TABLE_MAP = new HashMap<>();
+	//sourceKey ->url
+	public static Map<String,String> SOURCE_KEY_YRL_MAP = new HashMap<>();
 	//source key -> table | signature
 	public static Map<String, String[]> SOURCE_KEY_TABLE_SIGNATURE_MAP = new HashMap<>();
 	//source key -> signature verification result
@@ -187,7 +189,20 @@ public class TableChecker
 			JSONObject tableRowJSONObject = new JSONObject(value);
 			
 			URL_JSON_TABLE_MAP.put(key, tableRowJSONObject);
-			URL_SOURCE_TABLE_MAP.put(key, sourceKey);
+			
+			List<String> sourceKeys = new ArrayList<>();
+			if(!URL_SOURCE_TABLE_MAP.containsKey(key))
+			{			
+				sourceKeys.add(sourceKey);
+				URL_SOURCE_TABLE_MAP.put(key, sourceKeys);
+			}
+			else
+			{
+				sourceKeys = URL_SOURCE_TABLE_MAP.get(key);
+				sourceKeys.add(sourceKey);
+			}
+			
+			SOURCE_KEY_YRL_MAP.put(sourceKey, key);
 		}
 	}
 	
@@ -195,6 +210,13 @@ public class TableChecker
 	public String[] getURLsFromTable()
 	{
 		String[] toReturn = TableChecker.URL_JSON_TABLE_MAP.keySet().toArray(new String[0]);
+		
+		return toReturn;
+	}
+	
+	public String[] getOriginKeyssFromTable()
+	{
+		String[] toReturn = TableChecker.SOURCE_KEY_YRL_MAP.keySet().toArray(new String[0]);
 		
 		return toReturn;
 	}
