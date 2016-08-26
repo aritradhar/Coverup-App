@@ -55,12 +55,15 @@ class ButtonRenderer extends JButton implements TableCellRenderer {
 
     @Override
     public Component getTableCellRendererComponent(JTable table, Object value,
-            boolean isSelected, boolean hasFocus, int row, int column) {
-        if (isSelected) {
+            boolean isSelected, boolean hasFocus, int row, int column) 
+    {
+        if (isSelected) 
+        {
             setForeground(table.getSelectionForeground());
             setBackground(table.getSelectionBackground());
-            //setText("Selected");
-        } else {
+        } 
+        else 
+        {
             setForeground(table.getForeground());
             setBackground(UIManager.getColor("Button.background"));
             
@@ -148,7 +151,11 @@ class ButtonEditor extends DefaultCellEditor {
 						String seedStr = fountainTableRowSpecific.getString("seed");
 						Integer dataLength = fountainTableRowSpecific.getInt("len");
 						
-						AssembleFrame window = new AssembleFrame(urlString, dataLength);
+						Integer dropletCount = 0;
+						if(ENV.EXPERIMENTAL)
+							dropletCount = fountainTableRowSpecific.getInt("dropletCount");
+						
+						AssembleFrame window = new AssembleFrame(urlString, dataLength, dropletCount);
 						window.setSeed(seedStr);
 						window.frame.setVisible(true);
 							
