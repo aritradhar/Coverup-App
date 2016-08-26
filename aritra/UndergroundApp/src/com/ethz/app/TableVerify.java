@@ -14,6 +14,7 @@
 package com.ethz.app;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.EventQueue;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
@@ -296,7 +297,7 @@ public class TableVerify {
 
 		DefaultTableModel model = new DefaultTableModel() { 
 			private static final long serialVersionUID = 1L;
-			String[] col = {"source","URL", "View Data", "Progress"};
+			String[] col = {"Source","URL", "View Data", "Progress"};
 
 			@Override 
 			public int getColumnCount() { 
@@ -321,7 +322,8 @@ public class TableVerify {
 		
 		table = new JTable(model);
 		table.setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
-
+		table.setAutoCreateRowSorter(true);
+		
 		JScrollPane scrollPane = new JScrollPane(table, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		frame.getContentPane().add(scrollPane);
 
@@ -379,15 +381,11 @@ public class TableVerify {
 					
 					mntmShowPollingWindow.setEnabled(false);
 					btnStartPolling.setText("Start Polling");
-					startPolling = false;
-					
+					startPolling = false;		
 					
 				}
-
-
 			}
 		});
-		
 		
 		
 		panel.add(progressLabel);
@@ -461,7 +459,7 @@ public class TableVerify {
 				
 				Object[][] tableModelData = new Object[tableChecker.getRowCount()][4];
 
-				System.out.println(tableChecker.getRowCount());
+				//System.out.println(tableChecker.getRowCount());
 				
 				int i = 0;
 				for(String sourceKey : sourceKeys)
@@ -477,9 +475,7 @@ public class TableVerify {
 				}
 
 				//DefaultTableModel model = (DefaultTableModel) table.getModel();
-
-
-				model.setDataVector(tableModelData, new Object[]{"source","URL", "View Data", "Progress"});
+				model.setDataVector(tableModelData, new Object[]{"Source","URL", "View Data", "Progress"});
 
 				table.getColumn("Progress").setCellRenderer(new ProgressCellRender_1());
 				
@@ -487,7 +483,6 @@ public class TableVerify {
 				table.getColumn("View Data").setCellRenderer(new ButtonRenderer());
 				table.getColumn("View Data").setCellEditor(new ButtonEditor(new JCheckBox(), table));
 				
-			
 				table.setVisible(true);
 
 				btnVerifySignature.setEnabled(true);
@@ -503,8 +498,6 @@ public class TableVerify {
 		btnVerifySignature.addActionListener(new ActionListener() {
 
 			public void actionPerformed(ActionEvent e) {
-
-
 
 				if(!ENV.MULTIPLE_PROVIDER_SUPPORT)
 				{

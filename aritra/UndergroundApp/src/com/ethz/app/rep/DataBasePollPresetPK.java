@@ -162,7 +162,7 @@ public class DataBasePollPresetPK extends JFrame {
 				catch (Exception e) 
 				{
 					e.printStackTrace();
-					textArea.append("\n".concat("Some other shit!"));						
+					textArea.append("\n".concat("Some other Problem!"));						
 				}
 
 			}

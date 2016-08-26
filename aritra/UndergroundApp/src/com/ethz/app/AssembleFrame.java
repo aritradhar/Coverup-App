@@ -64,6 +64,7 @@ public class AssembleFrame {
 	public byte[] decodedData;
 	public int dataLength;
 	public static boolean glassDone = false;
+	int dropletCount;
 	
 	public byte[] decodedDataWOPadding;
 	
@@ -114,7 +115,7 @@ public class AssembleFrame {
 		this.fountainSeed = Base64.getUrlDecoder().decode(seedStr);
 	}
 	
-	public AssembleFrame(String urlString, int dataLength) 
+	public AssembleFrame(String urlString, int dataLength, int dropletCount) 
 	{
 		this.urlString = urlString;
 		this.dataLength = dataLength;
@@ -123,6 +124,7 @@ public class AssembleFrame {
 		JSONObject jObject = TableChecker.URL_JSON_TABLE_MAP.get(urlString);
 		String dropletDirID = jObject.getString("dropletLoc");
 		JSONDirPath = ENV.APP_STORAGE_LOC + ENV.DELIM + dropletDirID;
+		this.dropletCount = dropletCount;
 		
 		this.independent = false;
 		System.out.println(JSONDirPath);
@@ -149,9 +151,11 @@ public class AssembleFrame {
 
 		JEditorPane textArea = new JEditorPane("text/html", "");
 		textArea.setForeground(Color.BLACK);
-		textArea.setFont(new Font("Consolas",Font.PLAIN, 32));
+		textArea.putClientProperty(JEditorPane.HONOR_DISPLAY_PROPERTIES, Boolean.TRUE);
+		textArea.setFont(new Font("Consolas",Font.PLAIN, 15));
 		//textArea.setLineWrap(true);
 		textArea.setEditable(false);
+		//scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 		scrollPane.setViewportView(textArea);
 
 		JPanel panel_1 = new JPanel();
@@ -448,7 +452,7 @@ public class AssembleFrame {
 				
 				String counterS = (String)JOptionPane.showInputDialog(frame, "Enter droplet count", "Droplet Generate", JOptionPane.PLAIN_MESSAGE, null, null, "50");
 				
-				int dropletCounter = 50;
+				int dropletCounter = dropletCount;
 				try
 				{
 					dropletCounter = Integer.parseInt(counterS);

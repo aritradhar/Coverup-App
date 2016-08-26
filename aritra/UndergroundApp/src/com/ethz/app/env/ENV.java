@@ -53,6 +53,8 @@ public class ENV {
 	public static final boolean MULTIPLE_PROVIDER_SUPPORT =  true;
 	public static final boolean AON_SUPPORT = true;
 	
+	public static final boolean EXPERIMENTAL = false;
+	
 	
 	static
 	{
