@@ -440,6 +440,15 @@ public class TableVerify {
 
 					return;
 				}
+				catch (NullPointerException e2) {
+					e2.printStackTrace();
+					JOptionPane.showMessageDialog(frame,
+							"Houston we have a problem.",
+							"Error",
+							JOptionPane.ERROR_MESSAGE);
+
+					return;
+				}
 
 				String[] urls = tableChecker.getURLsFromTable();
 				String[] sourceKeys = tableChecker.getOriginKeysFromTable();
