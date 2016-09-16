@@ -150,6 +150,7 @@ public class DataBasePollPresetPK extends JFrame {
 				} 
 				catch(NullPointerException ex)
 				{
+					ex.printStackTrace();
 					textArea.append("\n".concat("Table not exists"));		
 				}
 

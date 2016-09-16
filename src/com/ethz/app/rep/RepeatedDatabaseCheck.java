@@ -127,8 +127,15 @@ public class RepeatedDatabaseCheck {
 		}
 		catch(RuntimeException ex)
 		{
-			this.messaage.append(ex.getMessage());
-			return;
+			if(ex.getMessage().equalsIgnoreCase(ENV.MAGIC_BYTES_EXCEPTION_MESSAGE))
+			{
+				
+			}
+			else
+			{
+				this.messaage.append(ex.getMessage());
+				return;
+			}
 		}
 
 
