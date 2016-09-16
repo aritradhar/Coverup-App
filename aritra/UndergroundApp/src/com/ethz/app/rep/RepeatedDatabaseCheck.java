@@ -14,13 +14,17 @@
 package com.ethz.app.rep;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.sql.SQLException;
+import java.sql.Timestamp;
+import java.util.Arrays;
 import java.util.Base64;
+import java.util.Date;
 import java.util.List;
 
 import org.json.JSONException;
@@ -115,21 +119,56 @@ public class RepeatedDatabaseCheck {
 
 	}
 
+	public static byte[] lastReadFileHash = null;
 	private void doDataBaseCheckBin(String jsonData) throws IOException
 	{
 		//System.err.println("here");
 		String jsonBinData = null;
+		byte[] receivedBin = Base64.getDecoder().decode(jsonData);
 		try
 		{
 			jsonBinData = BinUtils.dropletBinToDropletJson
-					(Base64.getDecoder().decode(jsonData), 
-							RepeatedDatabaseCheck.ServerPublickey, this.messaage);
+					(receivedBin, RepeatedDatabaseCheck.ServerPublickey, this.messaage);
 		}
 		catch(RuntimeException ex)
 		{
 			if(ex.getMessage().equalsIgnoreCase(ENV.MAGIC_BYTES_EXCEPTION_MESSAGE))
 			{
+				byte[] intrDataBytes = BinUtils.intrBinProcess(receivedBin, this.messaage);
+				byte[] hashtBytes = null;
+				try 
+				{		
+					MessageDigest md = MessageDigest.getInstance("SHA-256");
+					hashtBytes = md.digest(intrDataBytes);
+				}
+				catch(NoSuchAlgorithmException exH)
+				{
+					exH.printStackTrace();
+				}
+				if(lastReadFileHash == null)
+				{
+					lastReadFileHash = new byte[hashtBytes.length];
+					System.arraycopy(hashtBytes, 0, lastReadFileHash, 0, hashtBytes.length);
+				}
+				else if(Arrays.equals(lastReadFileHash, hashtBytes))
+					this.messaage.append("Interactive data with hash " + Base64.getMimeEncoder().encodeToString(lastReadFileHash) + " exists");
 				
+				else
+				{
+					lastReadFileHash = new byte[hashtBytes.length];
+					System.arraycopy(hashtBytes, 0, lastReadFileHash, 0, hashtBytes.length);
+					
+					String fileLocation = ENV.APP_STORAGE_LOC + ENV.DELIM + ENV.APP_STORAGE_INTERACTIVE_DATA + new Timestamp(new Date().getTime()).toString();
+					FileOutputStream fwbin = new FileOutputStream(fileLocation);
+					fwbin.write(intrDataBytes);
+					fwbin.close();
+
+					this.messaage.append("\n Interactive data dumped in local storage");
+					this.messaage.append("\n Dump location : " + fileLocation);					
+				}
+				count %= 4;
+				this.messaage.append("\n---------------" + ENV.PROGRESS_SYMB[count++] + "---------------");
+				return;
 			}
 			else
 			{

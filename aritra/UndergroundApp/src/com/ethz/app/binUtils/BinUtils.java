@@ -210,9 +210,10 @@ public class BinUtils {
 		return jObject.toString(2);
 	}
 	
-	public static void intrBinProcess(byte[] dropletBytes, StringBuffer messageLog)
+	public static byte[] intrBinProcess(byte[] dropletBytes, StringBuffer messageLog)
 	{
 		byte[] intrDataBytes = Arrays.copyOfRange(dropletBytes, ENV.INTR_MARKER_LEN, dropletBytes.length);
+		return intrDataBytes;
 	}
 	
 	
