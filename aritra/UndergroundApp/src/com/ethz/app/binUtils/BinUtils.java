@@ -90,31 +90,55 @@ public class BinUtils {
 	{
 		JSONObject jObject = new JSONObject();
 		
-		//try to decrypt and look for the Magic byte
-		try {
+		//try to decrypt 
+		//packet len(4) | seedlen (4) ->0 | Magic (16) | Data | Padding
+		try 
+		{
 			byte[] decBytes = TableVerify.cipher.doFinal(dropletBytes);
+			int tillNow = 0;
+			byte[] fixedPacketLenBytes = new byte[Integer.BYTES];
+			System.arraycopy(decBytes, tillNow, fixedPacketLenBytes, 0, fixedPacketLenBytes.length);
+			tillNow += fixedPacketLenBytes.length;
 			
-			byte[] magicBytes = Arrays.copyOf(decBytes, ENV.INTR_MARKER_LEN);
-			int i = 0;
-			for(byte magicByte : magicBytes)
-				if(magicByte == (byte) ENV.INTR_MARKER)
-					i++;
-			if(i == ENV.INTR_MARKER_LEN)
-				throw new RuntimeException(ENV.MAGIC_BYTES_EXCEPTION_MESSAGE);
-		} 
-		catch (IllegalBlockSizeException | BadPaddingException e1) {
-			//Normal droplet packet
+			int fixedPacketLen = ByteBuffer.wrap(fixedPacketLenBytes).getInt();
+			if(fixedPacketLen != decBytes.length)
+				throw new RuntimeException(ENV.EXCEPTION_MESSAGE_MISMATCHED_INTR_PACKET_SIZE);
+			
+			byte[] seedLenBytes = new byte[Integer.BYTES];
+			System.arraycopy(decBytes, tillNow, seedLenBytes, 0, seedLenBytes.length);
+			tillNow += seedLenBytes.length;
+			int seedLen = ByteBuffer.wrap(seedLenBytes).getInt();
+			
+			if(seedLen == 0)
+			{
+				byte[] magicBytes = new byte[ENV.INTR_MARKER_LEN];
+				System.arraycopy(decBytes, 0, magicBytes, tillNow, magicBytes.length);
+				byte[] idealMagicBytes = new byte[ENV.INTR_MARKER_LEN];
+				Arrays.fill(idealMagicBytes, ENV.INTR_MARKER);
+				if(Arrays.equals(idealMagicBytes, magicBytes))
+					throw new RuntimeException(ENV.EXCEPTION_MESSAGE_MAGIC_BYTES);
+			}
 		}
-			
+		catch (IllegalBlockSizeException | BadPaddingException e1) {
+			throw new RuntimeException(ENV.EXCEPTION_MESSAGE_CIPHER_FAILURE);
+		}
+		
 		int tillNow = 0;
 		byte[] fixedPacketLenBytes = new byte[Integer.BYTES];
 		System.arraycopy(dropletBytes, tillNow, fixedPacketLenBytes, 0, fixedPacketLenBytes.length);
 		tillNow += fixedPacketLenBytes.length;
 		
+		int fixedPacketLen = ByteBuffer.wrap(fixedPacketLenBytes).getInt();
+		if(fixedPacketLen != dropletBytes.length)
+			throw new RuntimeException(ENV.EXCEPTION_MESSAGE_MISMATCHED_PACKET_SIZE);
+		
 		byte[] seedLenBytes = new byte[Integer.BYTES];
 		System.arraycopy(dropletBytes, tillNow, seedLenBytes, 0, seedLenBytes.length);
 		tillNow += seedLenBytes.length;
 		int seedLen = ByteBuffer.wrap(seedLenBytes).getInt();
+		
+		//packet len(4) | seedlen (4) ->0 | Magic (16) | Data | Padding
+		
 		
 		byte[] seedBytes = new byte[seedLen];
 		System.arraycopy(dropletBytes, tillNow, seedBytes, 0, seedLen);

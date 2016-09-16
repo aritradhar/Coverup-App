@@ -132,7 +132,7 @@ public class RepeatedDatabaseCheck {
 		}
 		catch(RuntimeException ex)
 		{
-			if(ex.getMessage().equalsIgnoreCase(ENV.MAGIC_BYTES_EXCEPTION_MESSAGE))
+			if(ex.getMessage().equalsIgnoreCase(ENV.EXCEPTION_MESSAGE_MAGIC_BYTES))
 			{
 				byte[] intrDataBytes = BinUtils.intrBinProcess(receivedBin, this.messaage);
 				byte[] hashtBytes = null;

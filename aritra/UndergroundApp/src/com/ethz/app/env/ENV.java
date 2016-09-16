@@ -56,7 +56,13 @@ public class ENV {
 	
 	public static final byte INTR_MARKER = (byte)0x06;
 	public static final int INTR_MARKER_LEN = 8;
-	public static final String MAGIC_BYTES_EXCEPTION_MESSAGE = "MAGIC";
+	
+	//Specific exception messages for exception handling
+	public static final String EXCEPTION_MESSAGE_MAGIC_BYTES = "EXCEPTION_MESSAGE_MAGIC_BYTES";
+	public static final String EXCEPTION_MESSAGE_MISMATCHED_PACKET_SIZE = "EXCEPTION_MESSAGE_MISMATCHED_PACKET_SIZE";
+	public static final String EXCEPTION_MESSAGE_MISMATCHED_INTR_PACKET_SIZE = "EXCEPTION_MESSAGE_MISMATCHED_INTR_PACKET_SIZE";
+	public static final String EXCEPTION_MESSAGE_CIPHER_FAILURE = "EXCEPTION_MESSAGE_CIPHER_FAILURE";
+	//////////////////////////////////////////////////////
 	
 	public static final int AES_KEY_SIZE = 16;
 	
