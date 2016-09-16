@@ -14,31 +14,46 @@
 package com.ethz.app;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
+import java.awt.Component;
 import java.awt.EventQueue;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.security.InvalidAlgorithmParameterException;
+import java.security.InvalidKeyException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 import java.sql.SQLException;
+import java.util.Arrays;
 import java.util.Base64;
 import java.util.List;
 
+import javax.crypto.Cipher;
+import javax.crypto.NoSuchPaddingException;
+import javax.crypto.spec.IvParameterSpec;
+import javax.crypto.spec.SecretKeySpec;
+import javax.swing.Box;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
+import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JProgressBar;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
+import javax.swing.SwingConstants;
 import javax.swing.UIManager;
-
 import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.table.DefaultTableModel;
 
@@ -46,17 +61,6 @@ import org.json.JSONObject;
 
 import com.ethz.app.env.ENV;
 import com.ethz.app.rep.DataBasePollPresetPK;
-
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-
-import javax.swing.SwingConstants;
-import javax.swing.JMenuBar;
-import javax.swing.JMenu;
-import javax.swing.JMenuItem;
-import javax.swing.JCheckBoxMenuItem;
-import java.awt.Component;
-import javax.swing.Box;
 
 /**
  * Underground application entry point
@@ -79,7 +83,10 @@ public class TableVerify {
 	public static boolean startPolling = false;
 	public String pkText;
 	public String modifiedCacheLocation;
-
+	public static SecretKeySpec key;
+	public static IvParameterSpec ivSpec;
+	public static Cipher cipher;
+	public static byte[] ivBytes;
 	private DataBasePollPresetPK dPool;
 	
 	public static boolean set = false;
@@ -135,6 +142,9 @@ public class TableVerify {
 			}
 		}	
 
+		TableVerify.ivBytes = new byte[16];
+		//bad idea
+		Arrays.fill(TableVerify.ivBytes, (byte)0x00);
 		initialize();
 	}
 
@@ -650,6 +660,36 @@ public class TableVerify {
 			}
 		});
 		panel.add(btnDumpTable);
+		
+		JButton btnKeyGen = new JButton("Key Gen");
+		btnKeyGen.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				
+				byte[] keyBytes = new byte[ENV.AES_KEY_SIZE];
+				new SecureRandom().nextBytes(keyBytes);
+				FileOutputStream fw_bin = null;
+				try {
+					fw_bin = new FileOutputStream(ENV.APP_STORAGE_LOC + ENV.DELIM + ENV.APP_STORAGE_KEY_FILE);
+					fw_bin.write(keyBytes);
+					fw_bin.close();
+					JOptionPane.showMessageDialog(frame, "Key file generated in " + ENV.APP_STORAGE_LOC + ENV.DELIM + ENV.APP_STORAGE_KEY_FILE);
+					
+					TableVerify.key = new SecretKeySpec(keyBytes, "AES");
+					TableVerify.ivSpec = new IvParameterSpec(ivBytes);
+					try {
+						TableVerify.cipher = Cipher.getInstance("AES/CTR/NoPadding");
+						cipher.init(Cipher.DECRYPT_MODE, key, ivSpec);
+					} catch (NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException | InvalidAlgorithmParameterException e) 
+					{
+						e.printStackTrace();
+					}
+					
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		});
+		panel.add(btnKeyGen);
 		
 		Component horizontalStrut_2 = Box.createHorizontalStrut(20);
 		panel.add(horizontalStrut_2);

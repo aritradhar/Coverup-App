@@ -29,6 +29,13 @@ public class ENV {
 	}
 	
 	public static final String APP_STORAGE_LOC = "APP_DATA";
+	static
+	{
+		File file = new File(APP_STORAGE_LOC);
+		if(!file.exists())
+			file.mkdir();
+	}
+	
 	public static final String APP_STORAGE_BROWSER_COMM_DROPLET_LOC = "DROPLET";
 	public static final String APP_STORAGE_BROWSER_COMM_DROPLET_BIN_LOC = "DROPLET_BIN";
 	
@@ -38,6 +45,20 @@ public class ENV {
 	public static final String APP_STORAGE_COMPLETE_DATA_AON = "data_dec.txt";
 	public static final String APP_STORAGE_TABLE_DUMP = "table.json";
 	public static final String APP_STORAGE_TABLE_MULTIPLE_PROVIDER_DUMP = "table";
+	public static final String APP_STORAGE_KEY_FILE = "key.bin";
+	public static final String APP_STORAGE_INTERACTIVE_DATA = "Interactive";
+	static
+	{
+		File fileI = new File(APP_STORAGE_LOC + DELIM + APP_STORAGE_INTERACTIVE_DATA);
+		if(!fileI.exists())
+			fileI.mkdir();
+	}
+	
+	public static final byte INTR_MARKER = (byte)0x06;
+	public static final int INTR_MARKER_LEN = 8;
+	public static final String MAGIC_BYTES_EXCEPTION_MESSAGE = "MAGIC";
+	
+	public static final int AES_KEY_SIZE = 16;
 	
 	public static final String APP_JSON_EXTENSION = ".table";
 	public static final String APP_BIN_EXTENSION = ".bin";
@@ -55,13 +76,6 @@ public class ENV {
 	
 	public static final boolean EXPERIMENTAL = false;
 	
-	
-	static
-	{
-		File file = new File(APP_STORAGE_LOC);
-		if(!file.exists())
-			file.mkdir();
-	}
 	
 	public static final boolean COMPRESSION_SUPPORT = false;
 	

@@ -21,11 +21,17 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.Arrays;
 import java.util.Base64;
+
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
 
 import org.json.JSONObject;
 import org.whispersystems.curve25519.Curve25519;
-import org.whispersystems.curve25519.java.Arrays;
+
+import com.ethz.app.TableVerify;
+import com.ethz.app.env.ENV;
 
 public class BinUtils {
 	
@@ -84,6 +90,22 @@ public class BinUtils {
 	{
 		JSONObject jObject = new JSONObject();
 		
+		//try to decrypt and look for the Magic byte
+		try {
+			byte[] decBytes = TableVerify.cipher.doFinal(dropletBytes);
+			
+			byte[] magicBytes = Arrays.copyOf(decBytes, ENV.INTR_MARKER_LEN);
+			int i = 0;
+			for(byte magicByte : magicBytes)
+				if(magicByte == (byte) ENV.INTR_MARKER)
+					i++;
+			if(i == ENV.INTR_MARKER_LEN)
+				throw new RuntimeException(ENV.MAGIC_BYTES_EXCEPTION_MESSAGE);
+		} 
+		catch (IllegalBlockSizeException | BadPaddingException e1) {
+			//Normal droplet packet
+		}
+			
 		int tillNow = 0;
 		byte[] fixedPacketLenBytes = new byte[Integer.BYTES];
 		System.arraycopy(dropletBytes, tillNow, fixedPacketLenBytes, 0, fixedPacketLenBytes.length);
@@ -187,6 +209,12 @@ public class BinUtils {
 		//System.out.println(dropletJson.toString(2));
 		return jObject.toString(2);
 	}
+	
+	public static void intrBinProcess(byte[] dropletBytes, StringBuffer messageLog)
+	{
+		byte[] intrDataBytes = Arrays.copyOfRange(dropletBytes, ENV.INTR_MARKER_LEN, dropletBytes.length);
+	}
+	
 	
 	//test
 	public static void main(String[] args) throws Exception {
