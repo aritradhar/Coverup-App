@@ -289,6 +289,17 @@ public class TableVerify {
 		JCheckBoxMenuItem menuBackgroundAssembling = new JCheckBoxMenuItem("Background Assembling");
 		mnSettings.add(menuBackgroundAssembling);
 		
+		JMenuItem mntmCovertBrowsing = new JMenuItem("Covert Browsing");
+		
+		mntmCovertBrowsing.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				
+				
+				
+			}
+		});
+		mnSettings.add(mntmCovertBrowsing);
+		
 		
 		JMenu mnHelp = new JMenu("Help");
 		menuBar.add(mnHelp);

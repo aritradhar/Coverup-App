@@ -45,12 +45,17 @@ public class TableChecker
 	public static Map<String,Set<String>> SOURCE_KEY_URL_MAP = new HashMap<>();
 	//source key -> table | signature
 	public static Map<String, String[]> SOURCE_KEY_TABLE_SIGNATURE_MAP = new HashMap<>();
+	//source key -> slice table | slice table signature
+	public static Map<String, String[]> SOURCE_KEY_SLICE_TABLE_SIGNATURE_MAP = new HashMap<>();
 	//source key -> signature verification result
 	public static Map<String, Boolean> SOURCE_KEY_SIGNATURE_VERIFY_MAP = new HashMap<>();
 	
 	public String tableJson;
 	public String signature;
 
+	public String sliceJson;
+	public String sliceSignature;
+	
 	public String publicKeyString;
 	public byte[] ServerpublicKey;
 
@@ -82,6 +87,11 @@ public class TableChecker
 		
 		this.tableJson = jObject.getString("table");
 		this.signature = jObject.getString("signature");
+		this.sliceJson = jObject.getString("sliceTable");
+		this.sliceSignature = jObject.getString("sliceTableSignature");
+		
+		System.out.println(this.sliceJson);
+
 		this.setMapFromtableJSON();
 		this.tableDumpJson = jObject.toString(2);
 	}
@@ -103,6 +113,8 @@ public class TableChecker
 		}
 		this.tableJson = jObject.getString("table");
 		this.signature = jObject.getString("signature");
+		this.sliceJson = jObject.getString("sliceTable");
+		this.sliceSignature = jObject.getString("sliceTableSignature");
 		this.setMapFromtableJSON();
 		this.tableDumpJson = jObject.toString(2);
 	}
@@ -141,7 +153,10 @@ public class TableChecker
 			}
 			this.tableJson = jObject_local.getString("table");
 			this.signature = jObject_local.getString("signature");
+			this.sliceJson = jObject_local.getString("sliceTable");
+			this.sliceSignature = jObject_local.getString("sliceTableSignature");
 			SOURCE_KEY_TABLE_SIGNATURE_MAP.put(row[1], new String[]{this.tableJson, this.signature});
+			SOURCE_KEY_SLICE_TABLE_SIGNATURE_MAP.put(row[1], new String[]{this.sliceJson, this.sliceSignature});
 			this.setMapFromtableJSONMultipleProvider(new JSONObject(this.tableJson), row[1]);
 		}
 	}
@@ -163,7 +178,10 @@ public class TableChecker
 			
 			this.tableJson = jObject.getString("table");
 			this.signature = jObject.getString("signature");
+			this.sliceJson = jObject.getString("sliceTable");
+			this.sliceSignature = jObject.getString("sliceTableSignature");
 			SOURCE_KEY_TABLE_SIGNATURE_MAP.put(row[1], new String[]{this.tableJson, this.signature});
+			SOURCE_KEY_SLICE_TABLE_SIGNATURE_MAP.put(row[1], new String[]{this.sliceJson, this.sliceSignature});
 			
 			this.setMapFromtableJSONMultipleProvider(new JSONObject(this.tableJson), row[1]);
 		}
