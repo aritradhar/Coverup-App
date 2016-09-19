@@ -66,6 +66,9 @@ public class TableChecker
 
 		JSONObject jObject = null;
 		
+		if(ffce.jsonData == null)
+			throw new RuntimeException(ENV.EXCEPTION_MESSAGE_EMPTY_TABLE);
+		
 		try
 		{
 			jObject = new JSONObject(ffce.jsonData);
@@ -89,8 +92,15 @@ public class TableChecker
 		ffce.getFirefoxCacheFile(loc);
 		ffce.conncetDatabase(ENV.DATABASE_TABLE_COL, loc);
 
-		JSONObject jObject = new JSONObject(ffce.jsonData);
-
+		JSONObject jObject = null;
+		try
+		{
+			jObject = new JSONObject(ffce.jsonData);
+		}
+		catch(JSONException ex)
+		{
+			throw new JSONException(ENV.EXCEPTION_MESSAGE_EMPTY_TABLE);
+		}
 		this.tableJson = jObject.getString("table");
 		this.signature = jObject.getString("signature");
 		this.setMapFromtableJSON();

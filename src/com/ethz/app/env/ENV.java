@@ -62,6 +62,8 @@ public class ENV {
 	public static final String EXCEPTION_MESSAGE_MISMATCHED_PACKET_SIZE = "EXCEPTION_MESSAGE_MISMATCHED_PACKET_SIZE";
 	public static final String EXCEPTION_MESSAGE_MISMATCHED_INTR_PACKET_SIZE = "EXCEPTION_MESSAGE_MISMATCHED_INTR_PACKET_SIZE";
 	public static final String EXCEPTION_MESSAGE_CIPHER_FAILURE = "EXCEPTION_MESSAGE_CIPHER_FAILURE";
+	
+	public static final String EXCEPTION_MESSAGE_EMPTY_TABLE = "EMPTY_TABLE";
 	//////////////////////////////////////////////////////
 	
 	public static final int AES_KEY_SIZE = 16;

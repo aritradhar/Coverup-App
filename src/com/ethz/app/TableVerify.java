@@ -19,9 +19,13 @@ import java.awt.EventQueue;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.MessageDigest;
@@ -57,6 +61,7 @@ import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.table.DefaultTableModel;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.ethz.app.env.ENV;
@@ -119,6 +124,49 @@ public class TableVerify {
 	//@SuppressWarnings("static-access")
 	public TableVerify() throws NoSuchAlgorithmException, SQLException {
 
+		TableVerify.ivBytes = new byte[16];
+		Arrays.fill(TableVerify.ivBytes, (byte)0x00);
+		
+		//load the key for AES if it exists
+		String KeyFileLoc = ENV.APP_STORAGE_LOC + ENV.DELIM + ENV.APP_STORAGE_KEY_FILE;
+		File keyFile = new File(KeyFileLoc);
+		
+		byte[] keyBytes = null;
+		if(!keyFile.exists())
+		{
+			keyBytes = new byte[ENV.AES_KEY_SIZE];
+			new SecureRandom().nextBytes(keyBytes);
+			FileOutputStream fw_bin = null;
+			try 
+			{
+				fw_bin = new FileOutputStream(KeyFileLoc);
+				fw_bin.write(keyBytes);
+				fw_bin.close();
+				JOptionPane.showMessageDialog(frame, "Key file generated in " + KeyFileLoc);
+
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+		else
+		{	
+			try {
+				keyBytes = Files.readAllBytes(keyFile.toPath());
+			} catch (IOException e) {
+				e.printStackTrace();
+			}			
+		}
+		
+		TableVerify.key = new SecretKeySpec(keyBytes, "AES");
+		TableVerify.ivSpec = new IvParameterSpec(ivBytes);
+		try {
+			TableVerify.cipher = Cipher.getInstance("AES/CTR/NoPadding");
+			cipher.init(Cipher.DECRYPT_MODE, key, ivSpec);
+		} catch (NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException | InvalidAlgorithmParameterException e) 
+		{
+			e.printStackTrace();
+		}
+		
 		TableVerify.tableChecker = new TableChecker();
 
 		try
@@ -127,18 +175,23 @@ public class TableVerify {
 		}
 		catch(Exception ex)
 		{
-			chooser = new JFileChooser(); 
-			chooser.setCurrentDirectory(new java.io.File("."));
-			chooser.setDialogTitle("Defalt derectory discovery fail. Select Firefox cache dir");
-			chooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
+			if(ex instanceof RuntimeException && ex.getMessage().equals(ENV.EXCEPTION_MESSAGE_EMPTY_TABLE))
+				JOptionPane.showMessageDialog(frame, "Database empty.");
+			else
+			{
+				chooser = new JFileChooser(); 
+				chooser.setCurrentDirectory(new java.io.File("."));
+				chooser.setDialogTitle("Defalt derectory discovery fail. Select Firefox cache dir");
+				chooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
 
-			chooser.setAcceptAllFileFilterUsed(false);  
-			chooser.setAcceptAllFileFilterUsed(false);  
+				chooser.setAcceptAllFileFilterUsed(false);  
+				chooser.setAcceptAllFileFilterUsed(false);  
 
-			if (chooser.showOpenDialog(frame) == JFileChooser.APPROVE_OPTION) 
-			{ 		
-				String path = chooser.getSelectedFile().getAbsolutePath();
-				TableVerify.tableChecker.loadtableData(path);
+				if (chooser.showOpenDialog(frame) == JFileChooser.APPROVE_OPTION) 
+				{ 		
+					String path = chooser.getSelectedFile().getAbsolutePath();
+					TableVerify.tableChecker.loadtableData(path);
+				}
 			}
 		}	
 
