@@ -325,7 +325,6 @@ public class TableVerify {
 
 		btnSetServerPk.addActionListener(new ActionListener() 
 		{
-
 			public void actionPerformed(ActionEvent e) 
 			{
 
