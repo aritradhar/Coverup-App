@@ -125,6 +125,8 @@ public class RepeatedDatabaseCheck {
 		//System.err.println("here");
 		String jsonBinData = null;
 		byte[] receivedBin = Base64.getDecoder().decode(jsonData);
+		//System.out.println(receivedBin.length);
+		
 		try
 		{
 			jsonBinData = BinUtils.dropletBinToDropletJson
@@ -132,7 +134,13 @@ public class RepeatedDatabaseCheck {
 		}
 		catch(RuntimeException ex)
 		{
-			if(ex.getMessage().equalsIgnoreCase(ENV.EXCEPTION_MESSAGE_MAGIC_BYTES))
+			ex.printStackTrace();
+			if(ex.getMessage() == null)
+			{
+				this.messaage.append("Data not according to spec: garbage");
+				return;
+			}
+			else if(ex.getMessage().equalsIgnoreCase(ENV.EXCEPTION_MESSAGE_MAGIC_BYTES))
 			{
 				byte[] intrDataBytes = BinUtils.intrBinProcess(receivedBin, this.messaage);
 				byte[] hashtBytes = null;

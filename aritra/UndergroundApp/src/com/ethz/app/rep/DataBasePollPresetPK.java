@@ -141,7 +141,6 @@ public class DataBasePollPresetPK extends JFrame {
 				// TODO Auto-generated method stub
 				try 
 				{
-
 					RepeatedDatabaseCheck t = new RepeatedDatabaseCheck(DataBasePollPresetPK.databaseFileLocation);
 					progress %= 4;
 					progressLabel.setText(new String(new char[]{ENV.PROGRESS_SYMB[progress++]}));

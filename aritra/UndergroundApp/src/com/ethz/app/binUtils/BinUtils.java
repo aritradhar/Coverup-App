@@ -92,35 +92,38 @@ public class BinUtils {
 		
 		//try to decrypt 
 		//packet len(4) | seedlen (4) ->0 | Magic (16) | Data | Padding
-		try 
+		if(TableVerify.cipher != null)
 		{
-			byte[] decBytes = TableVerify.cipher.doFinal(dropletBytes);
-			int tillNow = 0;
-			byte[] fixedPacketLenBytes = new byte[Integer.BYTES];
-			System.arraycopy(decBytes, tillNow, fixedPacketLenBytes, 0, fixedPacketLenBytes.length);
-			tillNow += fixedPacketLenBytes.length;
-			
-			int fixedPacketLen = ByteBuffer.wrap(fixedPacketLenBytes).getInt();
-			if(fixedPacketLen != decBytes.length)
-				throw new RuntimeException(ENV.EXCEPTION_MESSAGE_MISMATCHED_INTR_PACKET_SIZE);
-			
-			byte[] seedLenBytes = new byte[Integer.BYTES];
-			System.arraycopy(decBytes, tillNow, seedLenBytes, 0, seedLenBytes.length);
-			tillNow += seedLenBytes.length;
-			int seedLen = ByteBuffer.wrap(seedLenBytes).getInt();
-			
-			if(seedLen == 0)
+			try 
 			{
-				byte[] magicBytes = new byte[ENV.INTR_MARKER_LEN];
-				System.arraycopy(decBytes, 0, magicBytes, tillNow, magicBytes.length);
-				byte[] idealMagicBytes = new byte[ENV.INTR_MARKER_LEN];
-				Arrays.fill(idealMagicBytes, ENV.INTR_MARKER);
-				if(Arrays.equals(idealMagicBytes, magicBytes))
-					throw new RuntimeException(ENV.EXCEPTION_MESSAGE_MAGIC_BYTES);
+				byte[] decBytes = TableVerify.cipher.doFinal(dropletBytes);
+				int tillNow = 0;
+				byte[] fixedPacketLenBytes = new byte[Integer.BYTES];
+				System.arraycopy(decBytes, tillNow, fixedPacketLenBytes, 0, fixedPacketLenBytes.length);
+				tillNow += fixedPacketLenBytes.length;
+
+				int fixedPacketLen = ByteBuffer.wrap(fixedPacketLenBytes).getInt();
+				if(fixedPacketLen != decBytes.length)
+					throw new RuntimeException(ENV.EXCEPTION_MESSAGE_MISMATCHED_INTR_PACKET_SIZE);
+
+				byte[] seedLenBytes = new byte[Integer.BYTES];
+				System.arraycopy(decBytes, tillNow, seedLenBytes, 0, seedLenBytes.length);
+				tillNow += seedLenBytes.length;
+				int seedLen = ByteBuffer.wrap(seedLenBytes).getInt();
+
+				if(seedLen == 0)
+				{
+					byte[] magicBytes = new byte[ENV.INTR_MARKER_LEN];
+					System.arraycopy(decBytes, 0, magicBytes, tillNow, magicBytes.length);
+					byte[] idealMagicBytes = new byte[ENV.INTR_MARKER_LEN];
+					Arrays.fill(idealMagicBytes, ENV.INTR_MARKER);
+					if(Arrays.equals(idealMagicBytes, magicBytes))
+						throw new RuntimeException(ENV.EXCEPTION_MESSAGE_MAGIC_BYTES);
+				}
 			}
-		}
-		catch (IllegalBlockSizeException | BadPaddingException e1) {
-			throw new RuntimeException(ENV.EXCEPTION_MESSAGE_CIPHER_FAILURE);
+			catch (IllegalBlockSizeException | BadPaddingException e1) {
+				throw new RuntimeException(ENV.EXCEPTION_MESSAGE_CIPHER_FAILURE);
+			}
 		}
 		
 		int tillNow = 0;
@@ -129,6 +132,8 @@ public class BinUtils {
 		tillNow += fixedPacketLenBytes.length;
 		
 		int fixedPacketLen = ByteBuffer.wrap(fixedPacketLenBytes).getInt();
+		
+		//System.out.println(fixedPacketLen);
 		if(fixedPacketLen != dropletBytes.length)
 			throw new RuntimeException(ENV.EXCEPTION_MESSAGE_MISMATCHED_PACKET_SIZE);
 		
