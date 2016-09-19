@@ -103,9 +103,6 @@ public class BinUtils {
 				tillNow += fixedPacketLenBytes.length;
 
 				int fixedPacketLen = ByteBuffer.wrap(fixedPacketLenBytes).getInt();
-				if(fixedPacketLen != decBytes.length)
-					throw new RuntimeException(ENV.EXCEPTION_MESSAGE_MISMATCHED_INTR_PACKET_SIZE);
-
 				byte[] seedLenBytes = new byte[Integer.BYTES];
 				System.arraycopy(decBytes, tillNow, seedLenBytes, 0, seedLenBytes.length);
 				tillNow += seedLenBytes.length;
@@ -113,13 +110,17 @@ public class BinUtils {
 
 				if(seedLen == 0)
 				{
+					if(fixedPacketLen != decBytes.length)
+						throw new RuntimeException(ENV.EXCEPTION_MESSAGE_MISMATCHED_INTR_PACKET_SIZE);
+					
 					byte[] magicBytes = new byte[ENV.INTR_MARKER_LEN];
 					System.arraycopy(decBytes, 0, magicBytes, tillNow, magicBytes.length);
 					byte[] idealMagicBytes = new byte[ENV.INTR_MARKER_LEN];
 					Arrays.fill(idealMagicBytes, ENV.INTR_MARKER);
+					
 					if(Arrays.equals(idealMagicBytes, magicBytes))
 						throw new RuntimeException(ENV.EXCEPTION_MESSAGE_MAGIC_BYTES);
-				}
+				}						
 			}
 			catch (IllegalBlockSizeException | BadPaddingException e1) {
 				throw new RuntimeException(ENV.EXCEPTION_MESSAGE_CIPHER_FAILURE);
