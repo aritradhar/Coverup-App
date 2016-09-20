@@ -50,6 +50,8 @@ public class ENV {
 	public static final String APP_STORAGE_SLICE_TABLE_LOC = "SLICE_TABLE";
 	public static final String APP_STORAGE_SLICE_TABLE = "sliceTable.txt";
 	public static final String APP_STORAGE_COVERT_BROWSER_START_PAGE = "sliceTableHTML.htm";
+	public static final String APP_STORAGE_SLICE_ID_FILES_LOC = "SLICE_ID";
+	
 	static
 	{
 		File fileI = new File(APP_STORAGE_LOC + DELIM + APP_STORAGE_INTERACTIVE_DATA);
@@ -58,6 +60,9 @@ public class ENV {
 		File fileSlice = new File(APP_STORAGE_LOC + DELIM + APP_STORAGE_SLICE_TABLE_LOC);
 		if(!fileSlice.exists())
 			fileSlice.mkdir();
+		File fileSliceID = new File(APP_STORAGE_LOC + DELIM + APP_STORAGE_SLICE_ID_FILES_LOC);
+		if(!fileSliceID.exists())
+			fileSliceID.mkdir();
 	}
 	
 	public static final byte INTR_MARKER = (byte)0x06;
