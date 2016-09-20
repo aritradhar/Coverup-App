@@ -19,8 +19,10 @@ import org.eclipse.swt.browser.LocationEvent;
 import org.eclipse.swt.browser.LocationListener;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -244,11 +246,18 @@ public class CovertBrowser {
 				else
 				{
 					try {					
-						long id =  new Random().nextLong();
-						id = (id < 0) ? id * -1 : id;
-						FileWriter fw = new FileWriter(ENV.APP_STORAGE_LOC + ENV.DELIM + ENV.APP_STORAGE_SLICE_ID_FILES_LOC + ENV.DELIM + id + ".txt");
+
+						FileOutputStream fw = new FileOutputStream(ENV.APP_STORAGE_LOC + ENV.DELIM + 
+								ENV.APP_STORAGE_SLICE_ID_FILES_LOC + ENV.DELIM + ENV.APP_STORAGE_SLICE_ID_FILE);
+						byte[] out = new byte[Long.BYTES * sliceIdSet.size()];
+						int tillNow = 0;
 						for(String sliceId : sliceIdSet)
-							fw.append(sliceId + ",");
+						{
+							byte[] sliceBytes = ByteBuffer.allocate(Long.BYTES).putLong(Long.parseLong(sliceId)).array();
+							System.arraycopy(sliceBytes, 0, out, tillNow, sliceBytes.length);
+							tillNow += sliceBytes.length;
+						}
+						fw.write(out);
 						fw.close();
 					} catch (IOException e1) {
 						// TODO Auto-generated catch block
@@ -259,6 +268,9 @@ public class CovertBrowser {
 					messageBox.setMessage("Slice ids dispatched in local storage");
 					messageBox.setText("Message");
 					messageBox.open();
+					
+					sliceIdSet.clear();
+					lbllinks.setText(new Integer(sliceIdSet.size()).toString());
 				}
 			}
 		});
