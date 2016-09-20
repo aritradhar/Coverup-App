@@ -92,6 +92,19 @@ public class CovertBrowser {
 		createContents();
 		Image small = new Image(display,"assets//hb.jpg");
 		shell.setImage(small);    
+		
+		Button backButton = new Button(shell, SWT.NONE);
+		backButton.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent arg0) {
+			}
+		});
+		backButton.setBounds(10, 61, 35, 30);
+		backButton.setText("<-");
+		
+		Button forwardButton = new Button(shell, SWT.NONE);
+		forwardButton.setBounds(52, 61, 35, 30);
+		forwardButton.setText("->");
 
 		shell.open();
 		shell.layout();
@@ -107,7 +120,7 @@ public class CovertBrowser {
 	 */
 	protected void createContents() {
 		shell = new Shell();
-		shell.setSize(1442, 917);
+		shell.setSize(1459, 1003);
 		shell.setText("Covert Browser");
 
 		shell.addDisposeListener(new DisposeListener() {
@@ -128,7 +141,7 @@ public class CovertBrowser {
 		
 		Browser browser = new Browser(shell, SWT.NONE);
 
-		browser.setBounds(10, 61, 1404, 799);
+		browser.setBounds(10, 102, 1421, 844);
 		browser.setJavascriptEnabled(true);
 		//browser.setUrl("C:\\Users\\Aritra\\workspace_Mars_new\\UndergroundApp\\a.htm");
 		//browser.setUrl("http://forum.codecall.net/topic/57029-simple-java-web-browser/");
@@ -203,6 +216,7 @@ public class CovertBrowser {
 				}
 			}
 		});
+		
 		btnStop.setBounds(229, 15, 70, 30);
 		btnStop.setText("Stop");
 		
@@ -254,6 +268,10 @@ public class CovertBrowser {
 					} catch (IOException e) {
 						e.printStackTrace();
 					}
+					
+					File sliceStartPage = new File(sliceStartPageHtml);
+					String fullLocation = sliceStartPage.getAbsolutePath();
+					browser.setUrl(fullLocation);
 				}
 
 			}
