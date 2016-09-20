@@ -16,7 +16,6 @@ import java.io.BufferedReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
@@ -39,11 +38,9 @@ public class ProxyServer {
 		System.setProperty("https.proxyPort", new Integer(port).toString());
 	}
 	private int port;
-	private FileWriter fw;
 	public ProxyServer(int port) throws IOException 
 	{
 		this.port = port;
-		this.fw = new FileWriter(ENV.APP_STORAGE_LOC + ENV.DELIM + ENV.APP_STORAGE_SLICE_ID_FILES_LOC + ENV.DELIM + new Random().nextLong() + "txt");
 		//this.startServer();
 	}
 	private Thread serverThread;
@@ -139,7 +136,6 @@ public class ProxyServer {
 		{
 			//stop = false;
 			serverSocket.close();
-			this.fw.close();
 			System.err.println("Server closed");
 		}
 	}

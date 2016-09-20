@@ -19,10 +19,12 @@ import org.eclipse.swt.browser.LocationEvent;
 import org.eclipse.swt.browser.LocationListener;
 
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Random;
 import java.util.Set;
 
 import org.eclipse.swt.SWT;
@@ -142,7 +144,7 @@ public class CovertBrowser {
 		
 		Browser browser = new Browser(shell, SWT.NONE);
 
-		browser.setBounds(10, 102, 1421, 844);
+		browser.setBounds(10, 97, 1421, 849);
 		browser.setJavascriptEnabled(true);
 		//browser.setUrl("C:\\Users\\Aritra\\workspace_Mars_new\\UndergroundApp\\a.htm");
 		//browser.setUrl("http://forum.codecall.net/topic/57029-simple-java-web-browser/");
@@ -151,7 +153,7 @@ public class CovertBrowser {
 		composite.setBounds(10, 3, 1404, 52);
 
 		Label lbllinks = new Label(composite, SWT.NONE);
-		lbllinks.setBounds(1245, 20, 90, 20);
+		lbllinks.setBounds(1211, 20, 90, 20);
 		lbllinks.setText("#links");
 
 
@@ -226,6 +228,42 @@ public class CovertBrowser {
 	
 		btnLoadCovertStart.setBounds(974, 15, 167, 30);
 		btnLoadCovertStart.setText("Load covert start page");
+		
+		Button btnDispatch = new Button(composite, SWT.NONE);
+		btnDispatch.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				
+				if(sliceIdSet.size() == 0)
+				{
+					MessageBox messageBox = new MessageBox(shell ,SWT.ICON_INFORMATION);
+					messageBox.setMessage("Nothing to dispatch");
+					messageBox.setText("Message");
+					messageBox.open();
+				}
+				else
+				{
+					try {					
+						long id =  new Random().nextLong();
+						id = (id < 0) ? id * -1 : id;
+						FileWriter fw = new FileWriter(ENV.APP_STORAGE_LOC + ENV.DELIM + ENV.APP_STORAGE_SLICE_ID_FILES_LOC + ENV.DELIM + id + ".txt");
+						for(String sliceId : sliceIdSet)
+							fw.append(sliceId + ",");
+						fw.close();
+					} catch (IOException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					};
+
+					MessageBox messageBox = new MessageBox(shell ,SWT.ICON_INFORMATION);
+					messageBox.setMessage("Slice ids dispatched in local storage");
+					messageBox.setText("Message");
+					messageBox.open();
+				}
+			}
+		});
+		btnDispatch.setBounds(1314, 15, 90, 30);
+		btnDispatch.setText("Dispatch");
 		
 	
 		btnSetPort.addMouseListener(new MouseAdapter() {
