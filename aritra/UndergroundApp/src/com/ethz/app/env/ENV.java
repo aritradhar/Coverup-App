@@ -47,11 +47,17 @@ public class ENV {
 	public static final String APP_STORAGE_TABLE_MULTIPLE_PROVIDER_DUMP = "table";
 	public static final String APP_STORAGE_KEY_FILE = "key.bin";
 	public static final String APP_STORAGE_INTERACTIVE_DATA = "Interactive";
+	public static final String APP_STORAGE_SLICE_TABLE_LOC = "SLICE_TABLE";
+	public static final String APP_STORAGE_SLICE_TABLE = "sliceTable.txt";
+	public static final String APP_STORAGE_COVERT_BROWSER_START_PAGE = "sliceTableHTML.htm";
 	static
 	{
 		File fileI = new File(APP_STORAGE_LOC + DELIM + APP_STORAGE_INTERACTIVE_DATA);
 		if(!fileI.exists())
 			fileI.mkdir();
+		File fileSlice = new File(APP_STORAGE_LOC + DELIM + APP_STORAGE_SLICE_TABLE_LOC);
+		if(!fileSlice.exists())
+			fileSlice.mkdir();
 	}
 	
 	public static final byte INTR_MARKER = (byte)0x06;
