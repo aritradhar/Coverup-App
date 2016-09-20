@@ -64,6 +64,7 @@ import javax.swing.table.DefaultTableModel;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.ethz.app.covert.CovertBrowser;
 import com.ethz.app.env.ENV;
 import com.ethz.app.rep.DataBasePollPresetPK;
 
@@ -93,9 +94,9 @@ public class TableVerify {
 	public static Cipher cipher;
 	public static byte[] ivBytes;
 	private DataBasePollPresetPK dPool;
-	
+
 	public static boolean set = false;
-	
+
 	public static void main(String[] args) throws ClassNotFoundException, InstantiationException, IllegalAccessException, UnsupportedLookAndFeelException {
 
 		UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());	
@@ -126,11 +127,11 @@ public class TableVerify {
 
 		TableVerify.ivBytes = new byte[16];
 		Arrays.fill(TableVerify.ivBytes, (byte)0x00);
-		
+
 		//load the key for AES if it exists
 		String KeyFileLoc = ENV.APP_STORAGE_LOC + ENV.DELIM + ENV.APP_STORAGE_KEY_FILE;
 		File keyFile = new File(KeyFileLoc);
-		
+
 		byte[] keyBytes = null;
 		if(!keyFile.exists())
 		{
@@ -156,7 +157,7 @@ public class TableVerify {
 				e.printStackTrace();
 			}			
 		}
-		
+
 		TableVerify.key = new SecretKeySpec(keyBytes, "AES");
 		TableVerify.ivSpec = new IvParameterSpec(ivBytes);
 		try {
@@ -166,7 +167,7 @@ public class TableVerify {
 		{
 			e.printStackTrace();
 		}
-		
+
 		TableVerify.tableChecker = new TableChecker();
 
 		try
@@ -248,10 +249,10 @@ public class TableVerify {
 						frame,
 						"Set Database polling rate (ms), Default = 1000 ms, current = " + DataBasePollPresetPK.pollingRate + " ms"
 								+ "\nRestart polling o take effect",
-						"Polling rate",
-						JOptionPane.PLAIN_MESSAGE,
-						null,
-						null,
+								"Polling rate",
+								JOptionPane.PLAIN_MESSAGE,
+								null,
+								null,
 						"1000");
 
 				if(pollingRateString == null)
@@ -274,45 +275,50 @@ public class TableVerify {
 			}
 		});
 		mnSettings.add(mntmSetPollingRate);
-		
+
 		JMenuItem mntmShowPollingWindow = new JMenuItem("Show Polling Window");
 		mntmShowPollingWindow.setEnabled(false);
-		
+
 		mntmShowPollingWindow.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				
+
 				dPool.frame.setVisible(true);
 			}
 		});
 		mnSettings.add(mntmShowPollingWindow);
-		
+
 		JCheckBoxMenuItem menuBackgroundAssembling = new JCheckBoxMenuItem("Background Assembling");
 		mnSettings.add(menuBackgroundAssembling);
-		
+
 		JMenuItem mntmCovertBrowsing = new JMenuItem("Covert Browsing");
-		
+
 		mntmCovertBrowsing.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				
-				
-				
+
+				try {
+					CovertBrowser window = new CovertBrowser();
+					window.open();
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+
 			}
 		});
 		mnSettings.add(mntmCovertBrowsing);
-		
-		
+
+
 		JMenu mnHelp = new JMenu("Help");
 		menuBar.add(mnHelp);
-		
+
 		JMenuItem mntmAbout = new JMenuItem("About");
 		mntmAbout.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				
+
 				JOptionPane.showMessageDialog(frame, ENV.ABOUT_MESSAGE, "about", JOptionPane.INFORMATION_MESSAGE, frameIcon);
 			}
 		});
 		mnHelp.add(mntmAbout);
-		
+
 		///
 
 		JPanel panel_1 = new JPanel();
@@ -381,22 +387,22 @@ public class TableVerify {
 			public String getColumnName(int index) { 
 				return col[index]; 
 			} 
-			
+
 			@Override
 			public boolean isCellEditable(int row, int column) {
 				if(column != 2)
 					return false;
 				else
 					return true;
-				
+
 			}
 
 		};
-		
+
 		table = new JTable(model);
 		table.setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
 		table.setAutoCreateRowSorter(true);
-		
+
 		JScrollPane scrollPane = new JScrollPane(table, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		frame.getContentPane().add(scrollPane);
 
@@ -424,7 +430,7 @@ public class TableVerify {
 						JOptionPane.showMessageDialog(frame, "Server public key is not set");
 						return;
 					}
-					
+
 					//polling queue
 					EventQueue.invokeLater(new Runnable() 
 					{
@@ -449,23 +455,23 @@ public class TableVerify {
 				}
 				else
 				{
-					
+
 					dPool.stopPoll();
-					
+
 					mntmShowPollingWindow.setEnabled(false);
 					btnStartPolling.setText("Start Polling");
 					startPolling = false;		
-					
+
 				}
 			}
 		});
-		
-		
+
+
 		panel.add(progressLabel);
-		
+
 		Component horizontalStrut_1 = Box.createHorizontalStrut(20);
 		panel.add(horizontalStrut_1);
-		
+
 		Component horizontalStrut = Box.createHorizontalStrut(20);
 		panel.add(horizontalStrut);
 		panel.add(btnStartPolling);
@@ -525,7 +531,7 @@ public class TableVerify {
 
 				String[] urls = tableChecker.getURLsFromTable();
 				String[] sourceKeys = tableChecker.getOriginKeysFromTable();
-				
+
 				/*
 				 * Object[][] tableModelData = new Object[urls.length][4];
 
@@ -538,11 +544,11 @@ public class TableVerify {
 					tableModelData[i][3] = null;
 					i++;
 				}*/
-				
+
 				Object[][] tableModelData = new Object[tableChecker.getRowCount()][4];
 
 				//System.out.println(tableChecker.getRowCount());
-				
+
 				int i = 0;
 				for(String sourceKey : sourceKeys)
 				{
@@ -560,11 +566,11 @@ public class TableVerify {
 				model.setDataVector(tableModelData, new Object[]{"Source","URL", "View Data", "Progress"});
 
 				table.getColumn("Progress").setCellRenderer(new ProgressCellRender_1());
-				
+
 				//System.out.println(table.getValueAt(0, 0));
 				table.getColumn("View Data").setCellRenderer(new ButtonRenderer());
 				table.getColumn("View Data").setCellEditor(new ButtonEditor(new JCheckBox(), table));
-				
+
 				table.setVisible(true);
 
 				btnVerifySignature.setEnabled(true);
@@ -650,23 +656,27 @@ public class TableVerify {
 				if(!ENV.MULTIPLE_PROVIDER_SUPPORT)
 				{
 					String dump = tableChecker.tableDumpJson;
-					FileWriter fwTableDump = null;
+					String sliceTableDump = tableChecker.sliceJson;
+					FileWriter fwTableDump = null, fwSliceTableDump = null;
 					try {
 						fwTableDump = new FileWriter(ENV.APP_STORAGE_LOC + ENV.DELIM + ENV.APP_STORAGE_TABLE_DUMP);
+						fwSliceTableDump = new FileWriter(ENV.APP_STORAGE_LOC + ENV.DELIM + ENV.APP_STORAGE_SLICE_TABLE);
+						
 					} catch (IOException e1) {
 						JOptionPane.showMessageDialog(frame, "Error in file");
 						e1.printStackTrace();
 					}
 					try {
 						fwTableDump.append(dump);
+						fwSliceTableDump.append(sliceTableDump);
 					} catch (IOException e1) {
 						JOptionPane.showMessageDialog(frame, "Error in file");					
 						e1.printStackTrace();
 					}
 					try {
 						fwTableDump.close();
-
-						JOptionPane.showMessageDialog(frame, "Table dumped @ " + ENV.APP_STORAGE_LOC + ENV.DELIM + ENV.APP_STORAGE_TABLE_DUMP);
+						fwSliceTableDump.close();
+						JOptionPane.showMessageDialog(frame, "Table dumped @ \n" + ENV.APP_STORAGE_LOC + ENV.DELIM + ENV.APP_STORAGE_TABLE_DUMP);
 
 					} catch (IOException e1) {
 
@@ -679,19 +689,40 @@ public class TableVerify {
 				else
 				{
 					List<String[]> dumpList = tableChecker.multipleProviderRows;
-
+					String sliceTableDump = tableChecker.sliceJson;
+					String sliceTable = ENV.APP_STORAGE_LOC + ENV.DELIM + ENV.APP_STORAGE_SLICE_TABLE_LOC + ENV.DELIM + ENV.APP_STORAGE_SLICE_TABLE;
+					FileWriter fwSliceTableDump = null;
+					try {
+						fwSliceTableDump = new FileWriter(sliceTable);
+					} catch (IOException e2) {
+						JOptionPane.showMessageDialog(frame, "Error in file");
+						
+						e2.printStackTrace();
+					}
+					try {
+						fwSliceTableDump.append(sliceTableDump);
+					} catch (IOException e3) {
+						JOptionPane.showMessageDialog(frame, "Error in file");
+						e3.printStackTrace();
+					}
+					try {
+						fwSliceTableDump.close();
+					} catch (IOException e2) {
+						JOptionPane.showMessageDialog(frame, "Error in closing file!");						
+						e2.printStackTrace();
+					}
 					for(String[] dumpRow : dumpList)
 					{
 						FileWriter fwTableDump = null;
 						try {
 							//Due to the batshit provider names I am calculating sha256 of the provider name and keep it as the file name.
 							//I will also add the provider name on the first row of the table
-							
+
 							byte[] providerNameBytes = dumpRow[1].getBytes();
 							MessageDigest digest = MessageDigest.getInstance("SHA-256");
 							byte[] hashBytes = digest.digest(providerNameBytes);
 							String fileName = Base64.getUrlEncoder().encodeToString(hashBytes);
-									
+
 							fwTableDump = new FileWriter(ENV.APP_STORAGE_LOC + 
 									ENV.DELIM + ENV.APP_STORAGE_TABLE_MULTIPLE_PROVIDER_DUMP 
 									+ "_" + fileName
@@ -723,11 +754,11 @@ public class TableVerify {
 			}
 		});
 		panel.add(btnDumpTable);
-		
+
 		JButton btnKeyGen = new JButton("Key Gen");
 		btnKeyGen.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				
+
 				byte[] keyBytes = new byte[ENV.AES_KEY_SIZE];
 				new SecureRandom().nextBytes(keyBytes);
 				FileOutputStream fw_bin = null;
@@ -736,7 +767,7 @@ public class TableVerify {
 					fw_bin.write(keyBytes);
 					fw_bin.close();
 					JOptionPane.showMessageDialog(frame, "Key file generated in " + ENV.APP_STORAGE_LOC + ENV.DELIM + ENV.APP_STORAGE_KEY_FILE);
-					
+
 					TableVerify.key = new SecretKeySpec(keyBytes, "AES");
 					TableVerify.ivSpec = new IvParameterSpec(ivBytes);
 					try {
@@ -746,14 +777,14 @@ public class TableVerify {
 					{
 						e.printStackTrace();
 					}
-					
+
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
 			}
 		});
 		panel.add(btnKeyGen);
-		
+
 		Component horizontalStrut_2 = Box.createHorizontalStrut(20);
 		panel.add(horizontalStrut_2);
 
