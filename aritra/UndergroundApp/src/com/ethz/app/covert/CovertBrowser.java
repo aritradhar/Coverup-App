@@ -21,9 +21,9 @@ import org.eclipse.swt.browser.LocationListener;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
-
-import javax.swing.JOptionPane;
+import java.util.Set;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
@@ -56,6 +56,7 @@ public class CovertBrowser {
 	private int port;
 	private ProxyServer ps;
 	private boolean serverClosed;
+	public static Set<String> sliceIdSet = new HashSet<>();;
 	/**
 	 * Launch the application.
 	 * @param args
@@ -158,9 +159,9 @@ public class CovertBrowser {
 
 			@Override
 			public void changing(LocationEvent paramLocationEvent) {
-				System.out.println(paramLocationEvent.location);
-				urlList.add(paramLocationEvent.location);
-				lbllinks.setText(new Integer(urlList.size()).toString());
+				//System.out.println(paramLocationEvent.location);
+				//urlList.add(paramLocationEvent.location);
+				lbllinks.setText(new Integer(sliceIdSet.size()).toString());
 			}
 
 			@Override
