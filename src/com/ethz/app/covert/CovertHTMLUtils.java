@@ -51,7 +51,7 @@ public class CovertHTMLUtils {
 			String key = keys.next();
 			long value = jObject.getLong(key);
 			
-			fw.append(key + "			" + "<a href=\"http://127.0.0.1:" + port + "/" + value + "\">" + value + "</a>");
+			fw.append(key + "			" + "<a href=\"http://127.0.0.1:" + port + "/id=" + value + "\">" + value + "</a>");
 			fw.append("<br>");
 			//System.out.println(key);
 			//System.out.println(value);
