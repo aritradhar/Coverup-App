@@ -27,6 +27,9 @@ import java.util.Base64;
 import java.util.Date;
 import java.util.List;
 
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.whispersystems.curve25519.Curve25519;
@@ -35,6 +38,7 @@ import com.ethz.app.FirefoxCacheExtract;
 import com.ethz.app.TableChecker;
 import com.ethz.app.binUtils.BinUtils;
 import com.ethz.app.env.ENV;
+import com.ethz.ugs.compressUtil.SliceData;
 
 public class RepeatedDatabaseCheck {
 
@@ -47,7 +51,7 @@ public class RepeatedDatabaseCheck {
 	public String modifiedDatabaseLocation;
 
 
-	public RepeatedDatabaseCheck(String modifiedDatabaseLocation) throws SQLException, IOException 
+	public RepeatedDatabaseCheck(String modifiedDatabaseLocation) throws SQLException, IOException, IllegalBlockSizeException, BadPaddingException 
 	{
 		this.modifiedDatabaseLocation = modifiedDatabaseLocation;
 		//System.out.println("Run");
@@ -100,7 +104,7 @@ public class RepeatedDatabaseCheck {
 		
 		return true;
 	}
-	private void doDataBaseCheck() throws SQLException, IOException
+	private void doDataBaseCheck() throws SQLException, IOException, IllegalBlockSizeException, BadPaddingException
 	{
 		FirefoxCacheExtract ffce = new FirefoxCacheExtract();
 		ffce.getFirefoxCacheFile(this.modifiedDatabaseLocation);
@@ -120,7 +124,7 @@ public class RepeatedDatabaseCheck {
 	}
 
 	public static byte[] lastReadFileHash = null;
-	private void doDataBaseCheckBin(String jsonData) throws IOException
+	private void doDataBaseCheckBin(String jsonData) throws IOException, IllegalBlockSizeException, BadPaddingException
 	{
 		//System.err.println("here");
 		String jsonBinData = null;
@@ -142,7 +146,15 @@ public class RepeatedDatabaseCheck {
 			}
 			else if(ex.getMessage().equalsIgnoreCase(ENV.EXCEPTION_MESSAGE_MAGIC_BYTES))
 			{
-				byte[] intrDataBytes = BinUtils.intrBinProcess(receivedBin, this.messaage);
+				Object[] returnVal = BinUtils.intrBinProcess(receivedBin, this.messaage);
+				/**
+				 * 1. slice id in long
+				 * 2. slice index in integer
+				 * 3. slice data in byte array
+				 */
+				long sliceId = (long) returnVal[0];
+				int sliceIndex =(int) returnVal[1];
+				byte[] intrDataBytes = (byte[]) returnVal[2];
 				byte[] hashtBytes = null;
 				try 
 				{		
@@ -166,13 +178,16 @@ public class RepeatedDatabaseCheck {
 					lastReadFileHash = new byte[hashtBytes.length];
 					System.arraycopy(hashtBytes, 0, lastReadFileHash, 0, hashtBytes.length);
 					
-					String fileLocation = ENV.APP_STORAGE_LOC + ENV.DELIM + ENV.APP_STORAGE_INTERACTIVE_DATA + new Timestamp(new Date().getTime()).toString();
-					FileOutputStream fwbin = new FileOutputStream(fileLocation);
+					String sliceDirLocation = ENV.APP_STORAGE_LOC + ENV.DELIM + ENV.APP_STORAGE_INTERACTIVE_DATA + sliceId;
+					if(!new File(sliceDirLocation).exists())
+						new File(sliceDirLocation).mkdir();
+					String sliceFileLocation = ENV.APP_STORAGE_LOC + ENV.DELIM + ENV.APP_STORAGE_INTERACTIVE_DATA + sliceId + ENV.DELIM + sliceIndex;
+					FileOutputStream fwbin = new FileOutputStream(sliceFileLocation);
 					fwbin.write(intrDataBytes);
 					fwbin.close();
 
 					this.messaage.append("\n Interactive data dumped in local storage");
-					this.messaage.append("\n Dump location : " + fileLocation);					
+					this.messaage.append("\n Dump location : " + sliceFileLocation);					
 				}
 				count %= 4;
 				this.messaage.append("\n---------------" + ENV.PROGRESS_SYMB[count++] + "---------------");
@@ -336,7 +351,7 @@ public class RepeatedDatabaseCheck {
 		this.messaage.append("\n---------------" + ENV.PROGRESS_SYMB[count++] + "---------------");
 	}
 
-	private void doDataBaseCheckMultipleProvider() throws SQLException, IOException
+	private void doDataBaseCheckMultipleProvider() throws SQLException, IOException, IllegalBlockSizeException, BadPaddingException
 	{
 		FirefoxCacheExtract ffce = new FirefoxCacheExtract();
 		ffce.getFirefoxCacheFile(this.modifiedDatabaseLocation);
