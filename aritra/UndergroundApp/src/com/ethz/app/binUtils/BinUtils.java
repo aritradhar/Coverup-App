@@ -91,7 +91,9 @@ public class BinUtils {
 		JSONObject jObject = new JSONObject();
 		
 		//try to decrypt 
-		//packet len(4) | seedlen (4) ->0 | Magic (16) | Data | Padding
+		//packet len(4) | seedlen (4) ->0 | Magic (8) | Data | Padding
+		//Data -> slice id (8) | slice index (4) | slice_data_len (4) | slice data (n) | padding|
+		
 		if(TableVerify.cipher != null)
 		{
 			try 
@@ -118,6 +120,7 @@ public class BinUtils {
 					byte[] idealMagicBytes = new byte[ENV.INTR_MARKER_LEN];
 					Arrays.fill(idealMagicBytes, ENV.INTR_MARKER);
 					
+					//magic byte found!
 					if(Arrays.equals(idealMagicBytes, magicBytes))
 						throw new RuntimeException(ENV.EXCEPTION_MESSAGE_MAGIC_BYTES);
 				}						
@@ -240,10 +243,37 @@ public class BinUtils {
 		return jObject.toString(2);
 	}
 	
-	public static byte[] intrBinProcess(byte[] dropletBytes, StringBuffer messageLog)
+	/**
+	 * 
+	 * @param dropletBytes
+	 * @param messageLog
+	 * @return Object array
+	 * 1. slice id in long
+	 * 2. slice index in integer
+	 * 3. slice data in byte array
+	 * @throws IllegalBlockSizeException
+	 * @throws BadPaddingException
+	 */
+	public static Object[] intrBinProcess(byte[] dropletBytes, StringBuffer messageLog) throws IllegalBlockSizeException, BadPaddingException
 	{
-		byte[] intrDataBytes = Arrays.copyOfRange(dropletBytes, ENV.INTR_MARKER_LEN, dropletBytes.length);
-		return intrDataBytes;
+		//packet len(4) | seedlen (4) ->0 | Magic (8) | Data | Padding
+		//Data -> slice id (8) | slice index (4) | slice_data_len (4) | slice data (n) | padding|
+		
+		byte[] decBytes = TableVerify.cipher.doFinal(dropletBytes);
+		byte[] data = new byte[decBytes.length - 16];
+		byte[] sliceIdBytes = new byte[8];
+		System.arraycopy(decBytes, 16, sliceIdBytes, 0, 8);
+		long sliceId = ByteBuffer.wrap(sliceIdBytes).getLong();
+		byte[] sliceIndexBytes = new byte[4];
+		System.arraycopy(decBytes, 24, sliceIndexBytes, 0, 4);
+		int sliceIndex = ByteBuffer.wrap(sliceIndexBytes).getInt();
+		byte[] sliceDataLenBytes = new byte[4];
+		System.arraycopy(decBytes, 28, sliceDataLenBytes, 0, 4);
+		int sliceDatalen = ByteBuffer.wrap(sliceDataLenBytes).getInt();
+		byte[] sliceDataBytes = new byte[sliceDatalen];
+		System.arraycopy(dropletBytes, 32, sliceDataBytes, 0, sliceDatalen);
+		
+		return new Object[]{sliceId, sliceIndex, sliceDataBytes};
 	}
 	
 	
