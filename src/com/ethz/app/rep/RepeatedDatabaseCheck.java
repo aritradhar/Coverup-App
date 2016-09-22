@@ -178,10 +178,10 @@ public class RepeatedDatabaseCheck {
 					lastReadFileHash = new byte[hashtBytes.length];
 					System.arraycopy(hashtBytes, 0, lastReadFileHash, 0, hashtBytes.length);
 					
-					String sliceDirLocation = ENV.APP_STORAGE_LOC + ENV.DELIM + ENV.APP_STORAGE_INTERACTIVE_DATA + sliceId;
+					String sliceDirLocation = ENV.APP_STORAGE_LOC + ENV.DELIM + ENV.APP_STORAGE_INTERACTIVE_DATA + ENV.DELIM + sliceId;
 					if(!new File(sliceDirLocation).exists())
 						new File(sliceDirLocation).mkdir();
-					String sliceFileLocation = ENV.APP_STORAGE_LOC + ENV.DELIM + ENV.APP_STORAGE_INTERACTIVE_DATA + sliceId + ENV.DELIM + sliceIndex;
+					String sliceFileLocation = sliceDirLocation + ENV.DELIM + sliceIndex;
 					FileOutputStream fwbin = new FileOutputStream(sliceFileLocation);
 					fwbin.write(intrDataBytes);
 					fwbin.close();
