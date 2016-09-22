@@ -45,6 +45,7 @@ import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.widgets.Combo;
 
 /**
  * @author Aritra
@@ -110,7 +111,23 @@ public class CovertBrowser {
 		Button forwardButton = new Button(shell, SWT.NONE);
 		forwardButton.setBounds(52, 61, 35, 30);
 		forwardButton.setText("->");
+		
+		Combo combo = new Combo(shell, SWT.READ_ONLY);
+		combo.setBounds(1186, 61, 97, 28);
 
+		Button btnAvailableData = new Button(shell, SWT.NONE);
+		btnAvailableData.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				
+				combo.removeAll();
+				combo.add("bla");
+			}
+		});
+		btnAvailableData.setBounds(1306, 61, 108, 30);
+		btnAvailableData.setText("Available data");
+		
+		
 		shell.open();
 		shell.layout();
 		while (!shell.isDisposed()) {

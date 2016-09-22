@@ -16,7 +16,9 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 
 import org.json.JSONObject;
 
@@ -26,6 +28,11 @@ import org.json.JSONObject;
  */
 public class CovertHTMLUtils {
 
+	
+	public static Map<String, Long> sliceMap = new HashMap<>();
+	public static Map<Long, String> sliceMapRev = new HashMap<>();
+	
+	
 	public static void covertHTMLStartPageGenerator(String loc, String sliceFileLoc, int port) throws IOException
 	{
 		BufferedReader br = new BufferedReader(new FileReader(sliceFileLoc));
@@ -50,7 +57,8 @@ public class CovertHTMLUtils {
 		{
 			String key = keys.next();
 			long value = jObject.getLong(key);
-			
+			sliceMap.put(key, value);
+			sliceMapRev.put(value, key);
 			fw.append(key + "			" + "<a href=\"http://127.0.0.1:" + port + "/id=" + value + "\">" + value + "</a>");
 			fw.append("<br>");
 			//System.out.println(key);
