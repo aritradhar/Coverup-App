@@ -190,6 +190,8 @@ public class CovertBrowser {
 					messageBox.setMessage("Something went wrong as always : \n" + ex.toString());
 					messageBox.setText("Eror");
 					messageBox.open();
+					
+					browser.setText("<html><body><h1>Something went really wrong</h1></body></html>");
 				}
 
 			}
