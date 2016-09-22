@@ -260,7 +260,6 @@ public class BinUtils {
 		//Data -> slice id (8) | slice index (4) | slice_data_len (4) | slice data (n) | padding|
 		
 		byte[] decBytes = TableVerify.cipher.doFinal(dropletBytes);
-		byte[] data = new byte[decBytes.length - 16];
 		byte[] sliceIdBytes = new byte[8];
 		System.arraycopy(decBytes, 16, sliceIdBytes, 0, 8);
 		long sliceId = ByteBuffer.wrap(sliceIdBytes).getLong();

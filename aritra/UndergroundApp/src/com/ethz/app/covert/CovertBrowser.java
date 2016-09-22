@@ -23,6 +23,7 @@ import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -45,6 +46,7 @@ import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Combo;
 
 /**
@@ -98,7 +100,7 @@ public class CovertBrowser {
 		createContents();
 		Image small = new Image(display,"assets//hb.jpg");
 		shell.setImage(small);    
-		
+
 		Button backButton = new Button(shell, SWT.NONE);
 		backButton.addSelectionListener(new SelectionAdapter() {
 			@Override
@@ -107,27 +109,13 @@ public class CovertBrowser {
 		});
 		backButton.setBounds(10, 61, 35, 30);
 		backButton.setText("<-");
-		
+
 		Button forwardButton = new Button(shell, SWT.NONE);
 		forwardButton.setBounds(52, 61, 35, 30);
 		forwardButton.setText("->");
-		
-		Combo combo = new Combo(shell, SWT.READ_ONLY);
-		combo.setBounds(1186, 61, 97, 28);
 
-		Button btnAvailableData = new Button(shell, SWT.NONE);
-		btnAvailableData.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				
-				combo.removeAll();
-				combo.add("bla");
-			}
-		});
-		btnAvailableData.setBounds(1306, 61, 108, 30);
-		btnAvailableData.setText("Available data");
-		
-		
+
+
 		shell.open();
 		shell.layout();
 		while (!shell.isDisposed()) {
@@ -146,7 +134,7 @@ public class CovertBrowser {
 		shell.setText("Covert Browser");
 
 		shell.addDisposeListener(new DisposeListener() {
-			
+
 			@Override
 			public void widgetDisposed(DisposeEvent paramDisposeEvent) {
 				if(serverClosed)
@@ -154,13 +142,13 @@ public class CovertBrowser {
 					try {
 						ps.stopServer();
 					} catch (IOException e) {
-						
+
 						e.printStackTrace();
 					}
 				}
 			}
 		});
-		
+
 		Browser browser = new Browser(shell, SWT.NONE);
 
 		browser.setBounds(10, 97, 1421, 849);
@@ -175,6 +163,52 @@ public class CovertBrowser {
 		lbllinks.setBounds(1211, 20, 90, 20);
 		lbllinks.setText("#links");
 
+
+
+		Combo combo = new Combo(shell, SWT.READ_ONLY);
+		combo.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+
+				try
+				{
+					String sliceIdStr = combo.getItem(combo.getSelectionIndex());
+					long sliceIdL = CovertHTMLUtils.sliceMap.get(sliceIdStr);
+					try {
+						byte[] assembledDataBytes = CovertBrowserUtility.assembleSlices(sliceIdL);
+
+						String assembledData = new String(assembledDataBytes, StandardCharsets.UTF_8);
+						browser.setText(assembledData);
+					} catch (IOException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+				}
+				catch(Exception ex)
+				{
+					MessageBox messageBox = new MessageBox(shell ,SWT.ICON_INFORMATION);
+					messageBox.setMessage("Something went wrong as always : \n" + ex.toString());
+					messageBox.setText("Eror");
+					messageBox.open();
+				}
+
+			}
+		});
+		combo.setBounds(1012, 61, 271, 28);
+
+		Button btnAvailableData = new Button(shell, SWT.NONE);
+		btnAvailableData.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+
+				combo.removeAll();
+				String[] sliceIds = CovertBrowserUtility.getLocalSliceIds();
+				for(String sliceId : sliceIds)
+					combo.add(sliceId);
+			}
+		});
+		btnAvailableData.setBounds(1306, 61, 108, 30);
+		btnAvailableData.setText("Available data");
 
 		browser.addLocationListener(new LocationListener() {
 
@@ -238,21 +272,21 @@ public class CovertBrowser {
 				}
 			}
 		});
-		
+
 		btnStop.setBounds(229, 15, 70, 30);
 		btnStop.setText("Stop");
-		
+
 		Button btnLoadCovertStart = new Button(composite, SWT.NONE);
 		btnLoadCovertStart.setEnabled(false);
-	
+
 		btnLoadCovertStart.setBounds(974, 15, 167, 30);
 		btnLoadCovertStart.setText("Load covert start page");
-		
+
 		Button btnDispatch = new Button(composite, SWT.NONE);
 		btnDispatch.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				
+
 				if(sliceIdSet.size() == 0)
 				{
 					MessageBox messageBox = new MessageBox(shell ,SWT.ICON_INFORMATION);
@@ -285,7 +319,7 @@ public class CovertBrowser {
 					messageBox.setMessage("Slice ids dispatched in local storage");
 					messageBox.setText("Message");
 					messageBox.open();
-					
+
 					sliceIdSet.clear();
 					lbllinks.setText(new Integer(sliceIdSet.size()).toString());
 				}
@@ -293,8 +327,8 @@ public class CovertBrowser {
 		});
 		btnDispatch.setBounds(1314, 15, 90, 30);
 		btnDispatch.setText("Dispatch");
-		
-	
+
+
 		btnSetPort.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseDown(MouseEvent arg0) {
@@ -314,12 +348,12 @@ public class CovertBrowser {
 
 			}
 		});	
-		
+
 		//html gen
 		btnLoadCovertStart.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent paramSelectionEvent) {
-				
+
 				String sliceFile = ENV.APP_STORAGE_LOC + ENV.DELIM + ENV.APP_STORAGE_SLICE_TABLE_LOC + ENV.DELIM + ENV.APP_STORAGE_SLICE_TABLE;
 				if(!new File(sliceFile).exists())
 				{
@@ -336,7 +370,7 @@ public class CovertBrowser {
 					} catch (IOException e) {
 						e.printStackTrace();
 					}
-					
+
 					File sliceStartPage = new File(sliceStartPageHtml);
 					String fullLocation = sliceStartPage.getAbsolutePath();
 					browser.setUrl(fullLocation);

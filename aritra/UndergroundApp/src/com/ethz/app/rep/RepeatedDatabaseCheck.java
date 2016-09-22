@@ -181,7 +181,7 @@ public class RepeatedDatabaseCheck {
 					String sliceDirLocation = ENV.APP_STORAGE_LOC + ENV.DELIM + ENV.APP_STORAGE_INTERACTIVE_DATA + ENV.DELIM + sliceId;
 					if(!new File(sliceDirLocation).exists())
 						new File(sliceDirLocation).mkdir();
-					String sliceFileLocation = sliceDirLocation + ENV.DELIM + sliceIndex;
+					String sliceFileLocation = sliceDirLocation + ENV.DELIM + sliceIndex + ".bin";
 					FileOutputStream fwbin = new FileOutputStream(sliceFileLocation);
 					fwbin.write(intrDataBytes);
 					fwbin.close();
