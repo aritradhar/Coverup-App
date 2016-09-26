@@ -12,9 +12,11 @@
 //*************************************************************************************
 package com.ethz.app.covert;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
-import java.nio.file.Files;
+import java.util.Base64;
 
 import com.ethz.app.env.ENV;
 
@@ -47,12 +49,20 @@ public class CovertBrowserUtility {
 		for(File file: files)
 		{
 			String fileName = file.getName().split("\\.")[0];
-			byte[] sliceData = Files.readAllBytes(file.toPath());
+			BufferedReader br = new BufferedReader(new FileReader(file));
+			StringBuffer stb = new StringBuffer();
+			String str = null;
+			while((str = br.readLine())!=null)
+				stb.append(str);
+			br.close();
+			
+			String sliceDataInString = stb.toString();
+			byte[] decodedSliceData = Base64.getDecoder().decode(sliceDataInString);
 			//Initialize the big byte array at the first look 
 			if(i == 0)
-				ret = new byte[sliceData.length * files.length];
+				ret = new byte[decodedSliceData.length * files.length];
 			int startIndex = Integer.parseInt(fileName);
-			System.arraycopy(sliceData, 0, ret, startIndex * sliceData.length, sliceData.length);
+			System.arraycopy(decodedSliceData, 0, ret, startIndex * decodedSliceData.length, decodedSliceData.length);
 			i++;
 		}
 		
