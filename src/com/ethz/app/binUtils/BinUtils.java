@@ -124,8 +124,6 @@ public class BinUtils {
 					if(Arrays.equals(idealMagicBytes, magicBytes))
 						throw new RuntimeException(ENV.EXCEPTION_MESSAGE_MAGIC_BYTES);
 				}	
-				else if(seedLen != 32)
-					throw new RuntimeException(ENV.EXCEPTION_MESSAGE_GARBAGE_PACKET);
 			}
 			catch (IllegalBlockSizeException | BadPaddingException e1) {
 				throw new RuntimeException(ENV.EXCEPTION_MESSAGE_CIPHER_FAILURE);
@@ -140,13 +138,17 @@ public class BinUtils {
 		int fixedPacketLen = ByteBuffer.wrap(fixedPacketLenBytes).getInt();
 		
 		//System.out.println(fixedPacketLen);
-		if(fixedPacketLen != dropletBytes.length)
-			throw new RuntimeException(ENV.EXCEPTION_MESSAGE_MISMATCHED_PACKET_SIZE);
 		
 		byte[] seedLenBytes = new byte[Integer.BYTES];
 		System.arraycopy(dropletBytes, tillNow, seedLenBytes, 0, seedLenBytes.length);
 		tillNow += seedLenBytes.length;
 		int seedLen = ByteBuffer.wrap(seedLenBytes).getInt();
+		
+		if(seedLen != 32 && fixedPacketLen != dropletBytes.length)
+			throw new RuntimeException(ENV.EXCEPTION_MESSAGE_GARBAGE_PACKET);
+		
+		else if(fixedPacketLen != dropletBytes.length)
+			throw new RuntimeException(ENV.EXCEPTION_MESSAGE_MISMATCHED_PACKET_SIZE);
 		
 		//packet len(4) | seedlen (4) ->0 | Magic (16) | Data | Padding
 		
