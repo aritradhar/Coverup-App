@@ -32,9 +32,9 @@ public class ProxyServer {
 	public static void setProxy(int port)
 	{
 		System.setProperty("http.proxySet", "true");
-		System.setProperty("http.proxyHost", "localhost");
+		System.setProperty("http.proxyHost", "127.0.0.1");
 		System.setProperty("http.proxyPort", new Integer(port).toString());
-		System.setProperty("https.proxyHost", "localhost");
+		System.setProperty("https.proxyHost", "127.0.0.1");
 		System.setProperty("https.proxyPort", new Integer(port).toString());
 	}
 	private int port;
@@ -61,20 +61,27 @@ public class ProxyServer {
 						System.err.println("here");
 						BufferedReader readRequest = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
 
-
 						while(true) 
 						{
 							String s = readRequest.readLine();
-							if(s.contains("GET"))
+							System.out.println(s);
+							if(s!= null && s.contains("GET"))
 							{
 								s = s.trim();
 								String[] reqHead = s.split(" ");
 								if(reqHead[0].equalsIgnoreCase("GET"))
 								{
-									String getReq = reqHead[1];
-									getReq = getReq.split("=")[1];
-									CovertBrowser.sliceIdSet.add(getReq);
-									System.out.println(getReq);
+									try
+									{
+										String getReq = reqHead[1];
+										getReq = getReq.split("=")[1];
+										CovertBrowser.sliceIdSet.add(getReq);
+										System.out.println(getReq);
+									}
+									catch(ArrayIndexOutOfBoundsException ex)
+									{
+										System.out.println("request without any request string");
+									}
 								}
 								break;
 							}
