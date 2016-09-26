@@ -25,6 +25,7 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
@@ -174,19 +175,22 @@ public class CovertBrowser {
 				try
 				{
 					String sliceIdStr = combo.getItem(combo.getSelectionIndex());
-					long sliceIdL = CovertHTMLUtils.sliceMap.get(sliceIdStr);
+					//TODO for testing only
+					//long sliceIdL = CovertHTMLUtils.sliceMap.get(sliceIdStr);
+					long sliceIdL = Long.parseLong(combo.getItem(combo.getSelectionIndex()));
 					try {
 						byte[] assembledDataBytes = CovertBrowserUtility.assembleSlices(sliceIdL);
-
+						
+						//String assembledData = new String(assembledDataBytes, StandardCharsets.UTF_8);
 						String assembledData = new String(assembledDataBytes, StandardCharsets.UTF_8);
 						browser.setText(assembledData);
 					} catch (IOException e1) {
-						// TODO Auto-generated catch block
 						e1.printStackTrace();
 					}
 				}
 				catch(Exception ex)
 				{
+					ex.printStackTrace();
 					MessageBox messageBox = new MessageBox(shell ,SWT.ICON_INFORMATION);
 					messageBox.setMessage("Something went wrong as always : \n" + ex.toString());
 					messageBox.setText("Eror");

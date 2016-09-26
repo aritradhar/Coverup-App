@@ -14,17 +14,14 @@
 package com.ethz.app.rep;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.sql.SQLException;
-import java.sql.Timestamp;
 import java.util.Arrays;
 import java.util.Base64;
-import java.util.Date;
 import java.util.List;
 
 import javax.crypto.BadPaddingException;
@@ -38,7 +35,6 @@ import com.ethz.app.FirefoxCacheExtract;
 import com.ethz.app.TableChecker;
 import com.ethz.app.binUtils.BinUtils;
 import com.ethz.app.env.ENV;
-import com.ethz.ugs.compressUtil.SliceData;
 
 public class RepeatedDatabaseCheck {
 
@@ -185,13 +181,15 @@ public class RepeatedDatabaseCheck {
 					lastReadFileHash = new byte[hashtBytes.length];
 					System.arraycopy(hashtBytes, 0, lastReadFileHash, 0, hashtBytes.length);
 					
+					//save the slice files in .slice format and the data in it in base64 encode format to stay consistent as the server data format
 					String sliceDirLocation = ENV.APP_STORAGE_LOC + ENV.DELIM + ENV.APP_STORAGE_INTERACTIVE_DATA + ENV.DELIM + sliceId;
 					if(!new File(sliceDirLocation).exists())
 						new File(sliceDirLocation).mkdir();
-					String sliceFileLocation = sliceDirLocation + ENV.DELIM + sliceIndex + ".bin";
-					FileOutputStream fwbin = new FileOutputStream(sliceFileLocation);
-					fwbin.write(intrDataBytes);
-					fwbin.close();
+					String sliceFileLocation = sliceDirLocation + ENV.DELIM + sliceIndex + ".slice";
+					
+					FileWriter fw = new FileWriter(sliceFileLocation);
+					fw.append(Base64.getEncoder().encodeToString(intrDataBytes));
+					fw.close();
 
 					this.messaage.append("\n Interactive data dumped in local storage");
 					this.messaage.append("\n Dump location : " + sliceFileLocation);					
