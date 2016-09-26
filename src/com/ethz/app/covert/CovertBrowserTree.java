@@ -12,44 +12,56 @@
 //*************************************************************************************
 package com.ethz.app.covert;
 
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.browser.Browser;
+import org.eclipse.swt.browser.LocationEvent;
+import org.eclipse.swt.browser.LocationListener;
+
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Random;
 import java.util.Set;
 
+import javax.swing.JEditorPane;
+
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.browser.Browser;
-import org.eclipse.swt.browser.LocationEvent;
-import org.eclipse.swt.browser.LocationListener;
-import org.eclipse.swt.events.DisposeEvent;
-import org.eclipse.swt.events.DisposeListener;
-import org.eclipse.swt.events.MouseAdapter;
-import org.eclipse.swt.events.MouseEvent;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.widgets.Button;
-import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.MessageBox;
-import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
 import com.ethz.app.env.ENV;
 import com.ethz.app.rep.RepeatedDatabaseCheck;
 
+import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.events.DisposeEvent;
+import org.eclipse.swt.events.DisposeListener;
+import org.eclipse.swt.events.MouseAdapter;
+import org.eclipse.swt.events.MouseEvent;
+import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.MessageBox;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.layout.FillLayout;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.widgets.Combo;
+import org.eclipse.swt.custom.StyledText;
+import org.eclipse.swt.widgets.Tree;
+import org.eclipse.swt.widgets.TreeItem;
+
 /**
  * @author Aritra
  *
  */
-public class CovertBrowser {
+public class CovertBrowserTree {
 
 	protected Shell shell;
 	private Text text;
@@ -73,7 +85,7 @@ public class CovertBrowser {
 			System.setProperty("https.proxyHost", "127.0.0.1");
 			System.setProperty("https.proxyPort", "9700");
 
-			CovertBrowser window = new CovertBrowser();
+			CovertBrowserTree window = new CovertBrowserTree();
 			window.open();
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -83,7 +95,7 @@ public class CovertBrowser {
 	/**
 	 * 
 	 */
-	public CovertBrowser() {
+	public CovertBrowserTree() {
 		this.urlList = new ArrayList<>();
 		this.ps = null;
 		this.serverClosed = false;
@@ -97,6 +109,35 @@ public class CovertBrowser {
 		createContents();
 		Image small = new Image(display,"assets//hb.jpg");
 		shell.setImage(small);    
+
+		Button backButton = new Button(shell, SWT.NONE);
+		backButton.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent arg0) {
+			}
+		});
+		backButton.setBounds(10, 61, 35, 30);
+		backButton.setText("<-");
+
+		Button forwardButton = new Button(shell, SWT.NONE);
+		forwardButton.setBounds(52, 61, 35, 30);
+		forwardButton.setText("->");
+		
+		Tree tree = new Tree(shell, SWT.BORDER);
+		tree.setBounds(10, 97, 303, 849);
+		
+		 for (int loopIndex0 = 0; loopIndex0 < 10; loopIndex0++) {
+		      TreeItem treeItem0 = new TreeItem(tree, 0);
+		      treeItem0.setText("Level 0 Item " + loopIndex0);
+		      for (int loopIndex1 = 0; loopIndex1 < 10; loopIndex1++) {
+		        TreeItem treeItem1 = new TreeItem(treeItem0, 0);
+		        treeItem1.setText("Level 1 Item " + loopIndex1);
+		        for (int loopIndex2 = 0; loopIndex2 < 10; loopIndex2++) {
+		          TreeItem treeItem2 = new TreeItem(treeItem1, 0);
+		          treeItem2.setText("Level 2 Item " + loopIndex2);
+		        }
+		      }
+		    }
 		
 		shell.open();
 		shell.layout();
@@ -107,8 +148,6 @@ public class CovertBrowser {
 		}
 	}
 
-
-	
 	/**
 	 * Create contents of the window.
 	 */
@@ -135,29 +174,8 @@ public class CovertBrowser {
 		
 		Browser browser = new Browser(shell, SWT.NONE);
 
-		browser.setBounds(10, 97, 1421, 849);
-		browser.setJavascriptEnabled(true);
-		
-		
-		Button backButton = new Button(shell, SWT.NONE);
-		backButton.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent arg0) {
-				browser.back();
-			}
-		});
-		backButton.setBounds(10, 61, 35, 30);
-		backButton.setText("<-");
-
-		Button forwardButton = new Button(shell, SWT.NONE);
-		forwardButton.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				browser.forward();
-			}
-		});
-		forwardButton.setBounds(52, 61, 35, 30);
-		forwardButton.setText("->");
+		browser.setBounds(319, 97, 1112, 849);
+		browser.setJavascriptEnabled(false);
 		
 		//browser.setUrl("C:\\Users\\Aritra\\workspace_Mars_new\\UndergroundApp\\a.htm");
 		//browser.setUrl("http://forum.codecall.net/topic/57029-simple-java-web-browser/");
@@ -229,25 +247,16 @@ public class CovertBrowser {
 		browser.addLocationListener(new LocationListener() {
 
 			@Override
-			public void changing(LocationEvent event) {
-
-				if(!event.location.contains("127.0.0.1"))
-				{
-					System.out.println("bla");
-					text.setText(event.location);
-					browser.setText("<html><body><h1>Something went really wrong  <a href=\"http://127.0.0.1:9700/flag=bla\">bla</a></h1></body></html>");
-					//event.doit = false;
-				}
-				//event.location = "http://127.0.0.1:9070";
-				//System.out.println("bla");
-				//event.doit = false;
+			public void changing(LocationEvent paramLocationEvent) {
+				//System.out.println(paramLocationEvent.location);
 				//urlList.add(paramLocationEvent.location);
-				//lbllinks.setText(new Integer(sliceIdSet.size()).toString());
+				lbllinks.setText(new Integer(sliceIdSet.size()).toString());
 			}
 
 			@Override
 			public void changed(LocationEvent paramLocationEvent) {
 				// TODO Auto-generated method stub
+
 			}
 		});
 
