@@ -35,6 +35,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Text;
 
 import com.ethz.app.env.ENV;
+import com.ethz.app.rep.RepeatedDatabaseCheck;
 
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.events.DisposeEvent;
@@ -296,6 +297,13 @@ public class CovertBrowser {
 					messageBox.setText("Message");
 					messageBox.open();
 				}
+				else if(RepeatedDatabaseCheck.stored_droplet_counter < ENV.DISPACTH_REQUEST_THRESHOLD)
+				{
+					MessageBox messageBox = new MessageBox(shell ,SWT.ICON_INFORMATION);
+					messageBox.setMessage("Stored droplet count less than threshold value. Unsafe!");
+					messageBox.setText("Message");
+					messageBox.open();
+				}
 				else
 				{
 					try {					
@@ -316,7 +324,12 @@ public class CovertBrowser {
 						// TODO Auto-generated catch block
 						e1.printStackTrace();
 					};
-
+					
+					synchronized(this)
+					{
+						RepeatedDatabaseCheck.stored_droplet_counter = 0;
+					}
+					
 					MessageBox messageBox = new MessageBox(shell ,SWT.ICON_INFORMATION);
 					messageBox.setMessage("Slice ids dispatched in local storage");
 					messageBox.setText("Message");

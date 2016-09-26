@@ -124,7 +124,8 @@ public class RepeatedDatabaseCheck {
 	}
 
 	public static byte[] lastReadFileHash = null;
-	private void doDataBaseCheckBin(String jsonData) throws IOException, IllegalBlockSizeException, BadPaddingException
+	public static volatile int stored_droplet_counter = 0;
+	synchronized private void doDataBaseCheckBin(String jsonData) throws IOException, IllegalBlockSizeException, BadPaddingException
 	{
 		//System.err.println("here");
 		String jsonBinData = null;
@@ -134,7 +135,8 @@ public class RepeatedDatabaseCheck {
 		try
 		{
 			jsonBinData = BinUtils.dropletBinToDropletJson
-					(receivedBin, RepeatedDatabaseCheck.ServerPublickey, this.messaage);
+					(receivedBin, RepeatedDatabaseCheck.ServerPublickey, this.messaage);	
+			stored_droplet_counter++;
 		}
 		catch(RuntimeException ex)
 		{

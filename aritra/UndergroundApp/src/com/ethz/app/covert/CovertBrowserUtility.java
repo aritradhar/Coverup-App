@@ -48,6 +48,7 @@ public class CovertBrowserUtility {
 		{
 			String fileName = file.getName().split("\\.")[0];
 			byte[] sliceData = Files.readAllBytes(file.toPath());
+			//Initialize the big byte array at the first look 
 			if(i == 0)
 				ret = new byte[sliceData.length * files.length];
 			int startIndex = Integer.parseInt(fileName);
