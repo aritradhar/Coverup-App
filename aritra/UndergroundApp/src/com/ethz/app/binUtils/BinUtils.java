@@ -123,7 +123,9 @@ public class BinUtils {
 					//magic byte found!
 					if(Arrays.equals(idealMagicBytes, magicBytes))
 						throw new RuntimeException(ENV.EXCEPTION_MESSAGE_MAGIC_BYTES);
-				}						
+				}	
+				else if(seedLen != 32)
+					throw new RuntimeException(ENV.EXCEPTION_MESSAGE_GARBAGE_PACKET);
 			}
 			catch (IllegalBlockSizeException | BadPaddingException e1) {
 				throw new RuntimeException(ENV.EXCEPTION_MESSAGE_CIPHER_FAILURE);

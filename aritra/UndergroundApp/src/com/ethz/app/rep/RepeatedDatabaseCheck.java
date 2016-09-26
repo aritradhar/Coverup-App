@@ -138,8 +138,13 @@ public class RepeatedDatabaseCheck {
 		}
 		catch(RuntimeException ex)
 		{
-			ex.printStackTrace();
+			//ex.printStackTrace();
 			if(ex.getMessage() == null)
+			{
+				this.messaage.append("Data not according to spec: garbage");
+				return;
+			}
+			else if(ex.getMessage().equalsIgnoreCase(ENV.EXCEPTION_MESSAGE_GARBAGE_PACKET))
 			{
 				this.messaage.append("Data not according to spec: garbage");
 				return;
