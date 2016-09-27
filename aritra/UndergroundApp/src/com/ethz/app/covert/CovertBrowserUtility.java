@@ -14,6 +14,7 @@ package com.ethz.app.covert;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.Base64;
@@ -42,6 +43,9 @@ public class CovertBrowserUtility {
 	{
 		String sliceDirLocation = ENV.APP_STORAGE_LOC + ENV.DELIM + ENV.APP_STORAGE_INTERACTIVE_DATA + ENV.DELIM + sliceId;
 		
+		if(!new File(sliceDirLocation).exists())
+			return null;
+		
 		File[] files = new File(sliceDirLocation).listFiles();
 		
 		byte[] ret = null;
@@ -67,6 +71,19 @@ public class CovertBrowserUtility {
 		}
 		
 		return ret;
+	}
+	
+	public static String getSliceTable() throws IOException
+	{
+		BufferedReader br = new BufferedReader(new FileReader(ENV.APP_STORAGE_LOC + ENV.DELIM + ENV.APP_STORAGE_SLICE_TABLE_LOC + ENV.DELIM + ENV.APP_STORAGE_SLICE_TABLE));
+		StringBuffer stb = new StringBuffer();
+		String str = null;
+		
+		while((str = br.readLine()) != null)
+			stb.append(str);
+		br.close();
+		
+		return stb.toString();
 	}
 	
 }
