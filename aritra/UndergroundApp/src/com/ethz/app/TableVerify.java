@@ -504,10 +504,29 @@ public class TableVerify {
 					else
 					{
 						if(modifiedCacheLocation == null)
-							tableChecker.loadtableDataMultipleProvider();
+							TableVerify.tableChecker.loadtableDataMultipleProvider();
 						else
-							tableChecker.loadtableDataMultipleProvider(modifiedCacheLocation);
+							TableVerify.tableChecker.loadtableDataMultipleProvider(modifiedCacheLocation);
 					}
+					//auto dump slice table in the slice table location
+					
+					String sliceTableDump = TableVerify.tableChecker.sliceJson;
+					String sliceTable = ENV.APP_STORAGE_LOC + ENV.DELIM + ENV.APP_STORAGE_SLICE_TABLE_LOC + ENV.DELIM + ENV.APP_STORAGE_SLICE_TABLE;
+					FileWriter fwSliceTableDump = null;
+					try {
+						fwSliceTableDump = new FileWriter(sliceTable);
+					} catch (IOException e2) {
+						JOptionPane.showMessageDialog(frame, "Error in file");
+						
+						e2.printStackTrace();
+					}
+					try {
+						fwSliceTableDump.append(sliceTableDump);
+					} catch (IOException e3) {
+						JOptionPane.showMessageDialog(frame, "Error in file");
+						e3.printStackTrace();
+					}
+					
 				} 
 				catch (SQLException e1) 
 				{
@@ -615,6 +634,7 @@ public class TableVerify {
 				else
 				{
 					try {
+						boolean sliceTableVerifyRes = tableChecker.verifySliceTable();
 						boolean ret = tableChecker.verifyMessageMultipleProvider();
 						if(!ret)
 						{
@@ -625,7 +645,12 @@ public class TableVerify {
 						List<String> failedSigOriginKeys = TableChecker.verifyMessageList();
 
 						if(failedSigOriginKeys.size() == 0)
-							JOptionPane.showMessageDialog(frame, "Table verification successful!!");
+						{
+							if(sliceTableVerifyRes)
+								JOptionPane.showMessageDialog(frame, "Table verification successful!!");
+							else
+								JOptionPane.showMessageDialog(frame, "Table verification successful!!\n Interactive table verify failed!!");
+						}
 						else
 						{
 							StringBuffer stb = new StringBuffer();
