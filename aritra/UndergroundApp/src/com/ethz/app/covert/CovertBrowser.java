@@ -45,6 +45,9 @@ import org.eclipse.swt.widgets.Text;
 import com.ethz.app.env.ENV;
 import com.ethz.app.rep.RepeatedDatabaseCheck;
 
+import org.eclipse.swt.widgets.Tree;
+import org.eclipse.swt.widgets.TreeItem;
+
 /**
  * @author Aritra
  *
@@ -135,9 +138,44 @@ public class CovertBrowser {
 		
 		Browser browser = new Browser(shell, SWT.NONE);
 
-		browser.setBounds(10, 97, 1421, 849);
-		browser.setJavascriptEnabled(true);
+		browser.setBounds(275, 85, 1156, 861);
+		browser.setJavascriptEnabled(true);	
 		
+		Tree tree = new Tree(shell, SWT.BORDER);
+		tree.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				
+				try
+				{
+					//String sliceIdStr = tree.getItem(tree.getSelectionIndex());
+					//TODO for testing only
+					//long sliceIdL = CovertHTMLUtils.sliceMap.get(sliceIdStr);
+					
+					long sliceIdL = Long.parseLong(tree.getSelection()[0].getText());
+					try {
+						byte[] assembledDataBytes = CovertBrowserUtility.assembleSlices(sliceIdL);
+						
+						//String assembledData = new String(assembledDataBytes, StandardCharsets.UTF_8);
+						String assembledData = new String(assembledDataBytes, StandardCharsets.UTF_8);
+						browser.setText(assembledData);
+					} catch (IOException e1) {
+						e1.printStackTrace();
+					}
+				}
+				catch(Exception ex)
+				{
+					ex.printStackTrace();
+					MessageBox messageBox = new MessageBox(shell ,SWT.ICON_INFORMATION);
+					messageBox.setMessage("Something went wrong as always : \n" + ex.toString());
+					messageBox.setText("Eror");
+					messageBox.open();
+					
+					browser.setText("<html><body><h1>Something went really wrong</h1></body></html>");
+				}
+			}
+		});
+		tree.setBounds(10, 85, 259, 861);
 		
 		Button backButton = new Button(shell, SWT.NONE);
 		backButton.addSelectionListener(new SelectionAdapter() {
@@ -146,7 +184,7 @@ public class CovertBrowser {
 				browser.back();
 			}
 		});
-		backButton.setBounds(10, 61, 35, 30);
+		backButton.setBounds(275, 47, 35, 30);
 		backButton.setText("<-");
 
 		Button forwardButton = new Button(shell, SWT.NONE);
@@ -156,17 +194,17 @@ public class CovertBrowser {
 				browser.forward();
 			}
 		});
-		forwardButton.setBounds(52, 61, 35, 30);
+		forwardButton.setBounds(315, 47, 35, 30);
 		forwardButton.setText("->");
 		
 		//browser.setUrl("C:\\Users\\Aritra\\workspace_Mars_new\\UndergroundApp\\a.htm");
 		//browser.setUrl("http://forum.codecall.net/topic/57029-simple-java-web-browser/");
 
 		Composite composite = new Composite(shell, SWT.NONE);
-		composite.setBounds(10, 3, 1404, 52);
+		composite.setBounds(10, 3, 1404, 38);
 
 		Label lbllinks = new Label(composite, SWT.NONE);
-		lbllinks.setBounds(1211, 20, 90, 20);
+		lbllinks.setBounds(1218, 13, 90, 20);
 		lbllinks.setText("#links");
 		
 		/*
@@ -176,7 +214,7 @@ public class CovertBrowser {
 		browser.execute("Components.classes[\"@mozilla.org/preferences-service;1\"].getService(Components.interfaces.nsIPrefBranch).setIntPref(\"network.proxy.http\",\"127.0.0.1\");");
 		*/
 		
-		Combo combo = new Combo(shell, SWT.READ_ONLY);
+		/*Combo combo = new Combo(shell, SWT.READ_ONLY);
 		combo.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
@@ -210,20 +248,27 @@ public class CovertBrowser {
 
 			}
 		});
-		combo.setBounds(1012, 61, 271, 28);
-
+		combo.setBounds(1143, 63, 271, 28);
+		 */
+		
 		Button btnAvailableData = new Button(shell, SWT.NONE);
 		btnAvailableData.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 
-				combo.removeAll();
+				//combo.removeAll();
+				tree.removeAll();
 				String[] sliceIds = CovertBrowserUtility.getLocalSliceIds();
+
 				for(String sliceId : sliceIds)
-					combo.add(sliceId);
+				{
+					TreeItem treeItem0 = new TreeItem(tree, 0);
+					treeItem0.setText(sliceId);
+					//combo.add(sliceId);
+				}
 			}
 		});
-		btnAvailableData.setBounds(1306, 61, 108, 30);
+		btnAvailableData.setBounds(10, 49, 108, 30);
 		btnAvailableData.setText("Available data");
 
 		browser.addLocationListener(new LocationListener() {
@@ -231,7 +276,8 @@ public class CovertBrowser {
 			@Override
 			public void changing(LocationEvent event) {
 
-				if(!event.location.contains("127.0.0.1"))
+				//System.out.println(event.location);
+				if(!event.location.contains("127.0.0.1") && !event.location.contains("about:blank"))
 				{
 					System.out.println("bla");
 					text.setText(event.location);
@@ -253,7 +299,7 @@ public class CovertBrowser {
 
 
 		text = new Text(composite, SWT.BORDER);
-		text.setBounds(315, 17, 544, 26);
+		text.setBounds(315, 10, 544, 26);
 		text.setText("http://127.0.0.1:9700");
 
 		Button btnGo = new Button(composite, SWT.NONE);
@@ -274,11 +320,11 @@ public class CovertBrowser {
 			}
 		});
 
-		btnGo.setBounds(865, 15, 90, 30);
+		btnGo.setBounds(865, 8, 90, 30);
 		btnGo.setText("Go");
 
 		portText = new Text(composite, SWT.BORDER);
-		portText.setBounds(10, 14, 87, 26);
+		portText.setBounds(10, 10, 87, 26);
 		portText.setText("9700");
 
 		Button btnSetPort = new Button(composite, SWT.NONE);
@@ -287,7 +333,7 @@ public class CovertBrowser {
 			public void widgetSelected(SelectionEvent e) {
 			}
 		});
-		btnSetPort.setBounds(103, 14, 120, 30);
+		btnSetPort.setBounds(103, 8, 120, 30);
 		btnSetPort.setText("Set port + proxy");
 
 		Button btnStop = new Button(composite, SWT.NONE);
@@ -303,13 +349,13 @@ public class CovertBrowser {
 			}
 		});
 
-		btnStop.setBounds(229, 15, 70, 30);
+		btnStop.setBounds(224, 8, 70, 30);
 		btnStop.setText("Stop");
 
 		Button btnLoadCovertStart = new Button(composite, SWT.NONE);
 		btnLoadCovertStart.setEnabled(false);
 
-		btnLoadCovertStart.setBounds(974, 15, 167, 30);
+		btnLoadCovertStart.setBounds(974, 8, 167, 30);
 		btnLoadCovertStart.setText("Load covert start page");
 
 		Button btnDispatch = new Button(composite, SWT.NONE);
@@ -367,7 +413,7 @@ public class CovertBrowser {
 				}
 			}
 		});
-		btnDispatch.setBounds(1314, 15, 90, 30);
+		btnDispatch.setBounds(1298, 8, 106, 30);
 		btnDispatch.setText("Dispatch");
 
 
