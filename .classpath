@@ -8,5 +8,6 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/UndergroundServer"/>
 	<classpathentry kind="lib" path="lib/fountainAON.jar"/>
 	<classpathentry kind="lib" path="lib/SWT win x64/swt.jar" sourcepath="lib/SWT win x64/src.zip"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/SliceTree"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
