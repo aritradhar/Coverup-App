@@ -275,6 +275,22 @@ public class TableChecker
 		this.publicKeyString = publicKey;
 		this.ServerpublicKey = Base64.getUrlDecoder().decode(this.publicKeyString);
 	}
+	
+	public boolean verifySliceTable() throws NoSuchAlgorithmException
+	{
+		if(this.ServerpublicKey == null)
+			return false;
+		
+		byte[] sliceTableBytes = sliceJson.getBytes(StandardCharsets.UTF_8);
+		
+		MessageDigest md = MessageDigest.getInstance("SHA-256");
+		byte[] hashtableBytes = md.digest(sliceTableBytes);
+		byte[] signatureBytes = Base64.getUrlDecoder().decode(this.sliceSignature);
+		
+		this.verifyResult = Curve25519.getInstance("best").verifySignature(this.ServerpublicKey, hashtableBytes, signatureBytes);
+		
+		return verifyResult;
+	}
 
 	public boolean verifyMessage() throws NoSuchAlgorithmException
 	{
@@ -290,7 +306,7 @@ public class TableChecker
 		
 		this.verifyResult = Curve25519.getInstance("best").verifySignature(this.ServerpublicKey, hashtableBytes, signatureBytes);
 		
-		return true;
+		return verifyResult;
 	}
 	public boolean verifyMessageMultipleProvider() throws NoSuchAlgorithmException
 	{
