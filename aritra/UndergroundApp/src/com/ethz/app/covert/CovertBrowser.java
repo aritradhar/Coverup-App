@@ -344,11 +344,12 @@ public class CovertBrowser {
 			public void changing(LocationEvent event) {
 
 				//System.out.println(event.location);
+				System.out.println(browser.getData());
 				if(!event.location.contains("127.0.0.1") && !event.location.contains("about:blank"))
 				{
 					System.out.println("bla");
 					text.setText(event.location);
-					browser.setText("<html><body><h1>Something went really wrong  <a href=\"http://127.0.0.1:9700/flag=bla\">bla</a></h1></body></html>");
+					browser.setText("<html><body><h1>Requested for  " + event.location +"  <a href=\"http://127.0.0.1:9700/flag=" + event.location + "\">bla</a></h1></body></html>");
 					//event.doit = false;
 				}
 				//event.location = "http://127.0.0.1:9070";
