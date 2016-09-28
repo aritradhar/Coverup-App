@@ -12,11 +12,16 @@
 //*************************************************************************************
 package com.ethz.app.covert;
 
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.swt.SWT;
@@ -31,6 +36,7 @@ import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
@@ -53,6 +59,9 @@ public class CovertBrowser {
 
 	protected Shell shell;
 	private Text text;
+
+	private Text portText;
+	private int port;
 	private ProxyServer ps;
 	private boolean serverClosed;
 	public static Set<Long> sliceIdSet = new HashSet<>();
@@ -132,17 +141,17 @@ public class CovertBrowser {
 			}
 		});
 		
-		Browser browser = new Browser(shell, SWT.BORDER);
+		Browser browser = new Browser(shell, SWT.NONE);
 
-		browser.setBounds(275, 55, 1156, 891);
+		browser.setBounds(275, 85, 1156, 861);
 		browser.setJavascriptEnabled(true);	
 		
 
 		Composite composite = new Composite(shell, SWT.NONE);
-		composite.setBounds(10, 3, 1404, 46);
+		composite.setBounds(10, 3, 1404, 38);
 		
 		Label lbllinks = new Label(composite, SWT.NONE);
-		lbllinks.setBounds(1129, 13, 115, 20);
+		lbllinks.setBounds(1154, 13, 90, 20);
 		lbllinks.setText("#links");
 		
 		
@@ -215,7 +224,27 @@ public class CovertBrowser {
 				}
 			}
 		});
-		tree.setBounds(10, 58, 259, 888);
+		tree.setBounds(10, 85, 259, 861);
+		
+		Button backButton = new Button(shell, SWT.NONE);
+		backButton.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent arg0) {
+				browser.back();
+			}
+		});
+		backButton.setBounds(275, 47, 35, 30);
+		backButton.setText("<-");
+
+		Button forwardButton = new Button(shell, SWT.NONE);
+		forwardButton.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				browser.forward();
+			}
+		});
+		forwardButton.setBounds(315, 47, 35, 30);
+		forwardButton.setText("->");
 		
 		//browser.setUrl("C:\\Users\\Aritra\\workspace_Mars_new\\UndergroundApp\\a.htm");
 		//browser.setUrl("http://forum.codecall.net/topic/57029-simple-java-web-browser/");
@@ -227,6 +256,85 @@ public class CovertBrowser {
 		browser.execute("Components.classes[\"@mozilla.org/preferences-service;1\"].getService(Components.interfaces.nsIPrefBranch).setIntPref(\"network.proxy.http_port\",9700);");
 		browser.execute("Components.classes[\"@mozilla.org/preferences-service;1\"].getService(Components.interfaces.nsIPrefBranch).setIntPref(\"network.proxy.http\",\"127.0.0.1\");");
 		*/
+		
+		Button btnLoadCovertSite = new Button(shell, SWT.NONE);
+		btnLoadCovertSite.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				
+				String sliceTableDataJSON = null;
+				try {
+					sliceTableDataJSON = CovertBrowserUtility.getSliceTable();
+				} catch (IOException e1) {
+					MessageBox messageBox = new MessageBox(shell ,SWT.ICON_INFORMATION);
+					messageBox.setMessage("Something went wrong as always : \n" + e1.toString());
+					messageBox.setText("Eror");
+					messageBox.open();
+				}
+				
+				sliceTree = new com.ethz.tree.Tree(sliceTableDataJSON);
+				tree.removeAll();
+				exploredTree.clear();
+				treeItem0 = new TreeItem(tree, 0);
+				treeItem0.setText("ROOT");
+			}
+		});
+		btnLoadCovertSite.setBounds(10, 47, 165, 30);
+		btnLoadCovertSite.setText("Load Covert site tree");
+		
+		Combo combo = new Combo(shell, SWT.READ_ONLY);
+		combo.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+
+				try
+				{
+					String sliceIdStr = combo.getItem(combo.getSelectionIndex());
+					//TODO for testing only
+					//long sliceIdL = CovertHTMLUtils.sliceMap.get(sliceIdStr);
+					long sliceIdL = Long.parseLong(combo.getItem(combo.getSelectionIndex()));
+					try {
+						byte[] assembledDataBytes = CovertBrowserUtility.assembleSlices(sliceIdL);
+						
+						//String assembledData = new String(assembledDataBytes, StandardCharsets.UTF_8);
+						String assembledData = new String(assembledDataBytes, StandardCharsets.UTF_8);
+						browser.setText(assembledData);
+					} catch (IOException e1) {
+						e1.printStackTrace();
+					}
+				}
+				catch(Exception ex)
+				{
+					ex.printStackTrace();
+					MessageBox messageBox = new MessageBox(shell ,SWT.ICON_INFORMATION);
+					messageBox.setMessage("Something went wrong as always : \n" + ex.toString());
+					messageBox.setText("Eror");
+					messageBox.open();
+					
+					browser.setText("<html><body><h1>Something went really wrong</h1></body></html>");
+				}
+
+			}
+		});
+		combo.setBounds(1143, 49, 271, 28);
+		
+		
+		Button btnAvailableData = new Button(shell, SWT.NONE);
+		btnAvailableData.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+
+				combo.removeAll();
+				String[] sliceIds = CovertBrowserUtility.getLocalSliceIds();
+
+				for(String sliceId : sliceIds)
+				{
+					combo.add(sliceId);
+				}
+			}
+		});
+		btnAvailableData.setBounds(1029, 47, 108, 30);
+		btnAvailableData.setText("Available data");
 
 		browser.addLocationListener(new LocationListener() {
 
@@ -255,9 +363,10 @@ public class CovertBrowser {
 
 		text = new Text(composite, SWT.BORDER);
 		text.setBounds(315, 10, 544, 26);
-		text.setText("http://");
+		text.setText("http://127.0.0.1:9700");
 
 		Button btnGo = new Button(composite, SWT.NONE);
+		btnGo.setEnabled(false);
 		btnGo.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent arg0) {
@@ -276,6 +385,35 @@ public class CovertBrowser {
 
 		btnGo.setBounds(865, 8, 90, 30);
 		btnGo.setText("Go");
+
+		portText = new Text(composite, SWT.BORDER);
+		portText.setBounds(0, 10, 97, 28);
+		portText.setText("9700");
+
+		Button btnSetPort = new Button(composite, SWT.NONE);
+		btnSetPort.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+			}
+		});
+		btnSetPort.setBounds(103, 8, 120, 30);
+		btnSetPort.setText("Set port + proxy");
+
+		Button btnStop = new Button(composite, SWT.NONE);
+		btnStop.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent paramSelectionEvent) {
+
+				try {
+					ps.stopServer();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		});
+
+		btnStop.setBounds(224, 8, 70, 30);
+		btnStop.setText("Stop");
 
 		/*Button btnLoadCovertStart = new Button(composite, SWT.NONE);
 		btnLoadCovertStart.setEnabled(false);
@@ -341,51 +479,27 @@ public class CovertBrowser {
 		});
 		btnDispatch.setBounds(1288, 8, 106, 30);
 		btnDispatch.setText("Dispatch");
-		
-		Button btnLoadCovertSite = new Button(composite, SWT.NONE);
-		btnLoadCovertSite.setBounds(10, 10, 165, 26);
-		btnLoadCovertSite.addSelectionListener(new SelectionAdapter() {
+
+
+		btnSetPort.addMouseListener(new MouseAdapter() {
 			@Override
-			public void widgetSelected(SelectionEvent e) {
-				
-				String sliceTableDataJSON = null;
+			public void mouseDown(MouseEvent arg0) {
+
+				port = Integer.parseInt(portText.getText());
+				btnGo.setEnabled(true);
+
+				ProxyServer.setProxy(port);
 				try {
-					sliceTableDataJSON = CovertBrowserUtility.getSliceTable();
-				} catch (IOException e1) {
-					MessageBox messageBox = new MessageBox(shell ,SWT.ICON_INFORMATION);
-					messageBox.setMessage("Something went wrong as always : \n" + e1.toString());
-					messageBox.setText("Eror");
-					messageBox.open();
+					ps = new ProxyServer(port);
+				} catch (IOException e) {
+					e.printStackTrace();
 				}
-				
-				sliceTree = new com.ethz.tree.Tree(sliceTableDataJSON);
-				tree.removeAll();
-				exploredTree.clear();
-				treeItem0 = new TreeItem(tree, 0);
-				treeItem0.setText("ROOT");
+				ps.startServer();
+				serverClosed = true;
+				//btnLoadCovertStart.setEnabled(true);
+
 			}
-		});
-		btnLoadCovertSite.setText("Load Covert site tree");
-		
-		Button backButton = new Button(composite, SWT.NONE);
-		backButton.setBounds(235, 8, 35, 30);
-		backButton.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent arg0) {
-				browser.back();
-			}
-		});
-		backButton.setText("<-");
-		
-				Button forwardButton = new Button(composite, SWT.NONE);
-				forwardButton.setBounds(276, 8, 35, 30);
-				forwardButton.addSelectionListener(new SelectionAdapter() {
-					@Override
-					public void widgetSelected(SelectionEvent e) {
-						browser.forward();
-					}
-				});
-				forwardButton.setText("->");
+		});	
 
 		//html gen
 		/*btnLoadCovertStart.addSelectionListener(new SelectionAdapter() {

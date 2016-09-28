@@ -64,7 +64,7 @@ import javax.swing.table.DefaultTableModel;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.ethz.app.covert.CovertBrowser;
+import com.ethz.app.covert.CovertBrowserSA;
 import com.ethz.app.env.ENV;
 import com.ethz.app.rep.DataBasePollPresetPK;
 
@@ -296,7 +296,7 @@ public class TableVerify {
 			public void actionPerformed(ActionEvent arg0) {
 
 				try {
-					CovertBrowser window = new CovertBrowser();
+					CovertBrowserSA window = new CovertBrowserSA();
 					window.open();
 				} catch (Exception e) {
 					e.printStackTrace();
