@@ -55,7 +55,7 @@ public class CovertBrowserSA {
 	private Text text;
 	private ProxyServer ps;
 	private boolean serverClosed;
-	public static Set<Long> sliceIdSet = new HashSet<>();
+	public static Set<String> sliceNameSet = new HashSet<>();
 	private com.ethz.tree.Tree sliceTree;
 	private TreeItem treeItem0;
 	private Set<String> exploredTree;
@@ -142,28 +142,8 @@ public class CovertBrowserSA {
 		composite.setBounds(10, 3, 1404, 46);
 		
 		Label lbllinks = new Label(composite, SWT.NONE);
-
-		lbllinks.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseDoubleClick(MouseEvent e) {
-				
-				try {
-					Display display = Display.getDefault();
-					SliceList shell = new SliceList(display, sliceIdSet);
-					shell.open();
-					shell.layout();
-					while (!shell.isDisposed()) {
-						if (!display.readAndDispatch()) {
-							display.sleep();
-						}
-					}
-				} catch (Exception ex) {
-					ex.printStackTrace();
-				}
-			}
-		});
 		
-		lbllinks.setBounds(1129, 13, 115, 20);
+		lbllinks.setBounds(1082, 13, 74, 20);
 		lbllinks.setText("#links");
 		
 		
@@ -185,8 +165,8 @@ public class CovertBrowserSA {
 					{
 						if(!CovertBrowserUtility.checkSliceFolder(selectedNode.sliceId))
 						{
-							sliceIdSet.add(selectedNode.sliceId);
-							lbllinks.setText(new Integer(sliceIdSet.size()).toString());
+							sliceNameSet.add(selectedNode.sliceName);
+							lbllinks.setText(new Integer(sliceNameSet.size()).toString());
 						}
 					}
 					
@@ -311,7 +291,7 @@ public class CovertBrowserSA {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 
-				if(sliceIdSet.size() == 0)
+				if(sliceNameSet.size() == 0)
 				{
 					MessageBox messageBox = new MessageBox(shell ,SWT.ICON_INFORMATION);
 					messageBox.setMessage("Nothing to dispatch");
@@ -331,10 +311,11 @@ public class CovertBrowserSA {
 
 						FileOutputStream fw = new FileOutputStream(ENV.APP_STORAGE_LOC + ENV.DELIM + 
 								ENV.APP_STORAGE_SLICE_ID_FILES_LOC + ENV.DELIM + ENV.APP_STORAGE_SLICE_ID_FILE);
-						byte[] out = new byte[Long.BYTES * sliceIdSet.size()];
+						byte[] out = new byte[Long.BYTES * sliceNameSet.size()];
 						int tillNow = 0;
-						for(long sliceId : sliceIdSet)
+						for(String sliceName : sliceNameSet)
 						{
+							long sliceId = sliceTree.nodeMap.get(sliceName).sliceId;
 							byte[] sliceBytes = ByteBuffer.allocate(Long.BYTES).putLong(sliceId).array();
 							System.arraycopy(sliceBytes, 0, out, tillNow, sliceBytes.length);
 							tillNow += sliceBytes.length;
@@ -356,8 +337,8 @@ public class CovertBrowserSA {
 					messageBox.setText("Message");
 					messageBox.open();
 
-					sliceIdSet.clear();
-					lbllinks.setText(new Integer(sliceIdSet.size()).toString());
+					sliceNameSet.clear();
+					lbllinks.setText(new Integer(sliceNameSet.size()).toString());
 				}
 			}
 		});
@@ -408,6 +389,34 @@ public class CovertBrowserSA {
 					}
 				});
 				forwardButton.setText("->");
+				
+				Button btnModify = new Button(composite, SWT.NONE);
+				btnModify.addSelectionListener(new SelectionAdapter() {
+					@Override
+					public void widgetSelected(SelectionEvent e) {
+						
+						btnModify.setEnabled(false);
+						try {
+							Display display = Display.getDefault();
+							SliceList shell = new SliceList(display, sliceNameSet);
+							shell.open();
+							shell.layout();
+							while (!shell.isDisposed()) {
+								if (!display.readAndDispatch()) {
+									display.sleep();
+								}
+							}
+						} catch (Exception ex) {
+							ex.printStackTrace();
+						}
+						finally {
+							btnModify.setEnabled(true);
+							lbllinks.setText(new Integer(sliceNameSet.size()).toString());
+						}
+					}
+				});
+				btnModify.setBounds(1181, 8, 90, 30);
+				btnModify.setText("Modify");
 
 		//html gen
 		/*btnLoadCovertStart.addSelectionListener(new SelectionAdapter() {

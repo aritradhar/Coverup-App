@@ -77,7 +77,7 @@ public class ProxyServer {
 										getReq = getReq.split("=")[1];
 										try
 										{
-											CovertBrowserSA.sliceIdSet.add(Long.parseLong(getReq));
+											CovertBrowserSA.sliceNameSet.add(getReq);
 										}
 										catch(NumberFormatException ex)
 										{
