@@ -12,48 +12,42 @@
 //*************************************************************************************
 package com.ethz.app.covert;
 
-import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Shell;
-import org.eclipse.swt.browser.Browser;
-import org.eclipse.swt.browser.LocationEvent;
-import org.eclipse.swt.browser.LocationListener;
-
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.Base64;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Random;
+import java.util.Map;
 import java.util.Set;
 
-import javax.swing.JEditorPane;
-
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Text;
-
-import com.ethz.app.env.ENV;
-import com.ethz.app.rep.RepeatedDatabaseCheck;
-
-import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.browser.Browser;
+import org.eclipse.swt.browser.LocationEvent;
+import org.eclipse.swt.browser.LocationListener;
 import org.eclipse.swt.events.DisposeEvent;
 import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
-import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.layout.FillLayout;
-import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
-import org.eclipse.swt.custom.StyledText;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.MessageBox;
+import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.Text;
+
+import com.ethz.app.env.ENV;
+import com.ethz.app.rep.RepeatedDatabaseCheck;
+import com.ethz.tree.Node;
+
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
 
@@ -61,17 +55,19 @@ import org.eclipse.swt.widgets.TreeItem;
  * @author Aritra
  *
  */
-public class CovertBrowserTree {
+public class CovertBrowserSA {
 
 	protected Shell shell;
 	private Text text;
 
-	private List<String> urlList; 
 	private Text portText;
 	private int port;
 	private ProxyServer ps;
 	private boolean serverClosed;
-	public static Set<String> sliceIdSet = new HashSet<>();;
+	public static Set<Long> sliceIdSet = new HashSet<>();
+	private com.ethz.tree.Tree sliceTree;
+	private TreeItem treeItem0;
+	private Set<String> exploredTree;
 	/**
 	 * Launch the application.
 	 * @param args
@@ -85,7 +81,7 @@ public class CovertBrowserTree {
 			System.setProperty("https.proxyHost", "127.0.0.1");
 			System.setProperty("https.proxyPort", "9700");
 
-			CovertBrowserTree window = new CovertBrowserTree();
+			CovertBrowserSA window = new CovertBrowserSA();
 			window.open();
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -95,10 +91,10 @@ public class CovertBrowserTree {
 	/**
 	 * 
 	 */
-	public CovertBrowserTree() {
-		this.urlList = new ArrayList<>();
+	public CovertBrowserSA() {
 		this.ps = null;
 		this.serverClosed = false;
+		this.exploredTree = new HashSet<>();
 	}
 
 	/**
@@ -109,35 +105,6 @@ public class CovertBrowserTree {
 		createContents();
 		Image small = new Image(display,"assets//hb.jpg");
 		shell.setImage(small);    
-
-		Button backButton = new Button(shell, SWT.NONE);
-		backButton.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent arg0) {
-			}
-		});
-		backButton.setBounds(10, 61, 35, 30);
-		backButton.setText("<-");
-
-		Button forwardButton = new Button(shell, SWT.NONE);
-		forwardButton.setBounds(52, 61, 35, 30);
-		forwardButton.setText("->");
-		
-		Tree tree = new Tree(shell, SWT.BORDER);
-		tree.setBounds(10, 97, 303, 849);
-		
-		 for (int loopIndex0 = 0; loopIndex0 < 10; loopIndex0++) {
-		      TreeItem treeItem0 = new TreeItem(tree, 0);
-		      treeItem0.setText("Level 0 Item " + loopIndex0);
-		      for (int loopIndex1 = 0; loopIndex1 < 10; loopIndex1++) {
-		        TreeItem treeItem1 = new TreeItem(treeItem0, 0);
-		        treeItem1.setText("Level 1 Item " + loopIndex1);
-		        for (int loopIndex2 = 0; loopIndex2 < 10; loopIndex2++) {
-		          TreeItem treeItem2 = new TreeItem(treeItem1, 0);
-		          treeItem2.setText("Level 2 Item " + loopIndex2);
-		        }
-		      }
-		    }
 		
 		shell.open();
 		shell.layout();
@@ -148,6 +115,8 @@ public class CovertBrowserTree {
 		}
 	}
 
+
+	
 	/**
 	 * Create contents of the window.
 	 */
@@ -174,18 +143,112 @@ public class CovertBrowserTree {
 		
 		Browser browser = new Browser(shell, SWT.NONE);
 
-		browser.setBounds(319, 97, 1112, 849);
-		browser.setJavascriptEnabled(false);
+		browser.setBounds(275, 85, 1156, 861);
+		browser.setJavascriptEnabled(true);	
+		
+
+		Composite composite = new Composite(shell, SWT.NONE);
+		composite.setBounds(10, 3, 1404, 38);
+		
+		Label lbllinks = new Label(composite, SWT.NONE);
+		lbllinks.setBounds(1154, 13, 90, 20);
+		lbllinks.setText("#links");
+		
+		
+		Tree tree = new Tree(shell, SWT.BORDER);
+		tree.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				
+				try
+				{
+					//String sliceIdStr = tree.getItem(tree.getSelectionIndex());
+					//TODO for testing only
+					//long sliceIdL = CovertHTMLUtils.sliceMap.get(sliceIdStr);
+					
+					String selectedtext = tree.getSelection()[0].getText();
+					Node selectedNode = sliceTree.nodeMap.get(selectedtext);
+					
+					if(!selectedtext.equals("ROOT"))
+					{
+						if(!CovertBrowserUtility.checkSliceFolder(selectedNode.sliceId))
+						{
+							sliceIdSet.add(selectedNode.sliceId);
+							lbllinks.setText(new Integer(sliceIdSet.size()).toString());
+						}
+					}
+					
+					if(!selectedNode.isLeaf())
+					{	
+						if(!exploredTree.contains(selectedtext))
+						{
+							exploredTree.add(selectedtext);
+							for(Node child : selectedNode.children)
+							{
+								TreeItem treeItemInnter = new TreeItem(treeItem0, 0);
+								treeItemInnter.setText(child.sliceName);
+								if(!CovertBrowserUtility.checkSliceFolder(child.sliceId))
+									treeItemInnter.setForeground(tree.getDisplay().getSystemColor(SWT.COLOR_RED));
+							}
+						}
+					}
+					
+					if(tree.getSelection()[0].getText() == "ROOT")
+						return;
+					
+				    long sliceIdL = selectedNode.sliceId;
+					try {
+						byte[] assembledDataBytes = CovertBrowserUtility.assembleSlices(sliceIdL);
+						
+						if(assembledDataBytes == null)
+						{
+							browser.setText("<html><body><h1>Not locatated in disk</h1></body></html>");
+							return;
+						}
+						
+						//String assembledData = new String(assembledDataBytes, StandardCharsets.UTF_8);
+						String assembledData = new String(assembledDataBytes, StandardCharsets.UTF_8);
+						browser.setText(assembledData);
+					} catch (IOException e1) {
+						e1.printStackTrace();
+					}
+				}
+				catch(Exception ex)
+				{
+					ex.printStackTrace();
+					MessageBox messageBox = new MessageBox(shell ,SWT.ICON_INFORMATION);
+					messageBox.setMessage("Something went wrong as always : \n" + ex.toString());
+					messageBox.setText("Eror");
+					messageBox.open();
+					
+				}
+			}
+		});
+		tree.setBounds(10, 85, 259, 861);
+		
+		Button backButton = new Button(shell, SWT.NONE);
+		backButton.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent arg0) {
+				browser.back();
+			}
+		});
+		backButton.setBounds(275, 47, 35, 30);
+		backButton.setText("<-");
+
+		Button forwardButton = new Button(shell, SWT.NONE);
+		forwardButton.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				browser.forward();
+			}
+		});
+		forwardButton.setBounds(315, 47, 35, 30);
+		forwardButton.setText("->");
 		
 		//browser.setUrl("C:\\Users\\Aritra\\workspace_Mars_new\\UndergroundApp\\a.htm");
 		//browser.setUrl("http://forum.codecall.net/topic/57029-simple-java-web-browser/");
 
-		Composite composite = new Composite(shell, SWT.NONE);
-		composite.setBounds(10, 3, 1404, 52);
-
-		Label lbllinks = new Label(composite, SWT.NONE);
-		lbllinks.setBounds(1211, 20, 90, 20);
-		lbllinks.setText("#links");
 		
 		/*
 		browser.execute("Components.utils.import(\"resource://gre/modules/Services.jsm\");");
@@ -193,6 +256,31 @@ public class CovertBrowserTree {
 		browser.execute("Components.classes[\"@mozilla.org/preferences-service;1\"].getService(Components.interfaces.nsIPrefBranch).setIntPref(\"network.proxy.http_port\",9700);");
 		browser.execute("Components.classes[\"@mozilla.org/preferences-service;1\"].getService(Components.interfaces.nsIPrefBranch).setIntPref(\"network.proxy.http\",\"127.0.0.1\");");
 		*/
+		
+		Button btnLoadCovertSite = new Button(shell, SWT.NONE);
+		btnLoadCovertSite.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				
+				String sliceTableDataJSON = null;
+				try {
+					sliceTableDataJSON = CovertBrowserUtility.getSliceTable();
+				} catch (IOException e1) {
+					MessageBox messageBox = new MessageBox(shell ,SWT.ICON_INFORMATION);
+					messageBox.setMessage("Something went wrong as always : \n" + e1.toString());
+					messageBox.setText("Eror");
+					messageBox.open();
+				}
+				
+				sliceTree = new com.ethz.tree.Tree(sliceTableDataJSON);
+				tree.removeAll();
+				exploredTree.clear();
+				treeItem0 = new TreeItem(tree, 0);
+				treeItem0.setText("ROOT");
+			}
+		});
+		btnLoadCovertSite.setBounds(10, 47, 165, 30);
+		btnLoadCovertSite.setText("Load Covert site tree");
 		
 		Combo combo = new Combo(shell, SWT.READ_ONLY);
 		combo.addSelectionListener(new SelectionAdapter() {
@@ -228,8 +316,9 @@ public class CovertBrowserTree {
 
 			}
 		});
-		combo.setBounds(1012, 61, 271, 28);
-
+		combo.setBounds(1143, 49, 271, 28);
+		
+		
 		Button btnAvailableData = new Button(shell, SWT.NONE);
 		btnAvailableData.addSelectionListener(new SelectionAdapter() {
 			@Override
@@ -237,32 +326,43 @@ public class CovertBrowserTree {
 
 				combo.removeAll();
 				String[] sliceIds = CovertBrowserUtility.getLocalSliceIds();
+
 				for(String sliceId : sliceIds)
+				{
 					combo.add(sliceId);
+				}
 			}
 		});
-		btnAvailableData.setBounds(1306, 61, 108, 30);
+		btnAvailableData.setBounds(1029, 47, 108, 30);
 		btnAvailableData.setText("Available data");
 
 		browser.addLocationListener(new LocationListener() {
 
 			@Override
-			public void changing(LocationEvent paramLocationEvent) {
-				//System.out.println(paramLocationEvent.location);
+			public void changing(LocationEvent event) {
+
+				//System.out.println(event.location);
+				if(!event.location.contains("127.0.0.1") && !event.location.contains("about:blank"))
+				{		
+					browser.setText("<html><body><h1>Requested for  " + event.location +"  <a href=\"http://127.0.0.1:9700/flag=" + event.location + "\">bla</a></h1></body></html>");
+					event.doit = false;
+				}
+				//event.location = "http://127.0.0.1:9070";
+				//System.out.println("bla");
+				//event.doit = false;
 				//urlList.add(paramLocationEvent.location);
-				lbllinks.setText(new Integer(sliceIdSet.size()).toString());
+				//lbllinks.setText(new Integer(sliceIdSet.size()).toString());
 			}
 
 			@Override
 			public void changed(LocationEvent paramLocationEvent) {
 				// TODO Auto-generated method stub
-
 			}
 		});
 
 
 		text = new Text(composite, SWT.BORDER);
-		text.setBounds(315, 17, 544, 26);
+		text.setBounds(315, 10, 544, 26);
 		text.setText("http://127.0.0.1:9700");
 
 		Button btnGo = new Button(composite, SWT.NONE);
@@ -283,11 +383,11 @@ public class CovertBrowserTree {
 			}
 		});
 
-		btnGo.setBounds(865, 15, 90, 30);
+		btnGo.setBounds(865, 8, 90, 30);
 		btnGo.setText("Go");
 
 		portText = new Text(composite, SWT.BORDER);
-		portText.setBounds(10, 14, 87, 26);
+		portText.setBounds(0, 10, 97, 28);
 		portText.setText("9700");
 
 		Button btnSetPort = new Button(composite, SWT.NONE);
@@ -296,7 +396,7 @@ public class CovertBrowserTree {
 			public void widgetSelected(SelectionEvent e) {
 			}
 		});
-		btnSetPort.setBounds(103, 14, 120, 30);
+		btnSetPort.setBounds(103, 8, 120, 30);
 		btnSetPort.setText("Set port + proxy");
 
 		Button btnStop = new Button(composite, SWT.NONE);
@@ -312,15 +412,16 @@ public class CovertBrowserTree {
 			}
 		});
 
-		btnStop.setBounds(229, 15, 70, 30);
+		btnStop.setBounds(224, 8, 70, 30);
 		btnStop.setText("Stop");
 
-		Button btnLoadCovertStart = new Button(composite, SWT.NONE);
+		/*Button btnLoadCovertStart = new Button(composite, SWT.NONE);
 		btnLoadCovertStart.setEnabled(false);
 
-		btnLoadCovertStart.setBounds(974, 15, 167, 30);
+		btnLoadCovertStart.setBounds(974, 8, 167, 30);
 		btnLoadCovertStart.setText("Load covert start page");
-
+		 */
+		
 		Button btnDispatch = new Button(composite, SWT.NONE);
 		btnDispatch.addSelectionListener(new SelectionAdapter() {
 			@Override
@@ -348,9 +449,9 @@ public class CovertBrowserTree {
 								ENV.APP_STORAGE_SLICE_ID_FILES_LOC + ENV.DELIM + ENV.APP_STORAGE_SLICE_ID_FILE);
 						byte[] out = new byte[Long.BYTES * sliceIdSet.size()];
 						int tillNow = 0;
-						for(String sliceId : sliceIdSet)
+						for(long sliceId : sliceIdSet)
 						{
-							byte[] sliceBytes = ByteBuffer.allocate(Long.BYTES).putLong(Long.parseLong(sliceId)).array();
+							byte[] sliceBytes = ByteBuffer.allocate(Long.BYTES).putLong(sliceId).array();
 							System.arraycopy(sliceBytes, 0, out, tillNow, sliceBytes.length);
 							tillNow += sliceBytes.length;
 						}
@@ -376,7 +477,7 @@ public class CovertBrowserTree {
 				}
 			}
 		});
-		btnDispatch.setBounds(1314, 15, 90, 30);
+		btnDispatch.setBounds(1288, 8, 106, 30);
 		btnDispatch.setText("Dispatch");
 
 
@@ -395,13 +496,13 @@ public class CovertBrowserTree {
 				}
 				ps.startServer();
 				serverClosed = true;
-				btnLoadCovertStart.setEnabled(true);
+				//btnLoadCovertStart.setEnabled(true);
 
 			}
 		});	
 
 		//html gen
-		btnLoadCovertStart.addSelectionListener(new SelectionAdapter() {
+		/*btnLoadCovertStart.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent paramSelectionEvent) {
 
@@ -428,6 +529,6 @@ public class CovertBrowserTree {
 				}
 
 			}
-		});
+		});*/
 	}
 }

@@ -149,6 +149,7 @@ public class RepeatedDatabaseCheck {
 			}
 			else if(ex.getMessage().equalsIgnoreCase(ENV.EXCEPTION_MESSAGE_MAGIC_BYTES))
 			{
+				this.messaage.append("Encrypted slice found\n");
 				Object[] returnVal = BinUtils.intrBinProcess(receivedBin, this.messaage);
 				/**
 				 * 1. slice id in long
@@ -174,7 +175,7 @@ public class RepeatedDatabaseCheck {
 					System.arraycopy(hashtBytes, 0, lastReadFileHash, 0, hashtBytes.length);
 				}
 				else if(Arrays.equals(lastReadFileHash, hashtBytes))
-					this.messaage.append("Interactive data with hash " + Base64.getMimeEncoder().encodeToString(lastReadFileHash) + " exists");
+					this.messaage.append("\nInteractive data with hash " + Base64.getMimeEncoder().encodeToString(lastReadFileHash) + " exists");
 				
 				else
 				{
@@ -185,7 +186,7 @@ public class RepeatedDatabaseCheck {
 					String sliceDirLocation = ENV.APP_STORAGE_LOC + ENV.DELIM + ENV.APP_STORAGE_INTERACTIVE_DATA + ENV.DELIM + sliceId;
 					if(!new File(sliceDirLocation).exists())
 						new File(sliceDirLocation).mkdir();
-					String sliceFileLocation = sliceDirLocation + ENV.DELIM + sliceIndex + ".slice";
+					String sliceFileLocation = sliceDirLocation + ENV.DELIM + sliceIndex + ENV.APP_STORAGE_SLICE_FILE_FORMAT;
 					
 					FileWriter fw = new FileWriter(sliceFileLocation);
 					fw.append(Base64.getEncoder().encodeToString(intrDataBytes));
