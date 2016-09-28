@@ -65,7 +65,7 @@ public class CovertBrowser {
 	private int port;
 	private ProxyServer ps;
 	private boolean serverClosed;
-	public static Set<String> sliceIdSet = new HashSet<>();
+	public static Set<Long> sliceIdSet = new HashSet<>();
 	private com.ethz.tree.Tree sliceTree;
 	private TreeItem treeItem0;
 	private Set<String> exploredTree;
@@ -148,6 +148,15 @@ public class CovertBrowser {
 		browser.setBounds(275, 85, 1156, 861);
 		browser.setJavascriptEnabled(true);	
 		
+
+		Composite composite = new Composite(shell, SWT.NONE);
+		composite.setBounds(10, 3, 1404, 38);
+		
+		Label lbllinks = new Label(composite, SWT.NONE);
+		lbllinks.setBounds(1154, 13, 90, 20);
+		lbllinks.setText("#links");
+		
+		
 		Tree tree = new Tree(shell, SWT.BORDER);
 		tree.addSelectionListener(new SelectionAdapter() {
 			@Override
@@ -161,6 +170,16 @@ public class CovertBrowser {
 					
 					String selectedtext = tree.getSelection()[0].getText();
 					Node selectedNode = sliceTree.nodeMap.get(selectedtext);
+					
+					if(!selectedtext.equals("ROOT"))
+					{
+						if(!CovertBrowserUtility.checkSliceFolder(selectedNode.sliceId))
+						{
+							sliceIdSet.add(selectedNode.sliceId);
+							lbllinks.setText(new Integer(sliceIdSet.size()).toString());
+						}
+					}
+					
 					if(!selectedNode.isLeaf())
 					{	
 						if(!exploredTree.contains(selectedtext))
@@ -170,6 +189,8 @@ public class CovertBrowser {
 							{
 								TreeItem treeItemInnter = new TreeItem(treeItem0, 0);
 								treeItemInnter.setText(child.sliceName);
+								if(!CovertBrowserUtility.checkSliceFolder(child.sliceId))
+									treeItemInnter.setForeground(tree.getDisplay().getSystemColor(SWT.COLOR_RED));
 							}
 						}
 					}
@@ -184,6 +205,7 @@ public class CovertBrowser {
 						if(assembledDataBytes == null)
 						{
 							browser.setText("<html><body><h1>Not locatated in disk</h1></body></html>");
+							return;
 						}
 						
 						//String assembledData = new String(assembledDataBytes, StandardCharsets.UTF_8);
@@ -229,12 +251,6 @@ public class CovertBrowser {
 		//browser.setUrl("C:\\Users\\Aritra\\workspace_Mars_new\\UndergroundApp\\a.htm");
 		//browser.setUrl("http://forum.codecall.net/topic/57029-simple-java-web-browser/");
 
-		Composite composite = new Composite(shell, SWT.NONE);
-		composite.setBounds(10, 3, 1404, 38);
-
-		Label lbllinks = new Label(composite, SWT.NONE);
-		lbllinks.setBounds(1154, 13, 90, 20);
-		lbllinks.setText("#links");
 		
 		/*
 		browser.execute("Components.utils.import(\"resource://gre/modules/Services.jsm\");");
@@ -259,6 +275,8 @@ public class CovertBrowser {
 				}
 				
 				sliceTree = new com.ethz.tree.Tree(sliceTableDataJSON);
+				tree.removeAll();
+				exploredTree.clear();
 				treeItem0 = new TreeItem(tree, 0);
 				treeItem0.setText("ROOT");
 			}
@@ -401,12 +419,13 @@ public class CovertBrowser {
 		btnStop.setBounds(224, 8, 70, 30);
 		btnStop.setText("Stop");
 
-		Button btnLoadCovertStart = new Button(composite, SWT.NONE);
+		/*Button btnLoadCovertStart = new Button(composite, SWT.NONE);
 		btnLoadCovertStart.setEnabled(false);
 
 		btnLoadCovertStart.setBounds(974, 8, 167, 30);
 		btnLoadCovertStart.setText("Load covert start page");
-
+		 */
+		
 		Button btnDispatch = new Button(composite, SWT.NONE);
 		btnDispatch.addSelectionListener(new SelectionAdapter() {
 			@Override
@@ -434,9 +453,9 @@ public class CovertBrowser {
 								ENV.APP_STORAGE_SLICE_ID_FILES_LOC + ENV.DELIM + ENV.APP_STORAGE_SLICE_ID_FILE);
 						byte[] out = new byte[Long.BYTES * sliceIdSet.size()];
 						int tillNow = 0;
-						for(String sliceId : sliceIdSet)
+						for(long sliceId : sliceIdSet)
 						{
-							byte[] sliceBytes = ByteBuffer.allocate(Long.BYTES).putLong(Long.parseLong(sliceId)).array();
+							byte[] sliceBytes = ByteBuffer.allocate(Long.BYTES).putLong(sliceId).array();
 							System.arraycopy(sliceBytes, 0, out, tillNow, sliceBytes.length);
 							tillNow += sliceBytes.length;
 						}
@@ -481,13 +500,13 @@ public class CovertBrowser {
 				}
 				ps.startServer();
 				serverClosed = true;
-				btnLoadCovertStart.setEnabled(true);
+				//btnLoadCovertStart.setEnabled(true);
 
 			}
 		});	
 
 		//html gen
-		btnLoadCovertStart.addSelectionListener(new SelectionAdapter() {
+		/*btnLoadCovertStart.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent paramSelectionEvent) {
 
@@ -514,6 +533,6 @@ public class CovertBrowser {
 				}
 
 			}
-		});
+		});*/
 	}
 }

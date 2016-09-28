@@ -73,6 +73,12 @@ public class CovertBrowserUtility {
 		return ret;
 	}
 	
+	public static boolean checkSliceFolder(long sliceId)
+	{
+		String sliceDirLocation = ENV.APP_STORAGE_LOC + ENV.DELIM + ENV.APP_STORAGE_INTERACTIVE_DATA + ENV.DELIM + sliceId;
+		
+		return new File(sliceDirLocation).exists();
+	}
 	public static String getSliceTable() throws IOException
 	{
 		BufferedReader br = new BufferedReader(new FileReader(ENV.APP_STORAGE_LOC + ENV.DELIM + ENV.APP_STORAGE_SLICE_TABLE_LOC + ENV.DELIM + ENV.APP_STORAGE_SLICE_TABLE));
