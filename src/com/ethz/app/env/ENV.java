@@ -52,6 +52,7 @@ public class ENV {
 	public static final String APP_STORAGE_COVERT_BROWSER_START_PAGE = "sliceTableHTML.htm";
 	public static final String APP_STORAGE_SLICE_ID_FILES_LOC = "SLICE_ID";
 	public static final String APP_STORAGE_SLICE_ID_FILE = "slice_id.bin";
+	public static final String APP_STORAGE_SLICE_FILE_FORMAT = ".slice";
 	
 	static
 	{
