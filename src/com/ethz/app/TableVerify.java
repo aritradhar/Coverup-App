@@ -516,14 +516,14 @@ public class TableVerify {
 					try {
 						fwSliceTableDump = new FileWriter(sliceTable);
 					} catch (IOException e2) {
-						JOptionPane.showMessageDialog(frame, "Error in file");
+						JOptionPane.showMessageDialog(frame, "Error in locating slice tabel file");
 						
 						e2.printStackTrace();
 					}
 					try {
 						fwSliceTableDump.append(sliceTableDump);
 					} catch (IOException e3) {
-						JOptionPane.showMessageDialog(frame, "Error in file");
+						JOptionPane.showMessageDialog(frame, "Error in saving slice table file");
 						e3.printStackTrace();
 					}
 					
