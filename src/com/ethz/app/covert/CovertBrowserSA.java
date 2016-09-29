@@ -357,15 +357,25 @@ public class CovertBrowserSA {
 				} catch (IOException e1) {
 					MessageBox messageBox = new MessageBox(shell ,SWT.ICON_INFORMATION);
 					messageBox.setMessage("Something went wrong as always : \n" + e1.toString());
-					messageBox.setText("Eror");
+					messageBox.setText("Error");
 					messageBox.open();
 				}
 				
-				sliceTree = new com.ethz.tree.Tree(sliceTableDataJSON);
-				tree.removeAll();
-				exploredTree.clear();
-				treeItem0 = new TreeItem(tree, 0);
-				treeItem0.setText("ROOT");
+				try
+				{
+					sliceTree = new com.ethz.tree.Tree(sliceTableDataJSON);
+					tree.removeAll();
+					exploredTree.clear();
+					treeItem0 = new TreeItem(tree, 0);
+					treeItem0.setText("ROOT");
+				}
+				catch(Exception ex)
+				{
+					MessageBox messageBox = new MessageBox(shell ,SWT.ICON_INFORMATION);
+					messageBox.setMessage("Slice tree file possibly empty : \n" + ex.toString());
+					messageBox.setText("Error");
+					messageBox.open();
+				}
 			}
 		});
 		btnLoadCovertSite.setText("Load Covert site tree");
