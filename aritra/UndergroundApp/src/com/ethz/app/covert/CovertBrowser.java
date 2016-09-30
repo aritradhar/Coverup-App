@@ -45,7 +45,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
 import com.ethz.app.env.ENV;
-import com.ethz.app.rep.RepeatedDatabaseCheck;
+import com.ethz.app.poll.RepeatedDatabaseCheck;
 import com.ethz.tree.Node;
 
 import org.eclipse.swt.widgets.Tree;

@@ -32,7 +32,7 @@ import org.whispersystems.curve25519.Curve25519;
 
 import com.ethz.app.binUtils.BinUtils;
 import com.ethz.app.env.ENV;
-import com.ethz.app.rep.RepeatedDatabaseCheck;
+import com.ethz.app.poll.RepeatedDatabaseCheck;
 
 public class TableChecker 
 {
