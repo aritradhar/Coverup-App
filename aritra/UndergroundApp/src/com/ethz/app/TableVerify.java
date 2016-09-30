@@ -17,6 +17,8 @@ import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.EventQueue;
 import java.awt.FlowLayout;
+import java.awt.Graphics2D;
+import java.awt.SplashScreen;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
@@ -125,6 +127,7 @@ public class TableVerify {
 	//@SuppressWarnings("static-access")
 	public TableVerify() throws NoSuchAlgorithmException, SQLException {
 
+		
 		TableVerify.ivBytes = new byte[16];
 		Arrays.fill(TableVerify.ivBytes, (byte)0x00);
 
@@ -209,7 +212,7 @@ public class TableVerify {
 	private void initialize() throws NoSuchAlgorithmException 
 	{
 		frame = new JFrame();
-		frame.setTitle("Server Fountain Table");
+		frame.setTitle("Ninja Pumpkin");
 		frame.setBounds(100, 100, 823, 848);
 		ImageIcon frameIcon = new ImageIcon("assets//doge.png");
 		frame.setIconImage(frameIcon.getImage());

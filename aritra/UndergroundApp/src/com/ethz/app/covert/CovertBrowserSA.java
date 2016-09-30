@@ -114,7 +114,7 @@ public class CovertBrowserSA {
 	protected void createContents() {
 		shell = new Shell();
 		shell.setSize(1459, 1003);
-		shell.setText("Covert Browser");
+		shell.setText("Heavy breathing: Covert Browser");
 
 		shell.addDisposeListener(new DisposeListener() {
 
@@ -237,8 +237,8 @@ public class CovertBrowserSA {
 				//System.out.println(event.location);
 				if(!event.location.contains("127.0.0.1") && !event.location.contains("about:blank"))
 				{		
-					browser.setText("<html><body><h1>Add requested link  " + event.location +"  <a href=\"http://127.0.0.1:9700/flag=" + 
-								event.location + "\">bla</a></h1></body></html>");
+					browser.setText("<html><body><h1>Add requested link  </h1><br>" + event.location +"</body></html>");
+					
 					event.doit = false;
 				}
 				//event.location = "http://127.0.0.1:9070";
@@ -301,7 +301,9 @@ public class CovertBrowserSA {
 				else if(RepeatedDatabaseCheck.stored_droplet_counter < ENV.DISPACTH_REQUEST_THRESHOLD)
 				{
 					MessageBox messageBox = new MessageBox(shell ,SWT.ICON_INFORMATION);
-					messageBox.setMessage("Stored droplet count less than threshold value. Unsafe!");
+					messageBox.setMessage("Stored droplet count less than threshold value. Unsafe! (" + 
+								RepeatedDatabaseCheck.stored_droplet_counter + "<" + ENV.DISPACTH_REQUEST_THRESHOLD + ")");
+					
 					messageBox.setText("Message");
 					messageBox.open();
 				}
