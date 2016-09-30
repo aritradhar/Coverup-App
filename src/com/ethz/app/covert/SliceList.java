@@ -30,7 +30,7 @@ import org.eclipse.swt.events.SelectionAdapter;
  */
 public class SliceList extends Shell {
 
-	
+
 	private Set<String> displeaySet;
 
 	/**
@@ -48,46 +48,45 @@ public class SliceList extends Shell {
 	 */
 	protected void createContents() {
 		setText("Slice link list");
-		setSize(319, 511);
-		
+		setSize(319, 452);
+
 		List list = new List(this, SWT.BORDER | SWT.MULTI | SWT.V_SCROLL);
-	    list.setBounds(0, 20, 298, 347);
-	    for (String sliceName : displeaySet) {
-	      list.add(sliceName);
-	    }
+		list.setBounds(0, 20, 298, 347);
+		for (String sliceName : displeaySet) {
+			list.add(sliceName);
+		}
 
-	    Text text = new Text(this, SWT.BORDER);
-	    text.setBounds(71, 373, 160, 25);
-	    
-	    Button btnDelete = new Button(this, SWT.NONE);
-	    btnDelete.addSelectionListener(new SelectionAdapter() {
-	    	@Override
-	    	public void widgetSelected(SelectionEvent e) {
-	    		
-	    		String outString = list.getItem(list.getSelectionIndex());
-	    		displeaySet.remove(outString);
-	    		
-	    		list.removeAll();
-	    		for (String sliceName : displeaySet) {
-	    		      list.add(sliceName);
-	    		    }
-	    	}
-	    });
-	    btnDelete.setBounds(100, 404, 90, 30);
-	    btnDelete.setText("Delete");
+		Button btnDelete = new Button(this, SWT.NONE);
+		if(displeaySet.size() == 0)
+			btnDelete.setEnabled(false);
 
-	    list.addSelectionListener(new SelectionListener() {
-	    	public void widgetSelected(SelectionEvent event) 
-	    	{
-	    		String outString = list.getItem(list.getSelectionIndex());
-	    		text.setText("Selected Items: " + outString);
-	    	}
+		btnDelete.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {   
 
-	    	@Override
-	    	public void widgetDefaultSelected(SelectionEvent e) {			
-	    	}
-	    });
+				if(displeaySet.size() > 0)
+				{
+					try
+					{
+						String outString = list.getItem(list.getSelectionIndex());
+						displeaySet.remove(outString);
+					}
+					catch(Exception ex)
+					{
+						System.err.println("bla");
+					}
+				}
+				else
+					setEnabled(false);
 
+				list.removeAll();
+				for (String sliceName : displeaySet) {
+					list.add(sliceName);
+				}
+			}
+		});
+		btnDelete.setBounds(101, 373, 90, 30);
+		btnDelete.setText("Delete");
 	}
 
 	@Override
