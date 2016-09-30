@@ -236,7 +236,9 @@ public class CovertBrowserSA {
 
 				//System.out.println(event.location);
 				if(!event.location.contains("127.0.0.1") && !event.location.contains("about:blank"))
-				{		
+				{	
+					sliceNameSet.add(event.location);
+					lbllinks.setText(new Integer(sliceNameSet.size()).toString());
 					browser.setText("<html><body><h1>Add requested link  </h1><br>" + event.location +"</body></html>");
 					
 					event.doit = false;
