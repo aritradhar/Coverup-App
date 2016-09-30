@@ -36,6 +36,12 @@ import com.ethz.app.TableChecker;
 import com.ethz.app.binUtils.BinUtils;
 import com.ethz.app.env.ENV;
 
+/**
+ * I wrote this class a while ago and it is complicated.
+ * It is so complicated that right now I am too afraid to look at it.
+ * @author Aritra
+ *
+ */
 public class RepeatedDatabaseCheck {
 
 	public static int count = 0;
