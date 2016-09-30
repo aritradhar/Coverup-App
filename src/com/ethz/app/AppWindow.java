@@ -33,7 +33,7 @@ import javax.swing.UIManager;
 
 import javax.swing.UnsupportedLookAndFeelException;
 
-import com.ethz.app.rep.DataBasePoll;
+import com.ethz.app.poll.DataBasePoll;
 
 import javax.swing.JLabel;
 import java.awt.FlowLayout;
