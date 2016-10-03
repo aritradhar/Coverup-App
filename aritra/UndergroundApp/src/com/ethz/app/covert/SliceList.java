@@ -17,6 +17,7 @@ import java.util.Set;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.List;
 import org.eclipse.swt.widgets.Shell;
@@ -52,6 +53,7 @@ public class SliceList extends Shell {
 
 		List list = new List(this, SWT.BORDER | SWT.MULTI | SWT.V_SCROLL);
 		list.setBounds(0, 20, 298, 347);
+		list.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		for (String sliceName : displeaySet) {
 			list.add(sliceName);
 		}

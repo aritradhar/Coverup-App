@@ -138,7 +138,7 @@ public class RepeatedDatabaseCheck {
 		{
 			jsonBinData = BinUtils.dropletBinToDropletJson
 					(receivedBin, RepeatedDatabaseCheck.ServerPublickey, this.messaage);	
-			stored_droplet_counter++;
+			
 		}
 		catch(RuntimeException ex)
 		{
@@ -256,6 +256,8 @@ public class RepeatedDatabaseCheck {
 			this.messaage.append("\n Dump location : " + fileName);
 			this.messaage.append("\n Droplet id : " + Base64.getUrlEncoder().encodeToString(hashtableBytes));
 			fw.close();
+			
+			stored_droplet_counter++;
 		}
 		else
 		{
