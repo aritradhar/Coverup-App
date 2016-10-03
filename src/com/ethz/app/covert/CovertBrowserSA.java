@@ -132,7 +132,7 @@ public class CovertBrowserSA {
 			}
 		});
 		
-		Browser browser = new Browser(shell, SWT.BORDER);
+		Browser browser = new Browser(shell, SWT.NONE);
 
 		browser.setBounds(275, 55, 1156, 891);
 		browser.setJavascriptEnabled(true);	
