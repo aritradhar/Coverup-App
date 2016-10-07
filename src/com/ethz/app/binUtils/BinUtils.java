@@ -116,7 +116,7 @@ public class BinUtils {
 						throw new RuntimeException(ENV.EXCEPTION_MESSAGE_MISMATCHED_INTR_PACKET_SIZE);
 					
 					byte[] magicBytes = new byte[ENV.INTR_MARKER_LEN];
-					System.arraycopy(decBytes, 0, magicBytes, tillNow, magicBytes.length);
+					System.arraycopy(decBytes, tillNow, magicBytes, 0, magicBytes.length);
 					byte[] idealMagicBytes = new byte[ENV.INTR_MARKER_LEN];
 					Arrays.fill(idealMagicBytes, ENV.INTR_MARKER);
 					
