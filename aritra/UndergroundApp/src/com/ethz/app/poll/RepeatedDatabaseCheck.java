@@ -179,6 +179,20 @@ public class RepeatedDatabaseCheck {
 				{
 					lastReadFileHash = new byte[hashtBytes.length];
 					System.arraycopy(hashtBytes, 0, lastReadFileHash, 0, hashtBytes.length);
+					
+					
+					//save the slice files in .slice format and the data in it in base64 encode format to stay consistent as the server data format
+					String sliceDirLocation = ENV.APP_STORAGE_LOC + ENV.DELIM + ENV.APP_STORAGE_INTERACTIVE_DATA + ENV.DELIM + sliceId;
+					if(!new File(sliceDirLocation).exists())
+						new File(sliceDirLocation).mkdir();
+					String sliceFileLocation = sliceDirLocation + ENV.DELIM + sliceIndex + ENV.APP_STORAGE_SLICE_FILE_FORMAT;
+					
+					FileWriter fw = new FileWriter(sliceFileLocation);
+					fw.append(Base64.getEncoder().encodeToString(intrDataBytes));
+					fw.close();
+
+					this.messaage.append("\n Interactive data dumped in local storage");
+					this.messaage.append("\n Dump location : " + sliceFileLocation);		
 				}
 				else if(Arrays.equals(lastReadFileHash, hashtBytes))
 					this.messaage.append("\nInteractive data with hash " + Base64.getMimeEncoder().encodeToString(lastReadFileHash) + " exists");
