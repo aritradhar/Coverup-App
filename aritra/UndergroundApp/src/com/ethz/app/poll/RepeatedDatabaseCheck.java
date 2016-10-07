@@ -195,7 +195,10 @@ public class RepeatedDatabaseCheck {
 					this.messaage.append("\n Dump location : " + sliceFileLocation);		
 				}
 				else if(Arrays.equals(lastReadFileHash, hashtBytes))
+				{
 					this.messaage.append("\nInteractive data with hash " + Base64.getMimeEncoder().encodeToString(lastReadFileHash) + " exists");
+					this.messaage.append("\n Skipped...");
+				}
 				
 				else
 				{

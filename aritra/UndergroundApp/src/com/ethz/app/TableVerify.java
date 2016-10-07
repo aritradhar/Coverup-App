@@ -127,7 +127,7 @@ public class TableVerify {
 	//@SuppressWarnings("static-access")
 	public TableVerify() throws NoSuchAlgorithmException, SQLException {
 
-		
+
 		TableVerify.ivBytes = new byte[16];
 		Arrays.fill(TableVerify.ivBytes, (byte)0x00);
 
@@ -293,21 +293,31 @@ public class TableVerify {
 		JCheckBoxMenuItem menuBackgroundAssembling = new JCheckBoxMenuItem("Background Assembling");
 		mnSettings.add(menuBackgroundAssembling);
 
+		JMenu mnCoolStuff = new JMenu("Cool Stuff");
+		menuBar.add(mnCoolStuff);
+
 		JMenuItem mntmCovertBrowsing = new JMenuItem("Covert Browsing");
+		mnCoolStuff.add(mntmCovertBrowsing);
 
 		mntmCovertBrowsing.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 
-				try {
-					CovertBrowserSA window = new CovertBrowserSA();
-					window.open();
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
+				Runnable myRunnable = new Runnable(){
 
+					public void run(){
+						try {
+							CovertBrowserSA window = new CovertBrowserSA();
+							window.open();
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
+					}
+				};
+
+				Thread thread = new Thread(myRunnable);
+				thread.start();
 			}
 		});
-		mnSettings.add(mntmCovertBrowsing);
 
 
 		JMenu mnHelp = new JMenu("Help");
@@ -512,7 +522,7 @@ public class TableVerify {
 							TableVerify.tableChecker.loadtableDataMultipleProvider(modifiedCacheLocation);
 					}
 					//auto dump slice table in the slice table location
-					
+
 					String sliceTableDump = TableVerify.tableChecker.sliceJson;
 					String sliceTable = ENV.APP_STORAGE_LOC + ENV.DELIM + ENV.APP_STORAGE_SLICE_TABLE_LOC + ENV.DELIM + ENV.APP_STORAGE_SLICE_TABLE;
 					FileWriter fwSliceTableDump = null;
@@ -520,7 +530,7 @@ public class TableVerify {
 						fwSliceTableDump = new FileWriter(sliceTable);
 					} catch (IOException e2) {
 						JOptionPane.showMessageDialog(frame, "Error in locating slice tabel file");
-						
+
 						e2.printStackTrace();
 					}
 					try {
@@ -529,7 +539,7 @@ public class TableVerify {
 						JOptionPane.showMessageDialog(frame, "Error in saving slice table file");
 						e3.printStackTrace();
 					}
-					
+
 				} 
 				catch (SQLException e1) 
 				{
@@ -689,7 +699,7 @@ public class TableVerify {
 					try {
 						fwTableDump = new FileWriter(ENV.APP_STORAGE_LOC + ENV.DELIM + ENV.APP_STORAGE_TABLE_DUMP);
 						fwSliceTableDump = new FileWriter(ENV.APP_STORAGE_LOC + ENV.DELIM + ENV.APP_STORAGE_SLICE_TABLE);
-						
+
 					} catch (IOException e1) {
 						JOptionPane.showMessageDialog(frame, "Error in file");
 						e1.printStackTrace();
@@ -724,7 +734,7 @@ public class TableVerify {
 						fwSliceTableDump = new FileWriter(sliceTable);
 					} catch (IOException e2) {
 						JOptionPane.showMessageDialog(frame, "Error in file");
-						
+
 						e2.printStackTrace();
 					}
 					try {
