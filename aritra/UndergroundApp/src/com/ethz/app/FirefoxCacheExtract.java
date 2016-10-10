@@ -20,13 +20,18 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
+import javax.swing.JFileChooser;
+
+import org.eclipse.swt.widgets.Display;
 import org.sqlite.SQLiteConfig;
 
 public class FirefoxCacheExtract {
 
-	public String databaseFile;
+	public static String databaseFile;
 	public String jsonData;
 
 	public static String changedDBLocation = "";
@@ -36,12 +41,16 @@ public class FirefoxCacheExtract {
 		if(fileName == null || fileName.length() == 0)
 			return this.getFirefoxCacheFile();
 
-		this.databaseFile = fileName;
+		databaseFile = fileName;
 		return fileName;
 	}
 
 	public String getFirefoxCacheFile()
 	{
+		if(databaseFile != null)
+			return databaseFile;
+		
+		
 		String fileName = null;
 
 		String os = System.getProperty("os.name");
@@ -59,8 +68,33 @@ public class FirefoxCacheExtract {
 			appDataLoc = appDataLoc.concat("\\Firefox\\Profiles");
 			File profileLoc = new File(appDataLoc);
 			File[] files = profileLoc.listFiles();
-			fileName = files[0].getAbsolutePath().concat("\\webappsstore.sqlite");
+			
 
+			if(files.length > 0 )
+			{
+				Set<String> databaseList = new HashSet<>();
+				for(File file : files)
+					databaseList.add(file.getName());
+				
+				try
+				{
+					JFileChooser chooser = new JFileChooser(); 
+					chooser.setCurrentDirectory(new java.io.File(appDataLoc));
+					chooser.setDialogTitle("Multiple profile found. Choose one");
+					chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+		
+					if (chooser.showOpenDialog(TableVerify.frame) == JFileChooser.APPROVE_OPTION) 
+						fileName = chooser.getSelectedFile().getAbsolutePath().concat("\\webappsstore.sqlite");	
+				}
+				catch(Exception ex)
+				{
+					ex.printStackTrace();
+				}
+			}
+			else
+			{
+				fileName = files[0].getAbsolutePath().concat("\\webappsstore.sqlite");
+			}
 		}
 		else if(os.contains("Linux")){
 			appDataLoc = System.getenv("HOME");
@@ -78,7 +112,7 @@ public class FirefoxCacheExtract {
 		{
 			System.err.println("code for " + os + " is still not here :p");
 		}
-		this.databaseFile = fileName;
+		databaseFile = fileName;
 		//System.out.println(fileName);
 
 		return fileName;

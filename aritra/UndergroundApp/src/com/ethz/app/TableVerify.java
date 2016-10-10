@@ -79,7 +79,7 @@ public class TableVerify {
 
 	private JTable table;
 
-	public JFrame frame;
+	public static JFrame frame;
 
 	/**
 	 * Launch the application.
@@ -108,8 +108,8 @@ public class TableVerify {
 			{
 				try 
 				{
-					TableVerify window = new TableVerify();
-					window.frame.setVisible(true);
+					new TableVerify();
+					TableVerify.frame.setVisible(true);
 				} 
 				catch (Exception e) 
 				{
@@ -188,7 +188,6 @@ public class TableVerify {
 				chooser.setDialogTitle("Defalt derectory discovery fail. Select Firefox cache dir");
 				chooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
 
-				chooser.setAcceptAllFileFilterUsed(false);  
 				chooser.setAcceptAllFileFilterUsed(false);  
 
 				if (chooser.showOpenDialog(frame) == JFileChooser.APPROVE_OPTION) 
