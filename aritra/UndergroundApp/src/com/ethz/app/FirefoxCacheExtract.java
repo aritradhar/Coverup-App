@@ -26,7 +26,10 @@ import java.util.Set;
 
 import javax.swing.JFileChooser;
 
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.FileDialog;
+import org.eclipse.swt.widgets.Shell;
 import org.sqlite.SQLiteConfig;
 
 public class FirefoxCacheExtract {
@@ -77,7 +80,7 @@ public class FirefoxCacheExtract {
 					databaseList.add(file.getName());
 				
 				try
-				{
+				{	
 					JFileChooser chooser = new JFileChooser(); 
 					chooser.setCurrentDirectory(new java.io.File(appDataLoc));
 					chooser.setDialogTitle("Multiple profile found. Choose one");
