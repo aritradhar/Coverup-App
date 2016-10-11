@@ -11,7 +11,7 @@
 //*********************************************************************************** *
 //*************************************************************************************
 
-package com.ethz.app;
+package com.ethz.app.dbUtils;
 
 import java.sql.Connection;
 import java.sql.DriverManager;

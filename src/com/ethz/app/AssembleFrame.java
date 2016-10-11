@@ -43,6 +43,7 @@ import javax.swing.UnsupportedLookAndFeelException;
 
 import org.json.JSONObject;
 
+import com.ethz.app.dbUtils.TableChecker;
 import com.ethz.app.env.ENV;
 import com.ethz.fountain.Droplet;
 import com.ethz.fountain.Fountain;

@@ -39,6 +39,7 @@ import javax.swing.text.TableView.TableCell;
 
 import org.json.JSONObject;
 
+import com.ethz.app.dbUtils.TableChecker;
 import com.ethz.app.env.ENV;
 
 class ButtonRenderer extends JButton implements TableCellRenderer {

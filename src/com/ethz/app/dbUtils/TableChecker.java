@@ -11,7 +11,7 @@
 //*********************************************************************************** *
 //*************************************************************************************
 
-package com.ethz.app;
+package com.ethz.app.dbUtils;
 
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;

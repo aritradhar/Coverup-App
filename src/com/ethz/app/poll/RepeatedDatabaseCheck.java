@@ -31,9 +31,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.whispersystems.curve25519.Curve25519;
 
-import com.ethz.app.FirefoxCacheExtract;
-import com.ethz.app.TableChecker;
 import com.ethz.app.binUtils.BinUtils;
+import com.ethz.app.dbUtils.FirefoxCacheExtract;
+import com.ethz.app.dbUtils.TableChecker;
 import com.ethz.app.env.ENV;
 
 /**

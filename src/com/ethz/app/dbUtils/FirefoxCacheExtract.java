@@ -11,7 +11,7 @@
 //*********************************************************************************** *
 //*************************************************************************************
 
-package com.ethz.app;
+package com.ethz.app.dbUtils;
 
 import java.io.File;
 import java.sql.Connection;
@@ -32,6 +32,8 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Shell;
 import org.sqlite.SQLiteConfig;
+
+import com.ethz.app.TableVerify;
 
 public class FirefoxCacheExtract {
 
