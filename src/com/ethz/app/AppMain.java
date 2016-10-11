@@ -212,7 +212,7 @@ public class AppMain {
 	private void initialize() throws NoSuchAlgorithmException 
 	{
 		frame = new JFrame();
-		frame.setTitle("Ninja Pumpkin");
+		frame.setTitle("Ninja Pumpkin: The most awesome thing ever happened to humanity");
 		frame.setBounds(100, 100, 823, 848);
 		ImageIcon frameIcon = new ImageIcon("assets//doge.png");
 		frame.setIconImage(frameIcon.getImage());
@@ -251,7 +251,7 @@ public class AppMain {
 				String pollingRateString = (String)JOptionPane.showInputDialog(
 						frame,
 						"Set Database polling rate (ms), Default = 1000 ms, current = " + DataBasePollPresetPK.pollingRate + " ms"
-								+ "\nRestart polling o take effect",
+								+ "\nRestart polling to take effect",
 								"Polling rate",
 								JOptionPane.PLAIN_MESSAGE,
 								null,
