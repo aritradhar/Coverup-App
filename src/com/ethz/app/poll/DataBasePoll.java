@@ -38,7 +38,7 @@ import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.text.DefaultCaret;
 
-import com.ethz.app.TableVerify;
+import com.ethz.app.AppMain;
 
 public class DataBasePoll extends JFrame {
 
@@ -290,7 +290,7 @@ public class DataBasePoll extends JFrame {
 					{
 						try 
 						{
-							TableVerify window = new TableVerify();
+							AppMain window = new AppMain();
 							window.frame.setVisible(true);
 						} 
 						catch (Exception e) 

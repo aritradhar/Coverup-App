@@ -26,7 +26,7 @@ import org.whispersystems.curve25519.Curve25519;
 
 import com.ethz.app.dbUtils.FirefoxCacheExtract;
 
-public class App {
+public class MessageUtil {
 
 	public String fileName;
 	public byte[] ServerpublicKey;
@@ -42,12 +42,12 @@ public class App {
 		this.fileName = fileName;
 		this.ServerpublicKey = Base64.getUrlDecoder().decode("jMpEEfoSc2iOgRXeLQnLN1YKtjcyN824yso3psylEU0=");
 	}*/
-	public App()
+	public MessageUtil()
 	{
 		this.verifyResult = false;
 		//this.ServerpublicKey = Base64.getUrlDecoder().decode("jMpEEfoSc2iOgRXeLQnLN1YKtjcyN824yso3psylEU0=");
 	}
-	public App(String cacheLocation)
+	public MessageUtil(String cacheLocation)
 	{
 		this.verifyResult = false;
 		this.cacheLocation = cacheLocation;

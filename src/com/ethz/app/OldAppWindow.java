@@ -48,14 +48,14 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import javax.swing.JTabbedPane;
 
-public class AppWindow {
+public class OldAppWindow {
 
 	private JFrame frame;
 
 	/**
 	 * Launch the application.
 	 */
-	public static App app;
+	public static MessageUtil app;
 	private JTextField txtQq;
 
 	JFileChooser chooser;
@@ -70,7 +70,7 @@ public class AppWindow {
 			{
 				try {
 
-					AppWindow window = new AppWindow();
+					OldAppWindow window = new OldAppWindow();
 					window.frame.setVisible(true);
 				} 
 				catch (Exception e) 
@@ -87,11 +87,11 @@ public class AppWindow {
 	 * @throws SQLException 
 	 */
 	@SuppressWarnings("static-access")
-	public AppWindow() throws NoSuchAlgorithmException, SQLException {
+	public OldAppWindow() throws NoSuchAlgorithmException, SQLException {
 		
 		try
 		{
-			this.app = new App();
+			this.app = new MessageUtil();
 			app.loadMessage();
 			app.loadSignature();
 		}
@@ -108,7 +108,7 @@ public class AppWindow {
 			if (chooser.showOpenDialog(frame) == JFileChooser.APPROVE_OPTION) 
 			{ 		
 				String path = chooser.getSelectedFile().getAbsolutePath();
-				this.app = new App(path);
+				this.app = new MessageUtil(path);
 				app.loadMessage();
 				app.loadSignature();
 			}
@@ -316,7 +316,7 @@ public class AppWindow {
 					{
 						try {
 
-							TableVerify window = new TableVerify();
+							AppMain window = new AppMain();
 							window.frame.setVisible(true);
 						} 
 						catch (Exception e) 

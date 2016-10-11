@@ -30,7 +30,7 @@ import javax.crypto.IllegalBlockSizeException;
 import org.json.JSONObject;
 import org.whispersystems.curve25519.Curve25519;
 
-import com.ethz.app.TableVerify;
+import com.ethz.app.AppMain;
 import com.ethz.app.env.ENV;
 
 public class BinUtils {
@@ -94,11 +94,11 @@ public class BinUtils {
 		//packet len(4) | seedlen (4) ->0 | Magic (8) | Data | Padding
 		//Data -> slice id (8) | slice index (4) | slice_data_len (4) | slice data (n) | padding|
 		
-		if(TableVerify.cipher != null)
+		if(AppMain.cipher != null)
 		{
 			try 
 			{
-				byte[] decBytes = TableVerify.cipher.doFinal(dropletBytes);
+				byte[] decBytes = AppMain.cipher.doFinal(dropletBytes);
 				int tillNow = 0;
 				byte[] fixedPacketLenBytes = new byte[Integer.BYTES];
 				System.arraycopy(decBytes, tillNow, fixedPacketLenBytes, 0, fixedPacketLenBytes.length);
@@ -263,7 +263,7 @@ public class BinUtils {
 		//packet len(4) | seedlen (4) ->0 | Magic (8) | Data | Padding
 		//Data -> slice id (8) | slice index (4) | slice_data_len (4) | slice data (n) | padding|
 		
-		byte[] decBytes = TableVerify.cipher.doFinal(dropletBytes);
+		byte[] decBytes = AppMain.cipher.doFinal(dropletBytes);
 		byte[] sliceIdBytes = new byte[8];
 		System.arraycopy(decBytes, 16, sliceIdBytes, 0, 8);
 		long sliceId = ByteBuffer.wrap(sliceIdBytes).getLong();
