@@ -26,7 +26,6 @@ import javax.swing.JEditorPane;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JProgressBar;
-import javax.swing.JTextArea;
 
 import org.json.JSONObject;
 

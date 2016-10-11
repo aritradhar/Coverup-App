@@ -17,10 +17,7 @@ import java.awt.Component;
 import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.File;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import javax.swing.DefaultCellEditor;
@@ -28,14 +25,9 @@ import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JProgressBar;
 import javax.swing.JTable;
-import javax.swing.Timer;
 import javax.swing.UIManager;
-import javax.swing.table.AbstractTableModel;
-import javax.swing.table.DefaultTableCellRenderer;
-import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
-import javax.swing.table.TableModel;
-import javax.swing.text.TableView.TableCell;
+
 
 import org.json.JSONObject;
 

@@ -272,38 +272,6 @@ public class DataBasePoll extends JFrame {
 			}
 		});
 		panel.add(btnNewButton_1);
-		
-		JButton btnTable = new JButton("Table");
-		btnTable.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				
-				try {
-					UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-				} catch (ClassNotFoundException | InstantiationException | IllegalAccessException
-						| UnsupportedLookAndFeelException e1) {
-					
-					e1.printStackTrace();
-				}	
-				
-				EventQueue.invokeLater(new Runnable() {
-					public void run() 
-					{
-						try 
-						{
-							AppMain window = new AppMain();
-							window.frame.setVisible(true);
-						} 
-						catch (Exception e) 
-						{
-							e.printStackTrace();
-						}
-					}
-				});
-			}
-		});
-		panel.add(btnTable);
-		
-
 	}
 
 }
