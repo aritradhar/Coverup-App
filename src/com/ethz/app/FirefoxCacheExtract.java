@@ -107,13 +107,24 @@ public class FirefoxCacheExtract {
 			if(!mozzila.exists())
 				throw new RuntimeException("Firefox not installed");
 
-			appDataLoc = appDataLoc.concat("/firefox/6p4vbecj.default/webappsstore.sqlite");
+			
+			JFileChooser chooser = new JFileChooser(); 
+			chooser.setCurrentDirectory(new java.io.File(appDataLoc));
+			chooser.setDialogTitle("Choose profile dir");
+			chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 
-			fileName = appDataLoc;
+			if (chooser.showOpenDialog(TableVerify.frame) == JFileChooser.APPROVE_OPTION) 
+				fileName = chooser.getSelectedFile().getAbsolutePath().concat("\\webappsstore.sqlite");	
 		}
 		else
 		{
-			System.err.println("code for " + os + " is still not here :p");
+			JFileChooser chooser = new JFileChooser(); 
+			chooser.setCurrentDirectory(new java.io.File(appDataLoc));
+			chooser.setDialogTitle("<MAC> Choose profile dir");
+			chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+
+			if (chooser.showOpenDialog(TableVerify.frame) == JFileChooser.APPROVE_OPTION) 
+				fileName = chooser.getSelectedFile().getAbsolutePath().concat("\\webappsstore.sqlite");	
 		}
 		databaseFile = fileName;
 		//System.out.println(fileName);
