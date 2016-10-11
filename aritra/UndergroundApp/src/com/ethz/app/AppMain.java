@@ -76,7 +76,7 @@ import com.ethz.app.poll.DataBasePollPresetPK;
  * @author Aritra
  *
  */
-public class TableVerify {
+public class AppMain {
 
 	private JTable table;
 
@@ -109,8 +109,8 @@ public class TableVerify {
 			{
 				try 
 				{
-					new TableVerify();
-					TableVerify.frame.setVisible(true);
+					new AppMain();
+					AppMain.frame.setVisible(true);
 				} 
 				catch (Exception e) 
 				{
@@ -126,11 +126,11 @@ public class TableVerify {
 	 * @throws SQLException 
 	 */
 	//@SuppressWarnings("static-access")
-	public TableVerify() throws NoSuchAlgorithmException, SQLException {
+	public AppMain() throws NoSuchAlgorithmException, SQLException {
 
 
-		TableVerify.ivBytes = new byte[16];
-		Arrays.fill(TableVerify.ivBytes, (byte)0x00);
+		AppMain.ivBytes = new byte[16];
+		Arrays.fill(AppMain.ivBytes, (byte)0x00);
 
 		//load the key for AES if it exists
 		String KeyFileLoc = ENV.APP_STORAGE_LOC + ENV.DELIM + ENV.APP_STORAGE_KEY_FILE;
@@ -162,21 +162,21 @@ public class TableVerify {
 			}			
 		}
 
-		TableVerify.key = new SecretKeySpec(keyBytes, "AES");
-		TableVerify.ivSpec = new IvParameterSpec(ivBytes);
+		AppMain.key = new SecretKeySpec(keyBytes, "AES");
+		AppMain.ivSpec = new IvParameterSpec(ivBytes);
 		try {
-			TableVerify.cipher = Cipher.getInstance("AES/CTR/NoPadding");
+			AppMain.cipher = Cipher.getInstance("AES/CTR/NoPadding");
 			cipher.init(Cipher.DECRYPT_MODE, key, ivSpec);
 		} catch (NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException | InvalidAlgorithmParameterException e) 
 		{
 			e.printStackTrace();
 		}
 
-		TableVerify.tableChecker = new TableChecker();
+		AppMain.tableChecker = new TableChecker();
 
 		try
 		{
-			TableVerify.tableChecker.loadtableData();
+			AppMain.tableChecker.loadtableData();
 		}
 		catch(Exception ex)
 		{
@@ -194,14 +194,14 @@ public class TableVerify {
 				if (chooser.showOpenDialog(frame) == JFileChooser.APPROVE_OPTION) 
 				{ 		
 					String path = chooser.getSelectedFile().getAbsolutePath();
-					TableVerify.tableChecker.loadtableData(path);
+					AppMain.tableChecker.loadtableData(path);
 				}
 			}
 		}	
 
-		TableVerify.ivBytes = new byte[16];
+		AppMain.ivBytes = new byte[16];
 		//bad idea
-		Arrays.fill(TableVerify.ivBytes, (byte)0x00);
+		Arrays.fill(AppMain.ivBytes, (byte)0x00);
 		initialize();
 	}
 
@@ -367,7 +367,7 @@ public class TableVerify {
 				{
 					try
 					{
-						TableVerify.tableChecker.setPK(pkText);
+						AppMain.tableChecker.setPK(pkText);
 						lblNewLabel.setText("PK set : " + Base64.getUrlEncoder().encodeToString(tableChecker.ServerpublicKey));
 					}
 					catch(Exception ex)
@@ -425,7 +425,7 @@ public class TableVerify {
 
 		table.setVisible(false);
 
-		if(TableVerify.tableChecker == null)
+		if(AppMain.tableChecker == null)
 		{
 			System.err.println("NULL app");
 		}
@@ -510,20 +510,20 @@ public class TableVerify {
 					if(!ENV.MULTIPLE_PROVIDER_SUPPORT)
 					{
 						if(modifiedCacheLocation == null)
-							TableVerify.tableChecker.loadtableData();
+							AppMain.tableChecker.loadtableData();
 						else
-							TableVerify.tableChecker.loadtableData(modifiedCacheLocation);
+							AppMain.tableChecker.loadtableData(modifiedCacheLocation);
 					}
 					else
 					{
 						if(modifiedCacheLocation == null)
-							TableVerify.tableChecker.loadtableDataMultipleProvider();
+							AppMain.tableChecker.loadtableDataMultipleProvider();
 						else
-							TableVerify.tableChecker.loadtableDataMultipleProvider(modifiedCacheLocation);
+							AppMain.tableChecker.loadtableDataMultipleProvider(modifiedCacheLocation);
 					}
 					//auto dump slice table in the slice table location
 
-					String sliceTableDump = TableVerify.tableChecker.sliceJson;
+					String sliceTableDump = AppMain.tableChecker.sliceJson;
 					String sliceTable = ENV.APP_STORAGE_LOC + ENV.DELIM + ENV.APP_STORAGE_SLICE_TABLE_LOC + ENV.DELIM + ENV.APP_STORAGE_SLICE_TABLE;
 					FileWriter fwSliceTableDump = null;
 					try {
@@ -806,10 +806,10 @@ public class TableVerify {
 					fw_bin.close();
 					JOptionPane.showMessageDialog(frame, "Key file generated in " + ENV.APP_STORAGE_LOC + ENV.DELIM + ENV.APP_STORAGE_KEY_FILE);
 
-					TableVerify.key = new SecretKeySpec(keyBytes, "AES");
-					TableVerify.ivSpec = new IvParameterSpec(ivBytes);
+					AppMain.key = new SecretKeySpec(keyBytes, "AES");
+					AppMain.ivSpec = new IvParameterSpec(ivBytes);
 					try {
-						TableVerify.cipher = Cipher.getInstance("AES/CTR/NoPadding");
+						AppMain.cipher = Cipher.getInstance("AES/CTR/NoPadding");
 						cipher.init(Cipher.DECRYPT_MODE, key, ivSpec);
 					} catch (NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException | InvalidAlgorithmParameterException e) 
 					{

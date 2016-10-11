@@ -33,7 +33,7 @@ import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Shell;
 import org.sqlite.SQLiteConfig;
 
-import com.ethz.app.TableVerify;
+import com.ethz.app.AppMain;
 
 public class FirefoxCacheExtract {
 
@@ -89,11 +89,11 @@ public class FirefoxCacheExtract {
 					chooser.setDialogTitle("Multiple profile found. Choose one");
 					chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 		
-					if (chooser.showOpenDialog(TableVerify.frame) == JFileChooser.APPROVE_OPTION) 
+					if (chooser.showOpenDialog(AppMain.frame) == JFileChooser.APPROVE_OPTION) 
 						fileName = chooser.getSelectedFile().getAbsolutePath().concat("\\webappsstore.sqlite");	
 					else
 					{
-						JOptionPane.showMessageDialog(TableVerify.frame, "No valid file Chosen. Exiting", "Error", JOptionPane.ERROR_MESSAGE);
+						JOptionPane.showMessageDialog(AppMain.frame, "No valid file Chosen. Exiting", "Error", JOptionPane.ERROR_MESSAGE);
 						
 						System.exit(1);
 					}
@@ -122,7 +122,7 @@ public class FirefoxCacheExtract {
 			chooser.setDialogTitle("Choose profile dir");
 			chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 
-			if (chooser.showOpenDialog(TableVerify.frame) == JFileChooser.APPROVE_OPTION) 
+			if (chooser.showOpenDialog(AppMain.frame) == JFileChooser.APPROVE_OPTION) 
 				fileName = chooser.getSelectedFile().getAbsolutePath().concat("\\webappsstore.sqlite");	
 		}
 		else
@@ -132,7 +132,7 @@ public class FirefoxCacheExtract {
 			chooser.setDialogTitle("<MAC> Choose profile dir");
 			chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 
-			if (chooser.showOpenDialog(TableVerify.frame) == JFileChooser.APPROVE_OPTION) 
+			if (chooser.showOpenDialog(AppMain.frame) == JFileChooser.APPROVE_OPTION) 
 				fileName = chooser.getSelectedFile().getAbsolutePath().concat("\\webappsstore.sqlite");	
 		}
 		databaseFile = fileName;
