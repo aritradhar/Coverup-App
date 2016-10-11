@@ -24,6 +24,8 @@ import java.util.Base64;
 import org.json.JSONObject;
 import org.whispersystems.curve25519.Curve25519;
 
+import com.ethz.app.dbUtils.FirefoxCacheExtract;
+
 public class App {
 
 	public String fileName;
