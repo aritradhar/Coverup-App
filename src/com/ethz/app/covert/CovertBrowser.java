@@ -12,16 +12,11 @@
 //*************************************************************************************
 package com.ethz.app.covert;
 
-import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.swt.SWT;
@@ -289,7 +284,7 @@ public class CovertBrowser {
 
 				try
 				{
-					String sliceIdStr = combo.getItem(combo.getSelectionIndex());
+					//String sliceIdStr = combo.getItem(combo.getSelectionIndex());
 					//TODO for testing only
 					//long sliceIdL = CovertHTMLUtils.sliceMap.get(sliceIdStr);
 					long sliceIdL = Long.parseLong(combo.getItem(combo.getSelectionIndex()));

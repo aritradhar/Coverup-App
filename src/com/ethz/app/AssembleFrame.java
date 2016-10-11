@@ -19,11 +19,8 @@ import java.awt.EventQueue;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Base64;
@@ -37,7 +34,6 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
@@ -47,7 +43,6 @@ import com.ethz.app.dbUtils.TableChecker;
 import com.ethz.app.env.ENV;
 import com.ethz.fountain.Droplet;
 import com.ethz.fountain.Fountain;
-import com.ethz.fountain.Glass;
 import com.ethz.ugs.compressUtil.CompressUtil;
 
 import javax.swing.JProgressBar;

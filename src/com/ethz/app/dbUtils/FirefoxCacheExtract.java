@@ -27,10 +27,6 @@ import java.util.Set;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.FileDialog;
-import org.eclipse.swt.widgets.Shell;
 import org.sqlite.SQLiteConfig;
 
 import com.ethz.app.AppMain;
@@ -154,7 +150,7 @@ public class FirefoxCacheExtract {
 			config.setReadOnly(true); 
 			
 			Class.forName("org.sqlite.JDBC");
-			c = DriverManager.getConnection("jdbc:sqlite:" + this.databaseFile, config.toProperties());
+			c = DriverManager.getConnection("jdbc:sqlite:" + databaseFile, config.toProperties());
 		} 
 		catch ( Exception e ) 
 		{
@@ -183,7 +179,7 @@ public class FirefoxCacheExtract {
 			SQLiteConfig config = new SQLiteConfig();
 			config.setReadOnly(true); 
 			Class.forName("org.sqlite.JDBC");
-			c = DriverManager.getConnection("jdbc:sqlite:" + this.databaseFile, config.toProperties());
+			c = DriverManager.getConnection("jdbc:sqlite:" + databaseFile, config.toProperties());
 		} 
 		catch ( Exception e ) 
 		{
@@ -224,7 +220,7 @@ public class FirefoxCacheExtract {
 			config.setReadOnly(true); 
 			
 			Class.forName("org.sqlite.JDBC");
-			c = DriverManager.getConnection("jdbc:sqlite:" + this.databaseFile, config.toProperties());
+			c = DriverManager.getConnection("jdbc:sqlite:" + databaseFile, config.toProperties());
 		} 
 		catch ( Exception e ) 
 		{
@@ -267,7 +263,7 @@ public class FirefoxCacheExtract {
 			SQLiteConfig config = new SQLiteConfig();
 			config.setReadOnly(true); 
 			Class.forName("org.sqlite.JDBC");
-			c = DriverManager.getConnection("jdbc:sqlite:" + this.databaseFile, config.toProperties());
+			c = DriverManager.getConnection("jdbc:sqlite:" + databaseFile, config.toProperties());
 		} 
 		catch ( Exception e ) 
 		{
@@ -306,7 +302,7 @@ public class FirefoxCacheExtract {
 			config.setReadOnly(true); 
 			
 			Class.forName("org.sqlite.JDBC");
-			c = DriverManager.getConnection("jdbc:sqlite:" + this.databaseFile, config.toProperties());
+			c = DriverManager.getConnection("jdbc:sqlite:" + databaseFile, config.toProperties());
 		} 
 		catch ( Exception e ) 
 		{

@@ -17,13 +17,9 @@ import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.EventQueue;
 import java.awt.FlowLayout;
-import java.awt.Graphics2D;
-import java.awt.SplashScreen;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -63,7 +59,6 @@ import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.table.DefaultTableModel;
 
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.ethz.app.covert.CovertBrowserSA;
@@ -205,6 +200,7 @@ public class AppMain {
 		initialize();
 	}
 
+	public static Thread covertThread;
 	/**
 	 * Initialize the contents of the frame.
 	 * @throws NoSuchAlgorithmException 
@@ -299,14 +295,19 @@ public class AppMain {
 		JMenuItem mntmCovertBrowsing = new JMenuItem("Covert Browsing");
 		mnCoolStuff.add(mntmCovertBrowsing);
 
+		//TODO this is still blocking
 		mntmCovertBrowsing.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 
-				Runnable myRunnable = new Runnable(){
+				CovertBrowserSA window = new CovertBrowserSA();	
+				window.open();
+				
+				/*Runnable myRunnable = new Runnable(){
 
+					
 					public void run(){
 						try {
-							CovertBrowserSA window = new CovertBrowserSA();
+							CovertBrowserSA window = new CovertBrowserSA();				
 							window.open();
 						} catch (Exception e) {
 							e.printStackTrace();
@@ -314,8 +315,8 @@ public class AppMain {
 					}
 				};
 
-				Thread thread = new Thread(myRunnable);
-				thread.start();
+				covertThread = new Thread(myRunnable);
+				covertThread.start();*/
 			}
 		});
 
@@ -431,7 +432,6 @@ public class AppMain {
 		}
 		JLabel progressLabel = new JLabel("|");
 
-		//TODO
 		JButton btnStartPolling = new JButton("Start Polling");
 		btnStartPolling.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -561,7 +561,7 @@ public class AppMain {
 					return;
 				}
 
-				String[] urls = tableChecker.getURLsFromTable();
+				//String[] urls = tableChecker.getURLsFromTable();
 				String[] sourceKeys = tableChecker.getOriginKeysFromTable();
 
 				/*
