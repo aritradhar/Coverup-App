@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Set;
 
 import javax.swing.JFileChooser;
+import javax.swing.JOptionPane;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Display;
@@ -88,6 +89,12 @@ public class FirefoxCacheExtract {
 		
 					if (chooser.showOpenDialog(TableVerify.frame) == JFileChooser.APPROVE_OPTION) 
 						fileName = chooser.getSelectedFile().getAbsolutePath().concat("\\webappsstore.sqlite");	
+					else
+					{
+						JOptionPane.showMessageDialog(TableVerify.frame, "No valid file Chosen. Exiting", "Error", JOptionPane.ERROR_MESSAGE);
+						
+						System.exit(1);
+					}
 				}
 				catch(Exception ex)
 				{
