@@ -20,6 +20,7 @@ import javax.swing.JTextPane;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
+import com.ethz.app.env.ENV;
 import com.sun.prism.paint.Color;
 
 import java.awt.BorderLayout;
@@ -37,6 +38,12 @@ import java.awt.event.ActionEvent;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.font.TextAttribute;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.awt.GridLayout;
 
 /**
@@ -192,6 +199,17 @@ public class ChatApp {
 					String stringToDispatch = dispatchStr.toString();
 					dispatchStr = new StringBuffer();
 					chatChatPane.setText(chatChatPane.getText() + "-------- Dispatched --------\n");
+					
+					String chatDispatchLoc = ENV.APP_STORAGE_LOC + ENV.DELIM + ENV.APP_STORAGE_CHAT_LOC + ENV.DELIM + ENV.APP_STORAGE_CHAT_DISPATCH_LOC;
+					File file = new File(chatDispatchLoc);
+					int fileNum = file.listFiles().length;
+					try {
+						FileOutputStream fwBin = new FileOutputStream(chatDispatchLoc + ENV.DELIM + fileNum + ".txt");
+						fwBin.write(stringToDispatch.getBytes(StandardCharsets.UTF_8));
+						fwBin.close();
+					} catch (IOException e1) {
+						e1.printStackTrace();
+					}
 				}
 				
 			}

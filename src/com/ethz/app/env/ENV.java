@@ -53,6 +53,10 @@ public class ENV {
 	public static final String APP_STORAGE_SLICE_ID_FILES_LOC = "SLICE_ID";
 	public static final String APP_STORAGE_SLICE_ID_FILE = "slice_id.bin";
 	public static final String APP_STORAGE_SLICE_FILE_FORMAT = ".slice";
+	//chat stuff
+	public static final String APP_STORAGE_CHAT_LOC = "Chat";
+	public static final String APP_STORAGE_CHAT_DISPATCH_LOC = "Dispatch";
+	public static final String APP_STORAGE_CHAT_LOG_LOC = "LOGS";
 	
 	static
 	{
@@ -65,6 +69,17 @@ public class ENV {
 		File fileSliceID = new File(APP_STORAGE_LOC + DELIM + APP_STORAGE_SLICE_ID_FILES_LOC);
 		if(!fileSliceID.exists())
 			fileSliceID.mkdir();
+		
+		File FileChatLoc = new File(APP_STORAGE_LOC + DELIM + APP_STORAGE_CHAT_LOC);
+		if(!FileChatLoc.exists())
+			FileChatLoc.mkdir();
+		File FileChatDispatch = new File(APP_STORAGE_LOC + DELIM + APP_STORAGE_CHAT_LOC + DELIM + APP_STORAGE_CHAT_DISPATCH_LOC);
+		if(!FileChatDispatch.exists())
+			FileChatDispatch.mkdir();
+		File FileChatLog = new File(APP_STORAGE_LOC + DELIM + APP_STORAGE_CHAT_LOC + DELIM + APP_STORAGE_CHAT_LOG_LOC);
+		if(!FileChatLog.exists())
+			FileChatLog.mkdir();
+		
 	}
 	
 	public static final byte INTR_MARKER = (byte)0x06;
