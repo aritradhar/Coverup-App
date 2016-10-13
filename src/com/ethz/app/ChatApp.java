@@ -64,7 +64,7 @@ public class ChatApp {
 	private JTextPane chatChatPane;
 	private JComboBox<String> oldChatLogBox;
 	private String currentRemoteAddressInFocus;
-
+	private JButton btnSend;
 	/**
 	 * Launch the application.
 	 * @throws UnsupportedLookAndFeelException 
@@ -94,8 +94,12 @@ public class ChatApp {
 	public ChatApp() {
 		this.userName = "Anonymous";
 		this.oldChatLogBox = new JComboBox<>();
-
+		this.btnSend = new JButton("Send");
+		this.btnSend.setEnabled(false);
 		this.chatChatPane = new JTextPane();
+
+		this.chatText = new JTextField();
+		this.chatText.setEnabled(false);
 
 		oldChatLogBox.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -146,7 +150,6 @@ public class ChatApp {
 		frame.setBounds(100, 100, 667, 632);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-
 		JScrollPane jsp = new JScrollPane(chatChatPane);
 		chatChatPane.setEditable(false);
 		frame.getContentPane().add(jsp, BorderLayout.CENTER);
@@ -164,25 +167,29 @@ public class ChatApp {
 		panel_2.add(setRemotePublicKeyBtn);
 		setRemotePublicKeyBtn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				
+
 				if(txtRemotePublicKey.getText() != null && txtRemotePublicKey.getText().length() > 0)
 				{
 					if(exists(txtRemotePublicKey.getText()))
-						JOptionPane.showMessageDialog(frame, "Entered address already exists");
-					
-					
+						JOptionPane.showMessageDialog(frame, "Entered address already exists");			
+
 					else
 					{
-				
+
 						if(currentRemoteAddressInFocus == null)
 							currentRemoteAddressInFocus = txtRemotePublicKey.getText();
 
-						
+
 						else if(dispatchStr.length() > 0)
 						{
 							int i = JOptionPane.showConfirmDialog(frame, "dispatch String is not empty. Continue will destroy it");	
 							if(i == 0)
 							{
+								if(!btnSend.isEnabled())
+									btnSend.setEnabled(true);
+
+								if(!chatText.isEnabled())
+									chatText.setEnabled(true);
 
 								currentRemoteAddressInFocus =  txtRemotePublicKey.getText();
 								dispatchStr = new StringBuffer();
@@ -190,13 +197,20 @@ public class ChatApp {
 						}
 						else
 						{
+							if(!btnSend.isEnabled())
+								btnSend.setEnabled(true);
+
+
+							if(!chatText.isEnabled())
+								chatText.setEnabled(true);
+
 							makeNewChatDir(txtRemotePublicKey.getText());
 							currentRemoteAddressInFocus = txtRemotePublicKey.getText();
 							dispatchStr = new StringBuffer();
 						}
 
 
-					
+
 					}
 
 				}
@@ -207,7 +221,7 @@ public class ChatApp {
 		frame.getContentPane().add(panel, BorderLayout.SOUTH);
 		panel.setLayout(new BoxLayout(panel, BoxLayout.X_AXIS));
 
-		chatText = new JTextField();
+
 		chatText.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyPressed(KeyEvent keyEvent) {
@@ -224,6 +238,12 @@ public class ChatApp {
 							dispatchStr.append(chatMsg);
 							chatChatPane.setText(chatMsg);
 							chatText.setText("");
+
+							try {
+								saveChatToFile(currentRemoteAddressInFocus, chatMsg);
+							} catch (IOException e) {
+								e.printStackTrace();
+							}
 						}
 						else
 						{			
@@ -231,6 +251,12 @@ public class ChatApp {
 							dispatchStr.append(chatMsg);
 							chatChatPane.setText(chatMsg);
 							chatText.setText("");
+
+							try {
+								saveChatToFile(currentRemoteAddressInFocus, chatMsg);
+							} catch (IOException e) {
+								e.printStackTrace();
+							}
 						}
 					}
 				}
@@ -239,7 +265,7 @@ public class ChatApp {
 		panel.add(chatText);
 		chatText.setColumns(20);
 
-		JButton btnSend = new JButton("Send");
+
 		btnSend.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 
@@ -252,6 +278,12 @@ public class ChatApp {
 						dispatchStr.append(chatMsg);
 						chatChatPane.setText(chatMsg);
 						chatText.setText("");
+
+						try {
+							saveChatToFile(currentRemoteAddressInFocus, chatMsg);
+						} catch (IOException e) {
+							e.printStackTrace();
+						}
 					}
 					else
 					{
@@ -259,6 +291,12 @@ public class ChatApp {
 						dispatchStr.append(chatMsg);
 						chatChatPane.setText(chatMsg);
 						chatText.setText("");
+
+						try {
+							saveChatToFile(currentRemoteAddressInFocus, chatMsg);
+						} catch (IOException e) {
+							e.printStackTrace();
+						}
 					}
 				}
 			}
@@ -276,6 +314,12 @@ public class ChatApp {
 		JButton btnPopulate = new JButton("Populate");
 		btnPopulate.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+
+				if(!btnSend.isEnabled())
+					btnSend.setEnabled(true);
+
+				if(!chatText.isEnabled())
+					chatText.setEnabled(true);
 
 				oldChatLogBox.removeAllItems();
 				List<String> files = getOldChatPks();
@@ -305,9 +349,11 @@ public class ChatApp {
 		btnDispatch.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 
-				if(chatChatPane.getText() != null)
+
+				String stringToDispatch = dispatchStr.toString();
+
+				if(stringToDispatch.length() > 0)
 				{
-					String stringToDispatch = dispatchStr.toString();
 					dispatchStr = new StringBuffer();
 					chatChatPane.setText(chatChatPane.getText() + "-------- Dispatched --------\n");
 
@@ -319,12 +365,17 @@ public class ChatApp {
 						fwBin.write(stringToDispatch.getBytes(StandardCharsets.UTF_8));
 						fwBin.flush();
 						fwBin.close();
-						
+
 						dispatchStr = new StringBuffer();
 					} catch (IOException e1) {
 						e1.printStackTrace();
 					}
 				}
+				else
+				{
+					JOptionPane.showMessageDialog(frame, "Nothing to dispatch");
+				}
+
 
 			}
 		});
@@ -350,6 +401,9 @@ public class ChatApp {
 		String oldChatLoc = ENV.APP_STORAGE_LOC + ENV.DELIM + ENV.APP_STORAGE_CHAT_LOC + 
 				ENV.DELIM + ENV.APP_STORAGE_CHAT_LOG_LOC +  ENV.DELIM + address + ENV.DELIM + ENV.APP_STORAGE_CHAT_REPO_FILE;
 
+		if(!new File(oldChatLoc).exists())
+			return new String();
+
 		BufferedReader br = new BufferedReader(new FileReader(oldChatLoc));
 		StringBuffer stb = new StringBuffer();
 		String str = null;
@@ -360,6 +414,12 @@ public class ChatApp {
 		return stb.toString();
 	}
 
+	/**
+	 * Append chats
+	 * @param address
+	 * @param chat
+	 * @throws IOException
+	 */
 	private void saveChatToFile(String address, String chat) throws IOException
 	{
 		String saveChatLoc = ENV.APP_STORAGE_LOC + ENV.DELIM + ENV.APP_STORAGE_CHAT_LOC + 
@@ -370,21 +430,32 @@ public class ChatApp {
 		fw.flush();
 		fw.close();
 	}
-	
+
 	private boolean exists(String address)
 	{
 		String addressLoc = ENV.APP_STORAGE_LOC + ENV.DELIM + ENV.APP_STORAGE_CHAT_LOC + 
 				ENV.DELIM + ENV.APP_STORAGE_CHAT_LOG_LOC +  ENV.DELIM + address;
-		
+
 		return new File(addressLoc).exists();
 
 	}
-	
+
 	private void makeNewChatDir(String address)
 	{
 		String saveChatDirLoc = ENV.APP_STORAGE_LOC + ENV.DELIM + ENV.APP_STORAGE_CHAT_LOC + 
 				ENV.DELIM + ENV.APP_STORAGE_CHAT_LOG_LOC +  ENV.DELIM + address + ENV.DELIM + ENV.APP_STORAGE_CHAT_REPO_FILE;
-		
+
 		new File(saveChatDirLoc).mkdir();
+	}
+	
+	private void dispatchChat(String address, String chat) throws IOException
+	{
+		String saveChatLoc = ENV.APP_STORAGE_LOC + ENV.DELIM + ENV.APP_STORAGE_CHAT_LOC + 
+				ENV.DELIM + ENV.APP_STORAGE_CHAT_DISPATCH_LOC +  ENV.DELIM + address + ENV.DELIM + ENV.APP_STORAGE_CHAT_DISPATCH_FILE;
+
+		FileOutputStream fw = new FileOutputStream(saveChatLoc);
+		fw.write(chat.getBytes(StandardCharsets.UTF_8));
+		fw.flush();
+		fw.close();
 	}
 }
