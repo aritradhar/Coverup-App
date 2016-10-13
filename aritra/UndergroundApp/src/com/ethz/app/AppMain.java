@@ -59,6 +59,7 @@ import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.table.DefaultTableModel;
 
+import org.eclipse.swt.widgets.Display;
 import org.json.JSONObject;
 
 import com.ethz.app.covert.CovertBrowserSA;
@@ -299,8 +300,19 @@ public class AppMain {
 		mntmCovertBrowsing.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 
-				CovertBrowserSA window = new CovertBrowserSA();	
-				window.open();
+				/*CovertBrowserSA window = new CovertBrowserSA();	
+				window.open();*/
+				
+				Display.getDefault().syncExec(new Runnable() {
+				    public void run() {
+				    	try {
+							CovertBrowserSA window = new CovertBrowserSA();				
+							window.open();
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
+				    }
+				});
 				
 				/*Runnable myRunnable = new Runnable(){
 
