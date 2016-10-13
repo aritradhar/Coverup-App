@@ -49,7 +49,7 @@ import org.eclipse.swt.widgets.TreeItem;
  * @author Aritra
  *
  */
-public class CovertBrowserSA  {
+public class CovertBrowserSA {
 
 	public Shell shell;
 	private Text text;
@@ -417,35 +417,5 @@ public class CovertBrowserSA  {
 		});
 		btnModify.setBounds(1181, 8, 90, 30);
 		btnModify.setText("Modify");
-
-		//html gen
-		/*btnLoadCovertStart.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent paramSelectionEvent) {
-
-				String sliceFile = ENV.APP_STORAGE_LOC + ENV.DELIM + ENV.APP_STORAGE_SLICE_TABLE_LOC + ENV.DELIM + ENV.APP_STORAGE_SLICE_TABLE;
-				if(!new File(sliceFile).exists())
-				{
-					MessageBox messageBox = new MessageBox(shell ,SWT.ERROR);
-					messageBox.setMessage("Slice table not exists in APP_DATA");
-					messageBox.setText("Error");
-					messageBox.open();
-				}
-				else
-				{
-					String sliceStartPageHtml = ENV.APP_STORAGE_LOC + ENV.DELIM + ENV.APP_STORAGE_COVERT_BROWSER_START_PAGE;
-					try {
-						CovertHTMLUtils.covertHTMLStartPageGenerator(sliceStartPageHtml, sliceFile, port);
-					} catch (IOException e) {
-						e.printStackTrace();
-					}
-
-					File sliceStartPage = new File(sliceStartPageHtml);
-					String fullLocation = sliceStartPage.getAbsolutePath();
-					browser.setUrl(fullLocation);
-				}
-
-			}
-		});*/
 	}
 }
