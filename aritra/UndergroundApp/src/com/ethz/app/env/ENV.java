@@ -57,6 +57,8 @@ public class ENV {
 	public static final String APP_STORAGE_CHAT_LOC = "Chat";
 	public static final String APP_STORAGE_CHAT_DISPATCH_LOC = "Dispatch";
 	public static final String APP_STORAGE_CHAT_LOG_LOC = "LOGS";
+	public static final String APP_STORAGE_CHAT_REPO_FILE = "CHATLOG.log";
+	
 	
 	static
 	{
