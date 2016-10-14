@@ -59,6 +59,7 @@ import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
@@ -577,8 +578,8 @@ public class ChatApp {
 					fwBin.flush();
 					fwBin.close();
 					
-					// 0		  1		 2		 3
-					//R_adder | S_addr | iv | enc_Data | sig (on 0|1|2|3)
+					// 0		  1		 2	   3		4
+					//R_adder | S_addr | iv | len | enc_Data | sig (on 0|1|2|3|4)
 					
 					FileOutputStream fwEncbin = new FileOutputStream(encChatDispatchLoc);
 					byte[] receiverPublicAddress = Base64.getUrlDecoder().decode(currentRemoteAddressInFocus);
@@ -597,13 +598,15 @@ public class ChatApp {
 			        cipher.init(Cipher.ENCRYPT_MODE, key, new IvParameterSpec(aesIV));
 					
 					byte[] encData = cipher.doFinal(stringToDispatch.getBytes(StandardCharsets.UTF_8));
+					byte[] encDatalenBytes = ByteBuffer.allocate(Integer.BYTES).putInt(encData.length).array();
 					
-					//S_addr | iv | enc_Data |
-					byte[] toSign = new byte[receiverPublicAddress.length + senderAddressBytes.length + aesIV.length + encData.length];
+					//S_addr | iv | len | enc_Data 
+					byte[] toSign = new byte[receiverPublicAddress.length + senderAddressBytes.length + aesIV.length + encDatalenBytes.length + encData.length];
 					System.arraycopy(receiverPublicAddress, 0, toSign, 0, receiverPublicAddress.length);
 					System.arraycopy(senderAddressBytes, 0, toSign, receiverPublicAddress.length, senderAddressBytes.length);
 					System.arraycopy(aesIV, 0, toSign, receiverPublicAddress.length + senderAddressBytes.length, aesIV.length);
-					System.arraycopy(encData, 0, toSign, receiverPublicAddress.length + senderAddressBytes.length + aesIV.length, encData.length);
+					System.arraycopy(encDatalenBytes, 0, toSign, receiverPublicAddress.length + senderAddressBytes.length + aesIV.length, encDatalenBytes.length);
+					System.arraycopy(encData, 0, toSign, receiverPublicAddress.length + senderAddressBytes.length + aesIV.length + encDatalenBytes.length, encData.length);
 					
 					md.reset();
 					byte[] hashedToSign = md.digest(toSign);
