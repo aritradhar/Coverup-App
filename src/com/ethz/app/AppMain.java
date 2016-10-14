@@ -62,6 +62,8 @@ import javax.swing.table.DefaultTableModel;
 import org.eclipse.swt.widgets.Display;
 import org.json.JSONObject;
 
+import com.ethz.app.binUtils.BinUtils;
+import com.ethz.app.chatApp.ChatApp;
 import com.ethz.app.covert.CovertBrowserSA;
 import com.ethz.app.dbUtils.TableChecker;
 import com.ethz.app.env.ENV;
@@ -196,8 +198,18 @@ public class AppMain {
 		}	
 
 		AppMain.ivBytes = new byte[16];
-		//bad idea
+		//TODO bad idea
 		Arrays.fill(AppMain.ivBytes, (byte)0x00);
+		
+		//initialize data for the chat
+		try {
+			BinUtils.initializeChatData();
+		} catch (Exception e) {
+			
+			JOptionPane.showMessageDialog(frame, "Error initializing chat data structures. Whatever!");
+			e.printStackTrace();
+		}
+		
 		initialize();
 	}
 
@@ -295,6 +307,25 @@ public class AppMain {
 
 		JMenuItem mntmCovertBrowsing = new JMenuItem("Covert Browsing");
 		mnCoolStuff.add(mntmCovertBrowsing);
+		
+		JMenuItem mntmMessenger = new JMenuItem("Messenger");
+		mntmMessenger.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				
+				EventQueue.invokeLater(new Runnable() {
+					public void run() {
+						try {
+							ChatApp window = new ChatApp();
+							window.frame.setVisible(true);
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
+					}
+				});
+				
+			}
+		});
+		mnCoolStuff.add(mntmMessenger);
 
 		//TODO this is still blocking
 		mntmCovertBrowsing.addActionListener(new ActionListener() {
@@ -302,8 +333,18 @@ public class AppMain {
 
 				/*CovertBrowserSA window = new CovertBrowserSA();	
 				window.open();*/
+				EventQueue.invokeLater(new Runnable() {
+					public void run() {
+						try {
+							CovertBrowserSA window = new CovertBrowserSA();				
+							window.open();
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
+					}
+				});
 				
-				Display.getDefault().syncExec(new Runnable() {
+				/*Display.getDefault().syncExec(new Runnable() {
 				    public void run() {
 				    	try {
 							CovertBrowserSA window = new CovertBrowserSA();				
@@ -312,7 +353,7 @@ public class AppMain {
 							e.printStackTrace();
 						}
 				    }
-				});
+				});*/
 				
 				/*Runnable myRunnable = new Runnable(){
 

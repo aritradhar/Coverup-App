@@ -92,12 +92,16 @@ public class ENV {
 			FileChatLog.mkdir();
 		
 	}
+	//magic bytes
+	public static final byte INTR_MAGIC_BYTE = (byte)0x06;
+	public static final int INTR_MAGIC_BYTES_LEN = 8;
 	
-	public static final byte INTR_MARKER = (byte)0x06;
-	public static final int INTR_MARKER_LEN = 8;
-	
+	public static final byte CHAT_MAGIC_BYTES = (byte)0x0A;
+	public static final int CHAT_MAGIC_BYTES_LEN = 8;
+	//magic byte ends
 	//Specific exception messages for exception handling
-	public static final String EXCEPTION_MESSAGE_MAGIC_BYTES = "EXCEPTION_MESSAGE_MAGIC_BYTES";
+	public static final String EXCEPTION_INTR_MESSAGE_MAGIC_BYTES = "EXCEPTION_INTR_MESSAGE_MAGIC_BYTES";
+	public static final String EXCEPTION_CHAT_MESSAGE_MAGIC_BYTES = "EXCEPTION_CHAT_MESSAGE_MAGIC_BYTES";
 	public static final String EXCEPTION_MESSAGE_MISMATCHED_PACKET_SIZE = "EXCEPTION_MESSAGE_MISMATCHED_PACKET_SIZE";
 	public static final String EXCEPTION_MESSAGE_MISMATCHED_INTR_PACKET_SIZE = "EXCEPTION_MESSAGE_MISMATCHED_INTR_PACKET_SIZE";
 	public static final String EXCEPTION_MESSAGE_CIPHER_FAILURE = "EXCEPTION_MESSAGE_CIPHER_FAILURE";
