@@ -61,6 +61,8 @@ public class ENV {
 	
 	public static final String APP_STORAGE_CHAT_DISPATCH_FILE = "CHAT.bin";
 	
+	public static final String APP_STORAGE_CHAT_KEY_FILE = APP_STORAGE_LOC + DELIM + APP_STORAGE_CHAT_LOC + DELIM + "KeyFile.key";
+	
 	
 	static
 	{

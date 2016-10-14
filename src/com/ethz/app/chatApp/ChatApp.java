@@ -10,7 +10,7 @@
 ///////////////////////////////////////////////// 									* *
 //*********************************************************************************** *
 //*************************************************************************************
-package com.ethz.app;
+package com.ethz.app.chatApp;
 
 import java.awt.EventQueue;
 import javax.swing.JFrame;
@@ -18,6 +18,10 @@ import javax.swing.JOptionPane;
 import javax.swing.JTextPane;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
+
+import org.json.JSONObject;
+import org.whispersystems.curve25519.Curve25519;
+import org.whispersystems.curve25519.Curve25519KeyPair;
 
 import com.ethz.app.env.ENV;
 
@@ -31,6 +35,7 @@ import javax.swing.BoxLayout;
 import java.awt.event.ActionListener;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.Date;
 import java.util.List;
 import java.awt.event.ActionEvent;
@@ -65,6 +70,8 @@ public class ChatApp {
 	private JComboBox<String> oldChatLogBox;
 	private String currentRemoteAddressInFocus;
 	private JButton btnSend;
+
+	private byte[] publicKey, privateKey;
 	/**
 	 * Launch the application.
 	 * @throws UnsupportedLookAndFeelException 
@@ -90,8 +97,12 @@ public class ChatApp {
 
 	/**
 	 * Create the application.
+	 * @throws IOException 
 	 */
-	public ChatApp() {
+	public ChatApp() throws IOException {
+
+		keyFileGen();
+
 		this.userName = "Anonymous";
 		this.oldChatLogBox = new JComboBox<>();
 		this.btnSend = new JButton("Send");
@@ -100,6 +111,7 @@ public class ChatApp {
 
 		this.chatText = new JTextField();
 		this.chatText.setEnabled(false);
+
 
 		oldChatLogBox.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -111,7 +123,7 @@ public class ChatApp {
 
 					else if(dispatchStr.length() > 0)
 					{
-						int i = JOptionPane.showConfirmDialog(frame, "dispatch String is not empty. Ok will destroy it");	
+						int i = JOptionPane.showConfirmDialog(frame, "dispatch String is not empty. Ok will not dispatche it. But will appear in logs");	
 						if(i == 0)
 						{
 							String oldChats = LoadChat(oldChatLogBox.getSelectedItem().toString());
@@ -136,7 +148,18 @@ public class ChatApp {
 			}
 		});
 
+		//populate the combo bo at initialization
+		if(!btnSend.isEnabled())
+			btnSend.setEnabled(true);
 
+		if(!chatText.isEnabled())
+			chatText.setEnabled(true);
+
+		oldChatLogBox.removeAllItems();
+		List<String> files = getOldChatPks();
+		for(String pk : files)
+			oldChatLogBox.addItem(pk);
+		////////////////////////////////////////
 
 		this.dispatchStr = new StringBuffer();
 		initialize();
@@ -349,34 +372,30 @@ public class ChatApp {
 		btnDispatch.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 
-
-				String stringToDispatch = dispatchStr.toString();
-
-				if(stringToDispatch.length() > 0)
-				{
-					dispatchStr = new StringBuffer();
-					chatChatPane.setText(chatChatPane.getText() + "-------- Dispatched --------\n");
-
-					String chatDispatchLoc = ENV.APP_STORAGE_LOC + ENV.DELIM + ENV.APP_STORAGE_CHAT_LOC + ENV.DELIM + ENV.APP_STORAGE_CHAT_DISPATCH_LOC;
-					File file = new File(chatDispatchLoc);
-					int fileNum = file.listFiles().length;
+				if(dispatchStr.length() > 0)
+				{		
+					boolean dispatch = false;
+					//dispatch the string to local file storage
 					try {
-						FileOutputStream fwBin = new FileOutputStream(chatDispatchLoc + ENV.DELIM + fileNum + ".txt");
-						fwBin.write(stringToDispatch.getBytes(StandardCharsets.UTF_8));
-						fwBin.flush();
-						fwBin.close();
-
-						dispatchStr = new StringBuffer();
+						dispatch = dispatchChat(dispatchStr.toString());
 					} catch (IOException e1) {
 						e1.printStackTrace();
+					}
+					if(dispatch)
+					{
+						chatChatPane.setText(chatChatPane.getText() + "-------- Dispatched --------\n");
+						try {
+							saveChatToFile(currentRemoteAddressInFocus, "-------- Dispatched --------\n");
+						} catch (IOException e1) {
+							e1.printStackTrace();
+						}
+						dispatchStr = new StringBuffer();
 					}
 				}
 				else
 				{
 					JOptionPane.showMessageDialog(frame, "Nothing to dispatch");
 				}
-
-
 			}
 		});
 		panel_1.add(btnDispatch);
@@ -437,7 +456,6 @@ public class ChatApp {
 				ENV.DELIM + ENV.APP_STORAGE_CHAT_LOG_LOC +  ENV.DELIM + address;
 
 		return new File(addressLoc).exists();
-
 	}
 
 	private void makeNewChatDir(String address)
@@ -447,15 +465,115 @@ public class ChatApp {
 
 		new File(saveChatDirLoc).mkdir();
 	}
-	
-	private void dispatchChat(String address, String chat) throws IOException
-	{
-		String saveChatLoc = ENV.APP_STORAGE_LOC + ENV.DELIM + ENV.APP_STORAGE_CHAT_LOC + 
-				ENV.DELIM + ENV.APP_STORAGE_CHAT_DISPATCH_LOC +  ENV.DELIM + address + ENV.DELIM + ENV.APP_STORAGE_CHAT_DISPATCH_FILE;
 
-		FileOutputStream fw = new FileOutputStream(saveChatLoc);
-		fw.write(chat.getBytes(StandardCharsets.UTF_8));
-		fw.flush();
-		fw.close();
+	/**
+	 * True - ok
+	 * False - do nothing
+	 * @param stringToDispatch
+	 * @return
+	 * @throws IOException
+	 */
+	private boolean dispatchChat(String stringToDispatch) throws IOException
+	{
+		String chatDispatchLoc = ENV.APP_STORAGE_LOC + ENV.DELIM + ENV.APP_STORAGE_CHAT_LOC + ENV.DELIM + ENV.APP_STORAGE_CHAT_DISPATCH_LOC + ENV.DELIM + currentRemoteAddressInFocus;
+		if(!new File(chatDispatchLoc).exists())
+		{
+			new File(chatDispatchLoc).mkdir();
+		}
+		
+		chatDispatchLoc = chatDispatchLoc + ENV.DELIM + ENV.APP_STORAGE_CHAT_DISPATCH_FILE;
+		File chatDispatchLocFile = new File(chatDispatchLoc);
+		
+		if(chatDispatchLocFile.exists())
+		{
+			int op = JOptionPane.showConfirmDialog(frame, "Earlier dispach is not removed, Overwrite?. OK - overwrite, No - Append");
+			
+			//overwrite
+			if(op == 0)
+			{
+				try {	
+					FileOutputStream fwBin = new FileOutputStream(chatDispatchLoc);
+					fwBin.write(stringToDispatch.getBytes(StandardCharsets.UTF_8));
+					fwBin.flush();
+					fwBin.close();
+					dispatchStr = new StringBuffer();			
+					return true;
+				} catch (IOException e1) {
+					e1.printStackTrace();
+				}
+				return false;
+			}
+			//append
+			else if(op == 1)
+			{
+				try {	
+					FileOutputStream fwBin = new FileOutputStream(chatDispatchLoc, true);
+					fwBin.write(stringToDispatch.getBytes(StandardCharsets.UTF_8));
+					fwBin.flush();
+					fwBin.close();
+					dispatchStr = new StringBuffer();
+					return true;
+
+				} catch (IOException e1) {
+					e1.printStackTrace();
+					
+				}
+				return false;
+			}
+			//signal nothing
+			else
+				return false;	
+		}
+		//just write
+		else
+		{
+			try {	
+				FileOutputStream fwBin = new FileOutputStream(chatDispatchLoc);
+				fwBin.write(stringToDispatch.getBytes(StandardCharsets.UTF_8));
+				fwBin.flush();
+				fwBin.close();
+				dispatchStr = new StringBuffer();
+				return true;
+
+			} catch (IOException e1) {
+				
+				e1.printStackTrace();
+				return false;
+			}
+		}
+	}
+
+	private void keyFileGen() throws IOException
+	{
+		File keyFile = new File(ENV.APP_STORAGE_CHAT_KEY_FILE);
+		if(!keyFile.exists())
+		{
+			Curve25519KeyPair keyPair = Curve25519.getInstance(Curve25519.BEST).generateKeyPair();
+			this.privateKey = keyPair.getPrivateKey();
+			this.publicKey = keyPair.getPublicKey();
+
+			JSONObject jObject = new JSONObject();
+			jObject.put("pk", Base64.getUrlEncoder().encodeToString(publicKey));
+			jObject.put("sk", Base64.getUrlEncoder().encodeToString(privateKey));
+
+			FileWriter fw = new FileWriter(ENV.APP_STORAGE_CHAT_KEY_FILE);
+			fw.write(jObject.toString(2));
+			fw.close();
+		}
+		else
+		{
+			BufferedReader br = new BufferedReader(new FileReader(ENV.APP_STORAGE_CHAT_KEY_FILE));
+			StringBuffer stb = new StringBuffer();
+			String str = null;
+
+			while((str = br.readLine()) != null)
+				stb.append(str);
+			br.close();
+
+			JSONObject jObject = new JSONObject(stb.toString());
+			this.publicKey = Base64.getUrlDecoder().decode(jObject.getString("pk"));
+			this.privateKey = Base64.getUrlDecoder().decode(jObject.getString("sk"));
+
+		}
 	}
 }
