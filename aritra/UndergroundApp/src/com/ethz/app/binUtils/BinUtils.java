@@ -16,6 +16,8 @@ package com.ethz.app.binUtils;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -23,12 +25,17 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 import java.util.Base64;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
+import javax.swing.JOptionPane;
 
 import org.json.JSONObject;
 import org.whispersystems.curve25519.Curve25519;
+import org.whispersystems.curve25519.Curve25519KeyPair;
 
 import com.ethz.app.AppMain;
 import com.ethz.app.env.ENV;
@@ -115,14 +122,19 @@ public class BinUtils {
 					if(fixedPacketLen != decBytes.length)
 						throw new RuntimeException(ENV.EXCEPTION_MESSAGE_MISMATCHED_INTR_PACKET_SIZE);
 					
-					byte[] magicBytes = new byte[ENV.INTR_MARKER_LEN];
+					byte[] magicBytes = new byte[ENV.INTR_MAGIC_BYTES_LEN];
 					System.arraycopy(decBytes, tillNow, magicBytes, 0, magicBytes.length);
-					byte[] idealMagicBytes = new byte[ENV.INTR_MARKER_LEN];
-					Arrays.fill(idealMagicBytes, ENV.INTR_MARKER);
+					byte[] idealInteractiveMagicBytes = new byte[ENV.INTR_MAGIC_BYTES_LEN];
+					Arrays.fill(idealInteractiveMagicBytes, ENV.INTR_MAGIC_BYTE);
 					
-					//magic byte found!
-					if(Arrays.equals(idealMagicBytes, magicBytes))
-						throw new RuntimeException(ENV.EXCEPTION_MESSAGE_MAGIC_BYTES);
+					byte[] idealChatMagicBytes = new byte[ENV.CHAT_MAGIC_BYTES_LEN];
+					Arrays.fill(idealInteractiveMagicBytes, ENV.CHAT_MAGIC_BYTES);
+					
+					//magic byte for interactive data found!
+					if(Arrays.equals(idealInteractiveMagicBytes, magicBytes))
+						throw new RuntimeException(ENV.EXCEPTION_INTR_MESSAGE_MAGIC_BYTES);
+					else if(Arrays.equals(idealChatMagicBytes, magicBytes))
+						throw new RuntimeException(ENV.EXCEPTION_CHAT_MESSAGE_MAGIC_BYTES);
 				}	
 			}
 			catch (IllegalBlockSizeException | BadPaddingException e1) {
@@ -279,6 +291,91 @@ public class BinUtils {
 		return new Object[]{sliceId, sliceIndex, sliceDataBytes};
 	}
 	
+	
+	public static String chatMessageBinProcess(byte[] data)
+	{
+		return null;
+	}
+	
+	
+	
+	//-------------------------------------------------------------------------------------------------------------------------
+	//necessary only to process chat data
+	public static Map<String, byte[]> addresskeyMap = new HashMap<>();
+
+	public static void initializeChatData() throws Exception
+	{
+		BinUtils.populateAddressKey();
+		BinUtils.keyFileGenChat();
+	}
+	
+	private static void populateAddressKey() throws Exception
+	{
+		
+		BufferedReader br = new BufferedReader(new FileReader(ENV.APP_STORAGE_PUBLIC_KEY_LIST));
+		String str = null;
+		while((str = br.readLine()) != null)
+		{
+			if(str.length() == 0)
+				continue;
+				
+			byte[] pk = Base64.getUrlDecoder().decode(str);
+			MessageDigest md = MessageDigest.getInstance("SHA-256");
+			byte[] hashedPk = md.digest(pk);
+			byte[] publicAddressBytes = Arrays.copyOf(hashedPk, ENV.PUBLIC_ADDRESS_LEN);
+			String address = Base64.getUrlEncoder().encodeToString(publicAddressBytes);
+			
+			addresskeyMap.put(address, pk);
+		}
+		br.close();
+	}
+	
+	public static byte[] myPublicKey;
+	private static byte[] myPrivateKey;
+	public static String myPublicAddress;
+	
+	private static void keyFileGenChat() throws IOException, NoSuchAlgorithmException
+	{
+		File keyFile = new File(ENV.APP_STORAGE_CHAT_KEY_FILE);
+		if(!keyFile.exists())
+		{
+			Curve25519KeyPair keyPair = Curve25519.getInstance(Curve25519.BEST).generateKeyPair();
+			myPrivateKey = keyPair.getPrivateKey();
+			myPublicKey = keyPair.getPublicKey();
+
+			MessageDigest md = MessageDigest.getInstance("SHA-256");
+			byte[] hasheddPk = md.digest(myPublicKey);
+			byte[] publicAddressBytes = Arrays.copyOf(hasheddPk, ENV.PUBLIC_ADDRESS_LEN);
+			myPublicAddress = Base64.getUrlEncoder().encodeToString(publicAddressBytes);
+			
+			JSONObject jObject = new JSONObject();
+			jObject.put("pk", Base64.getUrlEncoder().encodeToString(myPublicKey));
+			jObject.put("sk", Base64.getUrlEncoder().encodeToString(myPrivateKey));
+			jObject.put("address", myPublicAddress);
+
+			FileWriter fw = new FileWriter(ENV.APP_STORAGE_CHAT_KEY_FILE);
+			fw.write(jObject.toString(2));
+			fw.close();
+		}
+		else
+		{
+			BufferedReader br = new BufferedReader(new FileReader(ENV.APP_STORAGE_CHAT_KEY_FILE));
+			StringBuffer stb = new StringBuffer();
+			String str = null;
+
+			while((str = br.readLine()) != null)
+				stb.append(str);
+			br.close();
+
+			JSONObject jObject = new JSONObject(stb.toString());
+			myPublicKey = Base64.getUrlDecoder().decode(jObject.getString("pk"));
+			myPrivateKey = Base64.getUrlDecoder().decode(jObject.getString("sk"));
+			myPublicAddress = jObject.getString("address");
+
+		}
+	}
+	//chat stuff ends here
+	//----------------------------------------------------------------------------------------------------------------------------------
 	
 	//test
 	public static void main(String[] args) throws Exception {

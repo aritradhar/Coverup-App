@@ -153,7 +153,7 @@ public class RepeatedDatabaseCheck {
 				this.messaage.append("Data not according to spec: garbage");
 				return;
 			}
-			else if(ex.getMessage().equalsIgnoreCase(ENV.EXCEPTION_MESSAGE_MAGIC_BYTES))
+			else if(ex.getMessage().equalsIgnoreCase(ENV.EXCEPTION_INTR_MESSAGE_MAGIC_BYTES))
 			{
 				this.messaage.append("Encrypted slice found\n");
 				Object[] returnVal = BinUtils.intrBinProcess(receivedBin, this.messaage);
@@ -221,6 +221,10 @@ public class RepeatedDatabaseCheck {
 				count %= 4;
 				this.messaage.append("\n---------------" + ENV.PROGRESS_SYMB[count++] + "---------------");
 				return;
+			}
+			else if(ex.getMessage().equalsIgnoreCase(ENV.EXCEPTION_CHAT_MESSAGE_MAGIC_BYTES))
+			{
+				this.messaage.append("Got chat message");
 			}
 			else
 			{

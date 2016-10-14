@@ -26,6 +26,8 @@ import org.whispersystems.curve25519.Curve25519KeyPair;
 import com.ethz.app.env.ENV;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
+
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
@@ -39,6 +41,8 @@ import javax.crypto.SecretKey;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 import javax.swing.BoxLayout;
+import javax.swing.ImageIcon;
+
 import java.awt.event.ActionListener;
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -54,7 +58,6 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
@@ -77,7 +80,7 @@ import javax.swing.JProgressBar;
  */
 public class ChatApp {
 
-	private JFrame frame;
+	public JFrame frame;
 	private JTextField chatText;
 	private JTextField txtUsername;
 	private String userName;
@@ -209,6 +212,9 @@ public class ChatApp {
 	 */
 	private void initialize() {
 		frame = new JFrame();
+		frame.setTitle("Forever Alone Messenger");
+		ImageIcon frameIcon = new ImageIcon("assets//fa.png");
+		frame.setIconImage(frameIcon.getImage());
 		frame.addWindowListener(new WindowAdapter() {
 			@Override
 			public void windowClosing(WindowEvent windowEvent) {
