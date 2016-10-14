@@ -62,6 +62,7 @@ public class ENV {
 	public static final String APP_STORAGE_CHAT_DISPATCH_FILE = "CHAT.bin";
 	public static final String APP_STORAGE_ENC_CHAT_DISPATCH_FILE = "CHAT_ENC.bin";
 	
+	public static final int FIXED_CHAT_LEN = 512;
 	
 	public static final int PUBLIC_ADDRESS_LEN = 8;
 	

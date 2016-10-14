@@ -31,6 +31,13 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
+import javax.crypto.BadPaddingException;
+import javax.crypto.Cipher;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
+import javax.crypto.SecretKey;
+import javax.crypto.spec.IvParameterSpec;
+import javax.crypto.spec.SecretKeySpec;
 import javax.swing.BoxLayout;
 import java.awt.event.ActionListener;
 import java.sql.Timestamp;
@@ -53,11 +60,15 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.security.InvalidAlgorithmParameterException;
+import java.security.InvalidKeyException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 import java.awt.GridLayout;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import javax.swing.JProgressBar;
 
 /**
  * @author Aritra
@@ -76,8 +87,8 @@ public class ChatApp {
 	private String currentRemoteAddressInFocus;
 	private JButton btnSend;
 
-	private byte[] publicKey, privateKey;
-	private String publicAddress;
+	private byte[] myPublicKey, myPrivateKey;
+	private String myPublicAddress;
 	
 	public Map<String, byte[]> addresskeyMap;
 	/**
@@ -239,6 +250,9 @@ public class ChatApp {
 
 		JButton setRemotePublicKeyBtn = new JButton("Add Remote PK");
 		panel_2.add(setRemotePublicKeyBtn);
+		
+		JProgressBar progressBar = new JProgressBar();
+		panel_2.add(progressBar);
 		setRemotePublicKeyBtn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 
@@ -426,7 +440,8 @@ public class ChatApp {
 					//dispatch the string to local file storage
 					try {
 						dispatch = dispatchChat(dispatchStr.toString());
-					} catch (IOException e1) {
+					} catch (IOException | NoSuchAlgorithmException | InvalidKeyException | NoSuchPaddingException 
+							| InvalidAlgorithmParameterException | IllegalBlockSizeException | BadPaddingException e1) {
 						e1.printStackTrace();
 					}
 					if(dispatch)
@@ -526,8 +541,15 @@ public class ChatApp {
 	 * @param stringToDispatch
 	 * @return
 	 * @throws IOException
+	 * @throws NoSuchAlgorithmException 
+	 * @throws InvalidKeyException 
+	 * @throws NoSuchPaddingException 
+	 * @throws InvalidAlgorithmParameterException 
+	 * @throws BadPaddingException 
+	 * @throws IllegalBlockSizeException 
 	 */
-	private boolean dispatchChat(String stringToDispatch) throws IOException
+	private boolean dispatchChat(String stringToDispatch) throws IOException, NoSuchAlgorithmException, 
+	InvalidKeyException, NoSuchPaddingException, InvalidAlgorithmParameterException, IllegalBlockSizeException, BadPaddingException
 	{
 		String chatDispatchLoc = ENV.APP_STORAGE_LOC + ENV.DELIM + ENV.APP_STORAGE_CHAT_LOC + ENV.DELIM + ENV.APP_STORAGE_CHAT_DISPATCH_LOC + ENV.DELIM + currentRemoteAddressInFocus;
 		if(!new File(chatDispatchLoc).exists())
@@ -536,6 +558,9 @@ public class ChatApp {
 		}
 
 		chatDispatchLoc = chatDispatchLoc + ENV.DELIM + ENV.APP_STORAGE_CHAT_DISPATCH_FILE;
+		String encChatDispatchLoc = ENV.APP_STORAGE_LOC + ENV.DELIM + ENV.APP_STORAGE_CHAT_LOC + ENV.DELIM + 
+				ENV.APP_STORAGE_CHAT_DISPATCH_LOC + ENV.DELIM + currentRemoteAddressInFocus + ENV.DELIM + ENV.APP_STORAGE_ENC_CHAT_DISPATCH_FILE;
+		
 		File chatDispatchLocFile = new File(chatDispatchLoc);
 
 		if(chatDispatchLocFile.exists())
@@ -546,10 +571,54 @@ public class ChatApp {
 			if(op == 0)
 			{
 				try {	
+					
 					FileOutputStream fwBin = new FileOutputStream(chatDispatchLoc);
 					fwBin.write(stringToDispatch.getBytes(StandardCharsets.UTF_8));
 					fwBin.flush();
 					fwBin.close();
+					
+					// 0		  1		 2		 3
+					//R_adder | S_addr | iv | enc_Data | sig (on 0|1|2|3)
+					
+					FileOutputStream fwEncbin = new FileOutputStream(encChatDispatchLoc);
+					byte[] receiverPublicAddress = Base64.getUrlDecoder().decode(currentRemoteAddressInFocus);
+					byte[] receiverPublicKey = this.addresskeyMap.get(currentRemoteAddressInFocus);
+					byte[] senderAddressBytes = Base64.getUrlDecoder().decode(myPublicAddress);
+					byte[] sharedSecret = Curve25519.getInstance(Curve25519.BEST).calculateAgreement(receiverPublicKey, myPrivateKey);
+					MessageDigest md = MessageDigest.getInstance("SHA-256");
+					byte[] hashedSharedSecret = md.digest(sharedSecret);
+					byte[] aesKey = new byte[hashedSharedSecret.length / 2];
+					byte[] aesIV = new byte[hashedSharedSecret.length / 2];
+					System.arraycopy(hashedSharedSecret, 0, aesKey, 0, aesKey.length);
+					new SecureRandom().nextBytes(aesIV);
+					
+					SecretKey key = new SecretKeySpec(aesKey, "AES");
+					Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
+			        cipher.init(Cipher.ENCRYPT_MODE, key, new IvParameterSpec(aesIV));
+					
+					byte[] encData = cipher.doFinal(stringToDispatch.getBytes(StandardCharsets.UTF_8));
+					
+					//S_addr | iv | enc_Data |
+					byte[] toSign = new byte[receiverPublicAddress.length + senderAddressBytes.length + aesIV.length + encData.length];
+					System.arraycopy(receiverPublicAddress, 0, toSign, 0, receiverPublicAddress.length);
+					System.arraycopy(senderAddressBytes, 0, toSign, receiverPublicAddress.length, senderAddressBytes.length);
+					System.arraycopy(aesIV, 0, toSign, receiverPublicAddress.length + senderAddressBytes.length, aesIV.length);
+					System.arraycopy(encData, 0, toSign, receiverPublicAddress.length + senderAddressBytes.length + aesIV.length, encData.length);
+					
+					md.reset();
+					byte[] hashedToSign = md.digest(toSign);
+					byte[] signature = Curve25519.getInstance(Curve25519.BEST).calculateSignature(myPrivateKey, hashedToSign);
+					
+					byte[] toWrite = new byte[toSign.length + signature.length];
+					System.arraycopy(toSign, 0, toWrite, 0, toSign.length);
+					System.arraycopy(signature, 0, toWrite, toSign.length, signature.length);
+					
+					fwEncbin.write(toWrite);
+					fwEncbin.close();
+					
+					chatChatPane.setText(chatChatPane.getText() + "-------- Dispatch Overwritten --------\n");
+					saveChatToFile(currentRemoteAddressInFocus, "-------- Dispatch Overwritten --------\n", true);
+		
 					dispatchStr = new StringBuffer("");			
 					return true;
 				} catch (IOException e1) {
@@ -565,6 +634,47 @@ public class ChatApp {
 					fwBin.write(stringToDispatch.getBytes(StandardCharsets.UTF_8));
 					fwBin.flush();
 					fwBin.close();
+					
+					// 0		  1		 2		 3
+					//R_adder | S_addr | iv | enc_Data | sig (on 0|1|2|3)
+					
+					FileOutputStream fwEncbin = new FileOutputStream(encChatDispatchLoc);
+					byte[] receiverPublicAddress = Base64.getUrlDecoder().decode(currentRemoteAddressInFocus);
+					byte[] receiverPublicKey = this.addresskeyMap.get(currentRemoteAddressInFocus);
+					byte[] senderAddressBytes = Base64.getUrlDecoder().decode(myPublicAddress);
+					byte[] sharedSecret = Curve25519.getInstance(Curve25519.BEST).calculateAgreement(receiverPublicKey, myPrivateKey);
+					MessageDigest md = MessageDigest.getInstance("SHA-256");
+					byte[] hashedSharedSecret = md.digest(sharedSecret);
+					byte[] aesKey = new byte[hashedSharedSecret.length / 2];
+					byte[] aesIV = new byte[hashedSharedSecret.length / 2];
+					System.arraycopy(hashedSharedSecret, 0, aesKey, 0, aesKey.length);
+					new SecureRandom().nextBytes(aesIV);
+					
+					SecretKey key = new SecretKeySpec(aesKey, "AES");
+					Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
+			        cipher.init(Cipher.ENCRYPT_MODE, key, new IvParameterSpec(aesIV));
+					
+					byte[] encData = cipher.doFinal(stringToDispatch.getBytes(StandardCharsets.UTF_8));
+					
+					//S_addr | iv | enc_Data |
+					byte[] toSign = new byte[receiverPublicAddress.length + senderAddressBytes.length + aesIV.length + encData.length];
+					System.arraycopy(receiverPublicAddress, 0, toSign, 0, receiverPublicAddress.length);
+					System.arraycopy(senderAddressBytes, 0, toSign, receiverPublicAddress.length, senderAddressBytes.length);
+					System.arraycopy(aesIV, 0, toSign, receiverPublicAddress.length + senderAddressBytes.length, aesIV.length);
+					System.arraycopy(encData, 0, toSign, receiverPublicAddress.length + senderAddressBytes.length + aesIV.length, encData.length);
+					
+					md.reset();
+					byte[] hashedToSign = md.digest(toSign);
+					byte[] signature = Curve25519.getInstance(Curve25519.BEST).calculateSignature(myPrivateKey, hashedToSign);
+					
+					byte[] toWrite = new byte[toSign.length + signature.length];
+					System.arraycopy(toSign, 0, toWrite, 0, toSign.length);
+					System.arraycopy(signature, 0, toWrite, toSign.length, signature.length);
+					
+					fwEncbin.write(toWrite);
+					fwEncbin.close();
+					
+					
 					dispatchStr = new StringBuffer("");
 					return true;
 
@@ -586,6 +696,47 @@ public class ChatApp {
 				fwBin.write(stringToDispatch.getBytes(StandardCharsets.UTF_8));
 				fwBin.flush();
 				fwBin.close();
+				
+				// 0		  1		 2		 3
+				//R_adder | S_addr | iv | enc_Data | sig (on 0|1|2|3)
+				
+				FileOutputStream fwEncbin = new FileOutputStream(encChatDispatchLoc);
+				byte[] receiverPublicAddress = Base64.getUrlDecoder().decode(currentRemoteAddressInFocus);
+				byte[] receiverPublicKey = this.addresskeyMap.get(currentRemoteAddressInFocus);
+				byte[] senderAddressBytes = Base64.getUrlDecoder().decode(myPublicAddress);
+				byte[] sharedSecret = Curve25519.getInstance(Curve25519.BEST).calculateAgreement(receiverPublicKey, myPrivateKey);
+				MessageDigest md = MessageDigest.getInstance("SHA-256");
+				byte[] hashedSharedSecret = md.digest(sharedSecret);
+				byte[] aesKey = new byte[hashedSharedSecret.length / 2];
+				byte[] aesIV = new byte[hashedSharedSecret.length / 2];
+				System.arraycopy(hashedSharedSecret, 0, aesKey, 0, aesKey.length);
+				new SecureRandom().nextBytes(aesIV);
+				
+				SecretKey key = new SecretKeySpec(aesKey, "AES");
+				Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
+		        cipher.init(Cipher.ENCRYPT_MODE, key, new IvParameterSpec(aesIV));
+				
+				byte[] encData = cipher.doFinal(stringToDispatch.getBytes(StandardCharsets.UTF_8));
+				
+				//S_addr | iv | enc_Data |
+				byte[] toSign = new byte[receiverPublicAddress.length + senderAddressBytes.length + aesIV.length + encData.length];
+				System.arraycopy(receiverPublicAddress, 0, toSign, 0, receiverPublicAddress.length);
+				System.arraycopy(senderAddressBytes, 0, toSign, receiverPublicAddress.length, senderAddressBytes.length);
+				System.arraycopy(aesIV, 0, toSign, receiverPublicAddress.length + senderAddressBytes.length, aesIV.length);
+				System.arraycopy(encData, 0, toSign, receiverPublicAddress.length + senderAddressBytes.length + aesIV.length, encData.length);
+				
+				md.reset();
+				byte[] hashedToSign = md.digest(toSign);
+				byte[] signature = Curve25519.getInstance(Curve25519.BEST).calculateSignature(myPrivateKey, hashedToSign);
+				
+				byte[] toWrite = new byte[toSign.length + signature.length];
+				System.arraycopy(toSign, 0, toWrite, 0, toSign.length);
+				System.arraycopy(signature, 0, toWrite, toSign.length, signature.length);
+				
+				fwEncbin.write(toWrite);
+				fwEncbin.close();
+				
+				
 				dispatchStr = new StringBuffer("");
 				return true;
 
@@ -603,18 +754,18 @@ public class ChatApp {
 		if(!keyFile.exists())
 		{
 			Curve25519KeyPair keyPair = Curve25519.getInstance(Curve25519.BEST).generateKeyPair();
-			this.privateKey = keyPair.getPrivateKey();
-			this.publicKey = keyPair.getPublicKey();
+			this.myPrivateKey = keyPair.getPrivateKey();
+			this.myPublicKey = keyPair.getPublicKey();
 
 			MessageDigest md = MessageDigest.getInstance("SHA-256");
-			byte[] hasheddPk = md.digest(publicKey);
+			byte[] hasheddPk = md.digest(myPublicKey);
 			byte[] publicAddressBytes = Arrays.copyOf(hasheddPk, ENV.PUBLIC_ADDRESS_LEN);
-			this.publicAddress = Base64.getUrlEncoder().encodeToString(publicAddressBytes);
+			this.myPublicAddress = Base64.getUrlEncoder().encodeToString(publicAddressBytes);
 			
 			JSONObject jObject = new JSONObject();
-			jObject.put("pk", Base64.getUrlEncoder().encodeToString(publicKey));
-			jObject.put("sk", Base64.getUrlEncoder().encodeToString(privateKey));
-			jObject.put("address", this.publicAddress);
+			jObject.put("pk", Base64.getUrlEncoder().encodeToString(myPublicKey));
+			jObject.put("sk", Base64.getUrlEncoder().encodeToString(myPrivateKey));
+			jObject.put("address", this.myPublicAddress);
 
 			FileWriter fw = new FileWriter(ENV.APP_STORAGE_CHAT_KEY_FILE);
 			fw.write(jObject.toString(2));
@@ -631,9 +782,9 @@ public class ChatApp {
 			br.close();
 
 			JSONObject jObject = new JSONObject(stb.toString());
-			this.publicKey = Base64.getUrlDecoder().decode(jObject.getString("pk"));
-			this.privateKey = Base64.getUrlDecoder().decode(jObject.getString("sk"));
-			this.publicAddress = jObject.getString("address");
+			this.myPublicKey = Base64.getUrlDecoder().decode(jObject.getString("pk"));
+			this.myPrivateKey = Base64.getUrlDecoder().decode(jObject.getString("sk"));
+			this.myPublicAddress = jObject.getString("address");
 
 		}
 	}
