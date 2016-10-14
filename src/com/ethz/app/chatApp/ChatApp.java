@@ -126,6 +126,14 @@ public class ChatApp {
 						int i = JOptionPane.showConfirmDialog(frame, "dispatch String is not empty. Ok will not dispatche it. But will appear in logs");	
 						if(i == 0)
 						{
+							//save the not dispatched marker to the log file
+							try {
+								saveChatToFile(currentRemoteAddressInFocus, "--------Not Dispatched --------\n");
+							} catch (IOException e1) {
+								e1.printStackTrace();
+							}
+							
+							
 							String oldChats = LoadChat(oldChatLogBox.getSelectedItem().toString());
 							chatChatPane.setText(oldChats);
 							currentRemoteAddressInFocus = oldChatLogBox.getSelectedItem().toString();
@@ -205,7 +213,7 @@ public class ChatApp {
 
 						else if(dispatchStr.length() > 0)
 						{
-							int i = JOptionPane.showConfirmDialog(frame, "dispatch String is not empty. Continue will destroy it");	
+							int i = JOptionPane.showConfirmDialog(frame, "dispatch String is not empty. Ok will not dispatche it. But will appear in logs");	
 							if(i == 0)
 							{
 								if(!btnSend.isEnabled())
@@ -214,6 +222,13 @@ public class ChatApp {
 								if(!chatText.isEnabled())
 									chatText.setEnabled(true);
 
+								//save the not dispatched marker to the log file
+								try {
+									saveChatToFile(currentRemoteAddressInFocus, "--------Not Dispatched --------\n");
+								} catch (IOException e1) {
+									e1.printStackTrace();
+								}
+								
 								currentRemoteAddressInFocus =  txtRemotePublicKey.getText();
 								dispatchStr = new StringBuffer();
 							}
@@ -254,34 +269,31 @@ public class ChatApp {
 					Date date = new Date();
 					if(chatText.getText() != null && chatText.getText().length() > 0)
 					{
+						String chatMsg = null;
 						if(chatChatPane.getText() == null)
-						{
-
-							String chatMsg = userName + " [" + new Timestamp(date.getTime()).toString() + "] : " + chatText.getText() + "\n";
+						{						
+							chatMsg = userName + " [" + new Timestamp(date.getTime()).toString() + "] : " + chatText.getText() + "\n";
 							dispatchStr.append(chatMsg);
 							chatChatPane.setText(chatMsg);
 							chatText.setText("");
 
-							try {
-								saveChatToFile(currentRemoteAddressInFocus, chatMsg);
-							} catch (IOException e) {
-								e.printStackTrace();
-							}
+							
 						}
 						else
-						{			
-							String chatMsg = chatChatPane.getText() + userName + " [" + new Timestamp(date.getTime()).toString() + "] : " + chatText.getText() + "\n";
+						{
+							chatMsg = chatChatPane.getText() + userName + " [" + new Timestamp(date.getTime()).toString() + "] : " + chatText.getText() + "\n";
 							dispatchStr.append(chatMsg);
 							chatChatPane.setText(chatMsg);
 							chatText.setText("");
-
-							try {
-								saveChatToFile(currentRemoteAddressInFocus, chatMsg);
-							} catch (IOException e) {
-								e.printStackTrace();
-							}
+						
 						}
-					}
+						
+						try {
+							saveChatToFile(currentRemoteAddressInFocus, chatMsg);
+						} catch (IOException e) {
+							e.printStackTrace();
+						}
+					}			
 				}
 			}
 		});
@@ -295,31 +307,29 @@ public class ChatApp {
 				Date date = new Date();
 				if(chatText.getText() != null && chatText.getText().length() > 0)
 				{
+					String chatMsg = null;
 					if(chatChatPane.getText() == null)
 					{						
-						String chatMsg = userName + " [" + new Timestamp(date.getTime()).toString() + "] : " + chatText.getText() + "\n";
+						chatMsg = userName + " [" + new Timestamp(date.getTime()).toString() + "] : " + chatText.getText() + "\n";
 						dispatchStr.append(chatMsg);
 						chatChatPane.setText(chatMsg);
 						chatText.setText("");
 
-						try {
-							saveChatToFile(currentRemoteAddressInFocus, chatMsg);
-						} catch (IOException e) {
-							e.printStackTrace();
-						}
+						
 					}
 					else
 					{
-						String chatMsg = chatChatPane.getText() + userName + " [" + new Timestamp(date.getTime()).toString() + "] : " + chatText.getText() + "\n";
+						chatMsg = chatChatPane.getText() + userName + " [" + new Timestamp(date.getTime()).toString() + "] : " + chatText.getText() + "\n";
 						dispatchStr.append(chatMsg);
 						chatChatPane.setText(chatMsg);
 						chatText.setText("");
-
-						try {
-							saveChatToFile(currentRemoteAddressInFocus, chatMsg);
-						} catch (IOException e) {
-							e.printStackTrace();
-						}
+					
+					}
+					
+					try {
+						saveChatToFile(currentRemoteAddressInFocus, chatMsg);
+					} catch (IOException e) {
+						e.printStackTrace();
 					}
 				}
 			}
