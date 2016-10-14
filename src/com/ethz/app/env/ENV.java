@@ -60,9 +60,13 @@ public class ENV {
 	public static final String APP_STORAGE_CHAT_REPO_FILE = "CHATLOG.log";
 	
 	public static final String APP_STORAGE_CHAT_DISPATCH_FILE = "CHAT.bin";
+	public static final String APP_STORAGE_ENC_CHAT_DISPATCH_FILE = "CHAT_ENC.bin";
+	
+	
+	public static final int PUBLIC_ADDRESS_LEN = 8;
 	
 	public static final String APP_STORAGE_CHAT_KEY_FILE = APP_STORAGE_LOC + DELIM + APP_STORAGE_CHAT_LOC + DELIM + "KeyFile.key";
-	
+	public static final String APP_STORAGE_PUBLIC_KEY_LIST = APP_STORAGE_LOC + DELIM + APP_STORAGE_CHAT_LOC + DELIM + "pkList.txt";
 	
 	static
 	{

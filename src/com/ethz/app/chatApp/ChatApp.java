@@ -35,9 +35,13 @@ import javax.swing.BoxLayout;
 import java.awt.event.ActionListener;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Base64;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
@@ -49,10 +53,11 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.awt.GridLayout;
-import java.awt.ItemSelectable;
-import java.awt.event.ItemListener;
-import java.awt.event.ItemEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 
 /**
  * @author Aritra
@@ -72,6 +77,9 @@ public class ChatApp {
 	private JButton btnSend;
 
 	private byte[] publicKey, privateKey;
+	private String publicAddress;
+	
+	public Map<String, byte[]> addresskeyMap;
 	/**
 	 * Launch the application.
 	 * @throws UnsupportedLookAndFeelException 
@@ -97,12 +105,13 @@ public class ChatApp {
 
 	/**
 	 * Create the application.
-	 * @throws IOException 
+	 * @throws Exception 
 	 */
-	public ChatApp() throws IOException {
+	public ChatApp() throws Exception {
 
 		keyFileGen();
 
+		this.addresskeyMap = new HashMap<>();
 		this.userName = "Anonymous";
 		this.oldChatLogBox = new JComboBox<>();
 		this.btnSend = new JButton("Send");
@@ -128,16 +137,16 @@ public class ChatApp {
 						{
 							//save the not dispatched marker to the log file
 							try {
-								saveChatToFile(currentRemoteAddressInFocus, "--------Not Dispatched --------\n");
+								saveChatToFile(currentRemoteAddressInFocus, "--------Not Dispatched --------\n", true);
 							} catch (IOException e1) {
 								e1.printStackTrace();
 							}
-							
-							
+
+
 							String oldChats = LoadChat(oldChatLogBox.getSelectedItem().toString());
 							chatChatPane.setText(oldChats);
 							currentRemoteAddressInFocus = oldChatLogBox.getSelectedItem().toString();
-							dispatchStr = new StringBuffer();
+							dispatchStr = new StringBuffer("");
 						}
 					}
 					else
@@ -145,7 +154,7 @@ public class ChatApp {
 						String oldChats = LoadChat(oldChatLogBox.getSelectedItem().toString());
 						chatChatPane.setText(oldChats);
 						currentRemoteAddressInFocus = oldChatLogBox.getSelectedItem().toString();
-						dispatchStr = new StringBuffer();
+						dispatchStr = new StringBuffer("");
 					}
 
 
@@ -164,12 +173,22 @@ public class ChatApp {
 			chatText.setEnabled(true);
 
 		oldChatLogBox.removeAllItems();
-		List<String> files = getOldChatPks();
-		for(String pk : files)
-			oldChatLogBox.addItem(pk);
+		Set<String> retAddresses = this.populateAddressKey();
+		
+		if(retAddresses == null)
+		{
+			List<String> files = getOldChatPks();
+			for(String address : files)
+				oldChatLogBox.addItem(address);
+		}
+		else
+		{
+			for(String address : retAddresses)
+				oldChatLogBox.addItem(address);
+		}
 		////////////////////////////////////////
 
-		this.dispatchStr = new StringBuffer();
+		this.dispatchStr = new StringBuffer("");
 		initialize();
 	}
 
@@ -178,9 +197,33 @@ public class ChatApp {
 	 */
 	private void initialize() {
 		frame = new JFrame();
-		frame.setBounds(100, 100, 667, 632);
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.addWindowListener(new WindowAdapter() {
+			@Override
+			public void windowClosing(WindowEvent windowEvent) {
+				
+				if(dispatchStr.length() > 0)
+				{
+					int i = JOptionPane.showConfirmDialog(frame, "Dispatch string is not empty. Ok - close ");	
+					if(i == 0 || i == 2)
+					{
+						//save the not dispatched marker to the log file
+						try {
+							saveChatToFile(currentRemoteAddressInFocus, "--------Not Dispatched --------\n", true);
+						} catch (IOException e1) {
+							e1.printStackTrace();
+						}
 
+						frame.dispose();
+					}
+				}
+				else
+					frame.dispose();
+			}
+		});
+		frame.setBounds(100, 100, 667, 632);
+		frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+
+		
 		JScrollPane jsp = new JScrollPane(chatChatPane);
 		chatChatPane.setEditable(false);
 		frame.getContentPane().add(jsp, BorderLayout.CENTER);
@@ -224,13 +267,13 @@ public class ChatApp {
 
 								//save the not dispatched marker to the log file
 								try {
-									saveChatToFile(currentRemoteAddressInFocus, "--------Not Dispatched --------\n");
+									saveChatToFile(currentRemoteAddressInFocus, "--------Not Dispatched --------\n", true);
 								} catch (IOException e1) {
 									e1.printStackTrace();
 								}
-								
+
 								currentRemoteAddressInFocus =  txtRemotePublicKey.getText();
-								dispatchStr = new StringBuffer();
+								dispatchStr = new StringBuffer("");
 							}
 						}
 						else
@@ -244,13 +287,9 @@ public class ChatApp {
 
 							makeNewChatDir(txtRemotePublicKey.getText());
 							currentRemoteAddressInFocus = txtRemotePublicKey.getText();
-							dispatchStr = new StringBuffer();
+							dispatchStr = new StringBuffer("");
 						}
-
-
-
 					}
-
 				}
 			}
 		});
@@ -275,21 +314,19 @@ public class ChatApp {
 							chatMsg = userName + " [" + new Timestamp(date.getTime()).toString() + "] : " + chatText.getText() + "\n";
 							dispatchStr.append(chatMsg);
 							chatChatPane.setText(chatMsg);
-							chatText.setText("");
-
-							
+							chatText.setText("");					
 						}
 						else
 						{
-							chatMsg = chatChatPane.getText() + userName + " [" + new Timestamp(date.getTime()).toString() + "] : " + chatText.getText() + "\n";
-							dispatchStr.append(chatMsg);
+							String currentChatMessage =  userName + " [" + new Timestamp(date.getTime()).toString() + "] : " + chatText.getText() + "\n";
+							chatMsg = chatChatPane.getText() + currentChatMessage;
+							dispatchStr.append(currentChatMessage);
 							chatChatPane.setText(chatMsg);
 							chatText.setText("");
-						
 						}
-						
+
 						try {
-							saveChatToFile(currentRemoteAddressInFocus, chatMsg);
+							saveChatToFile(currentRemoteAddressInFocus, chatMsg, false);
 						} catch (IOException e) {
 							e.printStackTrace();
 						}
@@ -315,19 +352,20 @@ public class ChatApp {
 						chatChatPane.setText(chatMsg);
 						chatText.setText("");
 
-						
+
 					}
 					else
 					{
-						chatMsg = chatChatPane.getText() + userName + " [" + new Timestamp(date.getTime()).toString() + "] : " + chatText.getText() + "\n";
-						dispatchStr.append(chatMsg);
+						String currentChatMessage =  userName + " [" + new Timestamp(date.getTime()).toString() + "] : " + chatText.getText() + "\n";
+						chatMsg = chatChatPane.getText() + currentChatMessage;
+						dispatchStr.append(currentChatMessage);
 						chatChatPane.setText(chatMsg);
 						chatText.setText("");
-					
+
 					}
-					
+
 					try {
-						saveChatToFile(currentRemoteAddressInFocus, chatMsg);
+						saveChatToFile(currentRemoteAddressInFocus, chatMsg, false);
 					} catch (IOException e) {
 						e.printStackTrace();
 					}
@@ -395,11 +433,11 @@ public class ChatApp {
 					{
 						chatChatPane.setText(chatChatPane.getText() + "-------- Dispatched --------\n");
 						try {
-							saveChatToFile(currentRemoteAddressInFocus, "-------- Dispatched --------\n");
+							saveChatToFile(currentRemoteAddressInFocus, "-------- Dispatched --------\n", true);
 						} catch (IOException e1) {
 							e1.printStackTrace();
 						}
-						dispatchStr = new StringBuffer();
+						dispatchStr = new StringBuffer("");
 					}
 				}
 				else
@@ -434,7 +472,7 @@ public class ChatApp {
 			return new String();
 
 		BufferedReader br = new BufferedReader(new FileReader(oldChatLoc));
-		StringBuffer stb = new StringBuffer();
+		StringBuffer stb = new StringBuffer("");
 		String str = null;
 
 		while((str = br.readLine()) != null)
@@ -449,12 +487,18 @@ public class ChatApp {
 	 * @param chat
 	 * @throws IOException
 	 */
-	private void saveChatToFile(String address, String chat) throws IOException
+	private void saveChatToFile(String address, String chat, boolean append) throws IOException
 	{
+		String saveChatDirLoc = ENV.APP_STORAGE_LOC + ENV.DELIM + ENV.APP_STORAGE_CHAT_LOC + 
+				ENV.DELIM + ENV.APP_STORAGE_CHAT_LOG_LOC +  ENV.DELIM + address;
+		
+		if(!new File(saveChatDirLoc).exists())
+			new File(saveChatDirLoc).mkdir();
+		
 		String saveChatLoc = ENV.APP_STORAGE_LOC + ENV.DELIM + ENV.APP_STORAGE_CHAT_LOC + 
 				ENV.DELIM + ENV.APP_STORAGE_CHAT_LOG_LOC +  ENV.DELIM + address + ENV.DELIM + ENV.APP_STORAGE_CHAT_REPO_FILE;
 
-		FileWriter fw = new FileWriter(saveChatLoc, true);
+		FileWriter fw = new FileWriter(saveChatLoc, append);
 		fw.append(chat);
 		fw.flush();
 		fw.close();
@@ -490,14 +534,14 @@ public class ChatApp {
 		{
 			new File(chatDispatchLoc).mkdir();
 		}
-		
+
 		chatDispatchLoc = chatDispatchLoc + ENV.DELIM + ENV.APP_STORAGE_CHAT_DISPATCH_FILE;
 		File chatDispatchLocFile = new File(chatDispatchLoc);
-		
+
 		if(chatDispatchLocFile.exists())
 		{
 			int op = JOptionPane.showConfirmDialog(frame, "Earlier dispach is not removed, Overwrite?. OK - overwrite, No - Append");
-			
+
 			//overwrite
 			if(op == 0)
 			{
@@ -506,7 +550,7 @@ public class ChatApp {
 					fwBin.write(stringToDispatch.getBytes(StandardCharsets.UTF_8));
 					fwBin.flush();
 					fwBin.close();
-					dispatchStr = new StringBuffer();			
+					dispatchStr = new StringBuffer("");			
 					return true;
 				} catch (IOException e1) {
 					e1.printStackTrace();
@@ -521,12 +565,12 @@ public class ChatApp {
 					fwBin.write(stringToDispatch.getBytes(StandardCharsets.UTF_8));
 					fwBin.flush();
 					fwBin.close();
-					dispatchStr = new StringBuffer();
+					dispatchStr = new StringBuffer("");
 					return true;
 
 				} catch (IOException e1) {
 					e1.printStackTrace();
-					
+
 				}
 				return false;
 			}
@@ -542,18 +586,18 @@ public class ChatApp {
 				fwBin.write(stringToDispatch.getBytes(StandardCharsets.UTF_8));
 				fwBin.flush();
 				fwBin.close();
-				dispatchStr = new StringBuffer();
+				dispatchStr = new StringBuffer("");
 				return true;
 
 			} catch (IOException e1) {
-				
+
 				e1.printStackTrace();
 				return false;
 			}
 		}
 	}
 
-	private void keyFileGen() throws IOException
+	private void keyFileGen() throws IOException, NoSuchAlgorithmException
 	{
 		File keyFile = new File(ENV.APP_STORAGE_CHAT_KEY_FILE);
 		if(!keyFile.exists())
@@ -562,9 +606,15 @@ public class ChatApp {
 			this.privateKey = keyPair.getPrivateKey();
 			this.publicKey = keyPair.getPublicKey();
 
+			MessageDigest md = MessageDigest.getInstance("SHA-256");
+			byte[] hasheddPk = md.digest(publicKey);
+			byte[] publicAddressBytes = Arrays.copyOf(hasheddPk, ENV.PUBLIC_ADDRESS_LEN);
+			this.publicAddress = Base64.getUrlEncoder().encodeToString(publicAddressBytes);
+			
 			JSONObject jObject = new JSONObject();
 			jObject.put("pk", Base64.getUrlEncoder().encodeToString(publicKey));
 			jObject.put("sk", Base64.getUrlEncoder().encodeToString(privateKey));
+			jObject.put("address", this.publicAddress);
 
 			FileWriter fw = new FileWriter(ENV.APP_STORAGE_CHAT_KEY_FILE);
 			fw.write(jObject.toString(2));
@@ -583,7 +633,42 @@ public class ChatApp {
 			JSONObject jObject = new JSONObject(stb.toString());
 			this.publicKey = Base64.getUrlDecoder().decode(jObject.getString("pk"));
 			this.privateKey = Base64.getUrlDecoder().decode(jObject.getString("sk"));
+			this.publicAddress = jObject.getString("address");
 
 		}
+	}
+	
+	/**
+	 * Return list of public address from the local storage. Also populate the internal table of address and public key.
+	 * @return
+	 * @throws Exception
+	 */
+	public Set<String> populateAddressKey() throws Exception
+	{
+		File addresskeyFile = new File(ENV.APP_STORAGE_PUBLIC_KEY_LIST);
+		if(!addresskeyFile.exists())
+		{
+			JOptionPane.showMessageDialog(frame, "Public key list file not found");
+			return null;
+		}
+		
+		BufferedReader br = new BufferedReader(new FileReader(ENV.APP_STORAGE_PUBLIC_KEY_LIST));
+		String str = null;
+		while((str = br.readLine()) != null)
+		{
+			if(str.length() == 0)
+				continue;
+				
+			byte[] pk = Base64.getUrlDecoder().decode(str);
+			MessageDigest md = MessageDigest.getInstance("SHA-256");
+			byte[] hashedPk = md.digest(pk);
+			byte[] publicAddressBytes = Arrays.copyOf(hashedPk, ENV.PUBLIC_ADDRESS_LEN);
+			String address = Base64.getUrlEncoder().encodeToString(publicAddressBytes);
+			
+			this.addresskeyMap.put(address, pk);
+		}
+		br.close();
+		
+		return this.addresskeyMap.keySet();
 	}
 }
