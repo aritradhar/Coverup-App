@@ -294,6 +294,13 @@ public class BinUtils {
 	
 	public static String chatMessageBinProcess(byte[] data)
 	{
+		// 0		  1		 2	   3		4
+		//R_adder | S_addr | iv | len | enc_Data | sig (on 0|1|2|3|4)
+		
+		byte[] receiverAddress = new byte[ENV.PUBLIC_ADDRESS_LEN]; //holy shit this is me.
+		byte[] senderAddress = new byte[ENV.PUBLIC_ADDRESS_LEN]; //the guy or the girl (:)) who send this to me.
+		//byte[] iv = 
+		
 		return null;
 	}
 	

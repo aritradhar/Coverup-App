@@ -572,7 +572,7 @@ public class ChatApp {
 
 		if(chatDispatchLocFile.exists())
 		{
-			int op = JOptionPane.showConfirmDialog(frame, "Earlier dispach is not removed, Overwrite?. OK - overwrite, No - Append");
+			int op = JOptionPane.showConfirmDialog(frame, "Earlier dispach is not removed, Overwrite?. OK - overwrite, Rest - no");
 
 			//overwrite
 			if(op == 0)
@@ -588,7 +588,8 @@ public class ChatApp {
 					//R_adder | S_addr | iv | len | enc_Data | sig (on 0|1|2|3|4)
 					
 					FileOutputStream fwEncbin = new FileOutputStream(encChatDispatchLoc);
-					byte[] receiverPublicAddress = Base64.getUrlDecoder().decode(currentRemoteAddressInFocus);
+					/*
+					 * byte[] receiverPublicAddress = Base64.getUrlDecoder().decode(currentRemoteAddressInFocus);
 					byte[] receiverPublicKey = this.addresskeyMap.get(currentRemoteAddressInFocus);
 					byte[] senderAddressBytes = Base64.getUrlDecoder().decode(myPublicAddress);
 					byte[] sharedSecret = Curve25519.getInstance(Curve25519.BEST).calculateAgreement(receiverPublicKey, myPrivateKey);
@@ -620,7 +621,9 @@ public class ChatApp {
 					
 					byte[] toWrite = new byte[toSign.length + signature.length];
 					System.arraycopy(toSign, 0, toWrite, 0, toSign.length);
-					System.arraycopy(signature, 0, toWrite, toSign.length, signature.length);
+					System.arraycopy(signature, 0, toWrite, toSign.length, signature.length);*/
+					byte[] toWrite = this.makeEncStuff(stringToDispatch);
+					
 					
 					fwEncbin.write(toWrite);
 					fwEncbin.close();
@@ -635,67 +638,11 @@ public class ChatApp {
 				}
 				return false;
 			}
-			//append
-			else if(op == 1)
-			{
-				try {	
-					FileOutputStream fwBin = new FileOutputStream(chatDispatchLoc, true);
-					fwBin.write(stringToDispatch.getBytes(StandardCharsets.UTF_8));
-					fwBin.flush();
-					fwBin.close();
-					
-					// 0		  1		 2		 3
-					//R_adder | S_addr | iv | enc_Data | sig (on 0|1|2|3)
-					
-					FileOutputStream fwEncbin = new FileOutputStream(encChatDispatchLoc);
-					byte[] receiverPublicAddress = Base64.getUrlDecoder().decode(currentRemoteAddressInFocus);
-					byte[] receiverPublicKey = this.addresskeyMap.get(currentRemoteAddressInFocus);
-					byte[] senderAddressBytes = Base64.getUrlDecoder().decode(myPublicAddress);
-					byte[] sharedSecret = Curve25519.getInstance(Curve25519.BEST).calculateAgreement(receiverPublicKey, myPrivateKey);
-					MessageDigest md = MessageDigest.getInstance("SHA-256");
-					byte[] hashedSharedSecret = md.digest(sharedSecret);
-					byte[] aesKey = new byte[hashedSharedSecret.length / 2];
-					byte[] aesIV = new byte[hashedSharedSecret.length / 2];
-					System.arraycopy(hashedSharedSecret, 0, aesKey, 0, aesKey.length);
-					new SecureRandom().nextBytes(aesIV);
-					
-					SecretKey key = new SecretKeySpec(aesKey, "AES");
-					Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
-			        cipher.init(Cipher.ENCRYPT_MODE, key, new IvParameterSpec(aesIV));
-					
-					byte[] encData = cipher.doFinal(stringToDispatch.getBytes(StandardCharsets.UTF_8));
-					
-					//S_addr | iv | enc_Data |
-					byte[] toSign = new byte[receiverPublicAddress.length + senderAddressBytes.length + aesIV.length + encData.length];
-					System.arraycopy(receiverPublicAddress, 0, toSign, 0, receiverPublicAddress.length);
-					System.arraycopy(senderAddressBytes, 0, toSign, receiverPublicAddress.length, senderAddressBytes.length);
-					System.arraycopy(aesIV, 0, toSign, receiverPublicAddress.length + senderAddressBytes.length, aesIV.length);
-					System.arraycopy(encData, 0, toSign, receiverPublicAddress.length + senderAddressBytes.length + aesIV.length, encData.length);
-					
-					md.reset();
-					byte[] hashedToSign = md.digest(toSign);
-					byte[] signature = Curve25519.getInstance(Curve25519.BEST).calculateSignature(myPrivateKey, hashedToSign);
-					
-					byte[] toWrite = new byte[toSign.length + signature.length];
-					System.arraycopy(toSign, 0, toWrite, 0, toSign.length);
-					System.arraycopy(signature, 0, toWrite, toSign.length, signature.length);
-					
-					fwEncbin.write(toWrite);
-					fwEncbin.close();
-					
-					
-					dispatchStr = new StringBuffer("");
-					return true;
-
-				} catch (IOException e1) {
-					e1.printStackTrace();
-
-				}
-				return false;
-			}
 			//signal nothing
 			else
-				return false;	
+				return false;
+			
+				
 		}
 		//just write
 		else
@@ -704,43 +651,10 @@ public class ChatApp {
 				FileOutputStream fwBin = new FileOutputStream(chatDispatchLoc);
 				fwBin.write(stringToDispatch.getBytes(StandardCharsets.UTF_8));
 				fwBin.flush();
-				fwBin.close();
+				fwBin.close();		
 				
-				// 0		  1		 2		 3
-				//R_adder | S_addr | iv | enc_Data | sig (on 0|1|2|3)
-				
-				FileOutputStream fwEncbin = new FileOutputStream(encChatDispatchLoc);
-				byte[] receiverPublicAddress = Base64.getUrlDecoder().decode(currentRemoteAddressInFocus);
-				byte[] receiverPublicKey = this.addresskeyMap.get(currentRemoteAddressInFocus);
-				byte[] senderAddressBytes = Base64.getUrlDecoder().decode(myPublicAddress);
-				byte[] sharedSecret = Curve25519.getInstance(Curve25519.BEST).calculateAgreement(receiverPublicKey, myPrivateKey);
-				MessageDigest md = MessageDigest.getInstance("SHA-256");
-				byte[] hashedSharedSecret = md.digest(sharedSecret);
-				byte[] aesKey = new byte[hashedSharedSecret.length / 2];
-				byte[] aesIV = new byte[hashedSharedSecret.length / 2];
-				System.arraycopy(hashedSharedSecret, 0, aesKey, 0, aesKey.length);
-				new SecureRandom().nextBytes(aesIV);
-				
-				SecretKey key = new SecretKeySpec(aesKey, "AES");
-				Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
-		        cipher.init(Cipher.ENCRYPT_MODE, key, new IvParameterSpec(aesIV));
-				
-				byte[] encData = cipher.doFinal(stringToDispatch.getBytes(StandardCharsets.UTF_8));
-				
-				//S_addr | iv | enc_Data |
-				byte[] toSign = new byte[receiverPublicAddress.length + senderAddressBytes.length + aesIV.length + encData.length];
-				System.arraycopy(receiverPublicAddress, 0, toSign, 0, receiverPublicAddress.length);
-				System.arraycopy(senderAddressBytes, 0, toSign, receiverPublicAddress.length, senderAddressBytes.length);
-				System.arraycopy(aesIV, 0, toSign, receiverPublicAddress.length + senderAddressBytes.length, aesIV.length);
-				System.arraycopy(encData, 0, toSign, receiverPublicAddress.length + senderAddressBytes.length + aesIV.length, encData.length);
-				
-				md.reset();
-				byte[] hashedToSign = md.digest(toSign);
-				byte[] signature = Curve25519.getInstance(Curve25519.BEST).calculateSignature(myPrivateKey, hashedToSign);
-				
-				byte[] toWrite = new byte[toSign.length + signature.length];
-				System.arraycopy(toSign, 0, toWrite, 0, toSign.length);
-				System.arraycopy(signature, 0, toWrite, toSign.length, signature.length);
+				FileOutputStream fwEncbin = new FileOutputStream(encChatDispatchLoc);	
+				byte[] toWrite = this.makeEncStuff(stringToDispatch);
 				
 				fwEncbin.write(toWrite);
 				fwEncbin.close();
@@ -796,6 +710,45 @@ public class ChatApp {
 			this.myPublicAddress = jObject.getString("address");
 
 		}
+	}
+	
+	public byte[] makeEncStuff(String stringToDispatch) throws NoSuchAlgorithmException, NoSuchPaddingException, IllegalBlockSizeException, BadPaddingException, InvalidKeyException, InvalidAlgorithmParameterException 
+	{
+		byte[] receiverPublicAddress = Base64.getUrlDecoder().decode(currentRemoteAddressInFocus);
+		byte[] receiverPublicKey = this.addresskeyMap.get(currentRemoteAddressInFocus);
+		byte[] senderAddressBytes = Base64.getUrlDecoder().decode(myPublicAddress);
+		byte[] sharedSecret = Curve25519.getInstance(Curve25519.BEST).calculateAgreement(receiverPublicKey, myPrivateKey);
+		MessageDigest md = MessageDigest.getInstance("SHA-256");
+		byte[] hashedSharedSecret = md.digest(sharedSecret);
+		byte[] aesKey = new byte[hashedSharedSecret.length / 2];
+		byte[] aesIV = new byte[hashedSharedSecret.length / 2];
+		System.arraycopy(hashedSharedSecret, 0, aesKey, 0, aesKey.length);
+		new SecureRandom().nextBytes(aesIV);
+		
+		SecretKey key = new SecretKeySpec(aesKey, "AES");
+		Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
+        cipher.init(Cipher.ENCRYPT_MODE, key, new IvParameterSpec(aesIV));
+		
+		byte[] encData = cipher.doFinal(stringToDispatch.getBytes(StandardCharsets.UTF_8));
+		byte[] encDatalenBytes = ByteBuffer.allocate(Integer.BYTES).putInt(encData.length).array();
+		
+		//S_addr | iv | len | enc_Data 
+		byte[] toSign = new byte[receiverPublicAddress.length + senderAddressBytes.length + aesIV.length + encDatalenBytes.length + encData.length];
+		System.arraycopy(receiverPublicAddress, 0, toSign, 0, receiverPublicAddress.length);
+		System.arraycopy(senderAddressBytes, 0, toSign, receiverPublicAddress.length, senderAddressBytes.length);
+		System.arraycopy(aesIV, 0, toSign, receiverPublicAddress.length + senderAddressBytes.length, aesIV.length);
+		System.arraycopy(encDatalenBytes, 0, toSign, receiverPublicAddress.length + senderAddressBytes.length + aesIV.length, encDatalenBytes.length);
+		System.arraycopy(encData, 0, toSign, receiverPublicAddress.length + senderAddressBytes.length + aesIV.length + encDatalenBytes.length, encData.length);
+		
+		md.reset();
+		byte[] hashedToSign = md.digest(toSign);
+		byte[] signature = Curve25519.getInstance(Curve25519.BEST).calculateSignature(myPrivateKey, hashedToSign);
+		
+		byte[] toWrite = new byte[toSign.length + signature.length];
+		System.arraycopy(toSign, 0, toWrite, 0, toSign.length);
+		System.arraycopy(signature, 0, toWrite, toSign.length, signature.length);
+		
+		return toWrite;
 	}
 	
 	/**

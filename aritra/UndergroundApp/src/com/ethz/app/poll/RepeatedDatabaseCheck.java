@@ -225,6 +225,7 @@ public class RepeatedDatabaseCheck {
 			else if(ex.getMessage().equalsIgnoreCase(ENV.EXCEPTION_CHAT_MESSAGE_MAGIC_BYTES))
 			{
 				this.messaage.append("Got chat message");
+				BinUtils.chatMessageBinProcess(receivedBin);
 			}
 			else
 			{
