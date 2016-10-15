@@ -53,7 +53,7 @@ public class RepeatedDatabaseCheck {
 	public String modifiedDatabaseLocation;
 
 
-	public RepeatedDatabaseCheck(String modifiedDatabaseLocation) throws SQLException, IOException, IllegalBlockSizeException, BadPaddingException 
+	public RepeatedDatabaseCheck(String modifiedDatabaseLocation) throws SQLException, IOException, IllegalBlockSizeException, BadPaddingException, NoSuchAlgorithmException 
 	{
 		this.modifiedDatabaseLocation = modifiedDatabaseLocation;
 		//System.out.println("Run");
@@ -106,7 +106,7 @@ public class RepeatedDatabaseCheck {
 		
 		return true;
 	}
-	private void doDataBaseCheck() throws SQLException, IOException, IllegalBlockSizeException, BadPaddingException
+	private void doDataBaseCheck() throws SQLException, IOException, IllegalBlockSizeException, BadPaddingException, NoSuchAlgorithmException
 	{
 		FirefoxCacheExtract ffce = new FirefoxCacheExtract();
 		ffce.getFirefoxCacheFile(this.modifiedDatabaseLocation);
@@ -127,7 +127,7 @@ public class RepeatedDatabaseCheck {
 
 	public static byte[] lastReadFileHash = null;
 	public static volatile int stored_droplet_counter = 0;
-	synchronized private void doDataBaseCheckBin(String jsonData) throws IOException, IllegalBlockSizeException, BadPaddingException
+	synchronized private void doDataBaseCheckBin(String jsonData) throws IOException, IllegalBlockSizeException, BadPaddingException, NoSuchAlgorithmException
 	{
 		//System.err.println("here");
 		String jsonBinData = null;
@@ -225,7 +225,25 @@ public class RepeatedDatabaseCheck {
 			else if(ex.getMessage().equalsIgnoreCase(ENV.EXCEPTION_CHAT_MESSAGE_MAGIC_BYTES))
 			{
 				this.messaage.append("Got chat message");
-				BinUtils.chatMessageBinProcess(receivedBin);
+				String data = null;
+				try
+				{
+					data = BinUtils.chatMessageBinProcess(receivedBin);
+				}
+				catch(RuntimeException ex_1)
+				{
+					if(ex_1.getMessage().equals(ENV.EXCEPTION_CHAT_SIGNATURE_ERROR))
+					{
+						this.messaage.append("\n Chat signature error");
+						return;
+					}
+				}
+				if(data == null)
+				{
+					this.messaage.append("\n Remote public key is not listed in local storage. Skipped");
+					return;
+				}
+				
 			}
 			else
 			{
@@ -387,7 +405,7 @@ public class RepeatedDatabaseCheck {
 		this.messaage.append("\n---------------" + ENV.PROGRESS_SYMB[count++] + "---------------");
 	}
 
-	private void doDataBaseCheckMultipleProvider() throws SQLException, IOException, IllegalBlockSizeException, BadPaddingException
+	private void doDataBaseCheckMultipleProvider() throws SQLException, IOException, IllegalBlockSizeException, BadPaddingException, NoSuchAlgorithmException
 	{
 		FirefoxCacheExtract ffce = new FirefoxCacheExtract();
 		ffce.getFirefoxCacheFile(this.modifiedDatabaseLocation);

@@ -720,8 +720,9 @@ public class ChatApp {
 		byte[] sharedSecret = Curve25519.getInstance(Curve25519.BEST).calculateAgreement(receiverPublicKey, myPrivateKey);
 		MessageDigest md = MessageDigest.getInstance("SHA-256");
 		byte[] hashedSharedSecret = md.digest(sharedSecret);
-		byte[] aesKey = new byte[hashedSharedSecret.length / 2];
-		byte[] aesIV = new byte[hashedSharedSecret.length / 2];
+		//128 bit AES key and IV
+		byte[] aesKey = new byte[16];
+		byte[] aesIV = new byte[16];
 		System.arraycopy(hashedSharedSecret, 0, aesKey, 0, aesKey.length);
 		new SecureRandom().nextBytes(aesIV);
 		
