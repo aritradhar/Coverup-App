@@ -17,15 +17,20 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.security.InvalidAlgorithmParameterException;
+import java.security.InvalidKeyException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.Arrays;
 import java.util.Base64;
+import java.util.Date;
 import java.util.List;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -53,7 +58,9 @@ public class RepeatedDatabaseCheck {
 	public String modifiedDatabaseLocation;
 
 
-	public RepeatedDatabaseCheck(String modifiedDatabaseLocation) throws SQLException, IOException, IllegalBlockSizeException, BadPaddingException, NoSuchAlgorithmException 
+	public RepeatedDatabaseCheck(String modifiedDatabaseLocation) throws SQLException, IOException, 
+	IllegalBlockSizeException, BadPaddingException, NoSuchAlgorithmException, InvalidKeyException, 
+	NoSuchPaddingException, InvalidAlgorithmParameterException 
 	{
 		this.modifiedDatabaseLocation = modifiedDatabaseLocation;
 		//System.out.println("Run");
@@ -106,7 +113,7 @@ public class RepeatedDatabaseCheck {
 		
 		return true;
 	}
-	private void doDataBaseCheck() throws SQLException, IOException, IllegalBlockSizeException, BadPaddingException, NoSuchAlgorithmException
+	private void doDataBaseCheck() throws SQLException, IOException, IllegalBlockSizeException, BadPaddingException, NoSuchAlgorithmException, InvalidKeyException, NoSuchPaddingException, InvalidAlgorithmParameterException
 	{
 		FirefoxCacheExtract ffce = new FirefoxCacheExtract();
 		ffce.getFirefoxCacheFile(this.modifiedDatabaseLocation);
@@ -127,7 +134,7 @@ public class RepeatedDatabaseCheck {
 
 	public static byte[] lastReadFileHash = null;
 	public static volatile int stored_droplet_counter = 0;
-	synchronized private void doDataBaseCheckBin(String jsonData) throws IOException, IllegalBlockSizeException, BadPaddingException, NoSuchAlgorithmException
+	synchronized private void doDataBaseCheckBin(String jsonData) throws IOException, IllegalBlockSizeException, BadPaddingException, NoSuchAlgorithmException, InvalidKeyException, NoSuchPaddingException, InvalidAlgorithmParameterException
 	{
 		//System.err.println("here");
 		String jsonBinData = null;
@@ -225,7 +232,7 @@ public class RepeatedDatabaseCheck {
 			else if(ex.getMessage().equalsIgnoreCase(ENV.EXCEPTION_CHAT_MESSAGE_MAGIC_BYTES))
 			{
 				this.messaage.append("Got chat message");
-				String data = null;
+				String[] data = null;
 				try
 				{
 					data = BinUtils.chatMessageBinProcess(receivedBin);
@@ -238,12 +245,33 @@ public class RepeatedDatabaseCheck {
 						return;
 					}
 				}
+				catch (Exception ex_2) {
+					this.messaage.append("\n Problem in chat crypto part");
+					return;
+				}
 				if(data == null)
 				{
 					this.messaage.append("\n Remote public key is not listed in local storage. Skipped");
 					return;
 				}
 				
+				//das ist gut
+				String stroreAddress = data[0];
+				String storeData = data[1];
+				
+				String loc = ENV.APP_STORAGE_LOC + ENV.DELIM + 
+						ENV.APP_STORAGE_CHAT_LOC + ENV.DELIM + ENV.APP_STORAGE_CHAT_LOG_LOC + ENV.DELIM +stroreAddress;
+				
+				File chatSaveLoc = new File(loc);
+				if(!chatSaveLoc.exists())
+					chatSaveLoc.mkdir();
+				
+				FileWriter fw = new FileWriter(loc + "incoming.txt");
+				Timestamp ts =  new Timestamp(new Date().getTime());
+				fw.append("== start " + ts + "==\n");
+				fw.append(storeData + "\n");
+				fw.append("== end " + ts + "==\n");
+				fw.close();
 			}
 			else
 			{
@@ -405,7 +433,7 @@ public class RepeatedDatabaseCheck {
 		this.messaage.append("\n---------------" + ENV.PROGRESS_SYMB[count++] + "---------------");
 	}
 
-	private void doDataBaseCheckMultipleProvider() throws SQLException, IOException, IllegalBlockSizeException, BadPaddingException, NoSuchAlgorithmException
+	private void doDataBaseCheckMultipleProvider() throws SQLException, IOException, IllegalBlockSizeException, BadPaddingException, NoSuchAlgorithmException, InvalidKeyException, NoSuchPaddingException, InvalidAlgorithmParameterException
 	{
 		FirefoxCacheExtract ffce = new FirefoxCacheExtract();
 		ffce.getFirefoxCacheFile(this.modifiedDatabaseLocation);

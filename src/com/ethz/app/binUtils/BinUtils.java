@@ -21,6 +21,8 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.security.InvalidAlgorithmParameterException;
+import java.security.InvalidKeyException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
@@ -30,7 +32,12 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.crypto.BadPaddingException;
+import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
+import javax.crypto.SecretKey;
+import javax.crypto.spec.IvParameterSpec;
+import javax.crypto.spec.SecretKeySpec;
 import javax.swing.JOptionPane;
 
 import org.json.JSONObject;
@@ -291,8 +298,21 @@ public class BinUtils {
 		return new Object[]{sliceId, sliceIndex, sliceDataBytes};
 	}
 	
+	/**
+	 * 
+	 * @param data
+	 * @return Array of string.
+	 * index 0 -> sender public address
+	 * index 1 -> decrypted chat data
+	 * @throws NoSuchAlgorithmException
+	 * @throws NoSuchPaddingException
+	 * @throws InvalidKeyException
+	 * @throws InvalidAlgorithmParameterException
+	 * @throws IllegalBlockSizeException
+	 * @throws BadPaddingException
+	 */
 	
-	public static String chatMessageBinProcess(byte[] data) throws NoSuchAlgorithmException
+	public static String[] chatMessageBinProcess(byte[] data) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, InvalidAlgorithmParameterException, IllegalBlockSizeException, BadPaddingException
 	{
 		//	   0		  1		 	 2	   	  3			 4
 		//R_adder (8)| S_addr(8) | iv(16) | len(4) | enc_Data (n) | sig (64) (on 0|1|2|3|4)
@@ -306,8 +326,9 @@ public class BinUtils {
 		byte[] senderAddress = new byte[ENV.PUBLIC_ADDRESS_LEN]; //who send this to me.
 		System.arraycopy(data, tillNow, senderAddress, 0, senderAddress.length);
 		tillNow += senderAddress.length;
-			
-		byte[] senderPublicKey = BinUtils.addresskeyMap.get(Base64.getUrlEncoder().encodeToString(receiverAddress));
+		
+		String sernderAddressStr = Base64.getUrlEncoder().encodeToString(senderAddress);
+		byte[] senderPublicKey = BinUtils.addresskeyMap.get(sernderAddressStr);
 		if(senderPublicKey == null)
 			return null;
 		
@@ -342,9 +363,16 @@ public class BinUtils {
 		
 		tillNow += 4;
 		
-		
 		byte[] encryptedData = new byte[encDataLen];
-		return null;
+		System.arraycopy(data, tillNow, encryptedData, 0, encDataLen);
+		
+		SecretKey key = new SecretKeySpec(aesKey, "AES");
+		Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
+        cipher.init(Cipher.ENCRYPT_MODE, key, new IvParameterSpec(aesIV));
+        
+        byte[] decryptedChat = cipher.doFinal(encryptedData);
+        
+		return new String[]{sernderAddressStr, new String(decryptedChat, StandardCharsets.UTF_8)};
 	}
 	
 	
