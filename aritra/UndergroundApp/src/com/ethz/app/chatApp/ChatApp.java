@@ -48,11 +48,16 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Base64;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
@@ -95,6 +100,7 @@ public class ChatApp {
 	private String myPublicAddress;
 	
 	public Map<String, byte[]> addresskeyMap;
+	private ScheduledThreadPoolExecutor executor;
 	/**
 	 * Launch the application.
 	 * @throws UnsupportedLookAndFeelException 
@@ -136,6 +142,17 @@ public class ChatApp {
 		this.chatText = new JTextField();
 		this.chatText.setEnabled(false);
 
+		//run the executor to get the chats on regular interval
+		Runnable myRunnable = new Runnable() {
+
+			@Override
+			public void run() {
+				IncomingChatPoll.pollChat();
+			}
+		};
+		executor = new ScheduledThreadPoolExecutor(2);
+		executor.scheduleAtFixedRate(myRunnable, 0, ENV.CHAT_POLLING_RATE, TimeUnit.MILLISECONDS);
+		
 
 		oldChatLogBox.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -166,10 +183,16 @@ public class ChatApp {
 					}
 					else
 					{
-						String oldChats = LoadChat(oldChatLogBox.getSelectedItem().toString());
-						chatChatPane.setText(oldChats);
-						currentRemoteAddressInFocus = oldChatLogBox.getSelectedItem().toString();
-						dispatchStr = new StringBuffer("");
+						//this is the case to deal with when populate button is pressed
+						//This also trigger this lister but as nothing is selected, null pointer exception.
+						//Stupid problem.
+						if(oldChatLogBox.getSelectedItem() != null)
+						{
+							String oldChats = LoadChat(oldChatLogBox.getSelectedItem().toString());
+							chatChatPane.setText(oldChats);
+							currentRemoteAddressInFocus = oldChatLogBox.getSelectedItem().toString();
+							dispatchStr = new StringBuffer("");
+						}
 					}
 
 
@@ -188,17 +211,18 @@ public class ChatApp {
 			chatText.setEnabled(true);
 
 		oldChatLogBox.removeAllItems();
-		Set<String> retAddresses = this.populateAddressKey();
+		Set<String> retAddressesFromPKList = this.populateAddressKey();
+		Set<String> retAddressesFromFiles = getOldChatPks();
 		
-		if(retAddresses == null)
+		Set<String> allAddresses = new HashSet<>();
+		if(retAddressesFromFiles != null)
+			allAddresses.addAll(retAddressesFromFiles);
+		if(retAddressesFromPKList != null)
+			allAddresses.addAll(retAddressesFromPKList);
+		
+		if(allAddresses.size() > 0)
 		{
-			List<String> files = getOldChatPks();
-			for(String address : files)
-				oldChatLogBox.addItem(address);
-		}
-		else
-		{
-			for(String address : retAddresses)
+			for(String address : allAddresses)
 				oldChatLogBox.addItem(address);
 		}
 		////////////////////////////////////////
@@ -215,6 +239,8 @@ public class ChatApp {
 		frame.setTitle("Forever Alone Messenger");
 		ImageIcon frameIcon = new ImageIcon("assets//fa.png");
 		frame.setIconImage(frameIcon.getImage());
+		
+		//frame closing logic
 		frame.addWindowListener(new WindowAdapter() {
 			@Override
 			public void windowClosing(WindowEvent windowEvent) {
@@ -236,8 +262,12 @@ public class ChatApp {
 				}
 				else
 					frame.dispose();
+				
+				if(executor != null)
+					executor.shutdown();
 			}
 		});
+		//frame close logic ends
 		frame.setBounds(100, 100, 667, 632);
 		frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 
@@ -413,10 +443,28 @@ public class ChatApp {
 				if(!chatText.isEnabled())
 					chatText.setEnabled(true);
 
+				
 				oldChatLogBox.removeAllItems();
-				List<String> files = getOldChatPks();
-				for(String pk : files)
-					oldChatLogBox.addItem(pk);
+				Set<String> retAddressesFromPKList = null;
+				try {
+					retAddressesFromPKList = populateAddressKey();
+				} catch (Exception e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+				Set<String> retAddressesFromFiles = getOldChatPks();
+				
+				Set<String> allAddresses = new HashSet<>();
+				if(retAddressesFromFiles != null)
+					allAddresses.addAll(retAddressesFromFiles);
+				if(retAddressesFromPKList != null)
+					allAddresses.addAll(retAddressesFromPKList);
+				
+				if(allAddresses.size() > 0)
+				{
+					for(String address : allAddresses)
+						oldChatLogBox.addItem(address);
+				}
 
 			}
 		});
@@ -472,11 +520,11 @@ public class ChatApp {
 	}
 
 
-	private List<String> getOldChatPks()
+	private Set<String> getOldChatPks()
 	{
 		String oldChatLoc = ENV.APP_STORAGE_LOC + ENV.DELIM + ENV.APP_STORAGE_CHAT_LOC + ENV.DELIM + ENV.APP_STORAGE_CHAT_LOG_LOC;
 		File oldChatLocFile = new File(oldChatLoc);
-		List<String> filesStr = new ArrayList<>();
+		Set<String> filesStr = new HashSet<>();
 
 		for(File file : oldChatLocFile.listFiles())
 			filesStr.add(file.getName());
@@ -757,7 +805,7 @@ public class ChatApp {
 	 * @return
 	 * @throws Exception
 	 */
-	public Set<String> populateAddressKey() throws Exception
+	private Set<String> populateAddressKey() throws Exception
 	{
 		File addresskeyFile = new File(ENV.APP_STORAGE_PUBLIC_KEY_LIST);
 		if(!addresskeyFile.exists())

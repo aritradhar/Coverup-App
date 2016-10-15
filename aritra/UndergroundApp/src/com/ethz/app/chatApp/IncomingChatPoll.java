@@ -47,27 +47,29 @@ public class IncomingChatPoll {
 		try {
 			stmt = c.createStatement();
 			
-			ResultSet rs = stmt.executeQuery("SELECT COUNT(*) FROM incoming_chat;" );
+			ResultSet rs = stmt.executeQuery("SELECT * FROM incoming_chat;" );
 			//read all the rows from the database and store them in the proper chat location
 			while(rs.next())
 			{
 				String senderAddress = rs.getString("sender");
 				String data = rs.getString("data");
 				
-				String saveLocStr = ENV.APP_STORAGE_CHAT_LOC + ENV.DELIM + 
+				String saveLocStr = ENV.APP_STORAGE_LOC + ENV.DELIM + ENV.APP_STORAGE_CHAT_LOC + ENV.DELIM + 
 						ENV.APP_STORAGE_CHAT_LOG_LOC + ENV.DELIM + senderAddress;
 				File saveLoc = new File(saveLocStr);
 				if(!saveLoc.exists())
 					saveLoc.mkdir();
 				
+				//if(!new File(saveLocStr + ENV.DELIM + ENV.APP_STORAGE_CHAT_REPO_FILE).exists())
+				//	new File(saveLocStr + ENV.DELIM + ENV.APP_STORAGE_CHAT_REPO_FILE).createNewFile();
+				
 				FileWriter fw = new FileWriter(saveLocStr + ENV.DELIM + ENV.APP_STORAGE_CHAT_REPO_FILE, true);
 				fw.append("---- Received start ----\n" + data + "\n ---- Received end ----\n");
 				fw.close();
 			}
-			
-			//delete all the rows from the datebase
-			stmt.executeUpdate("DELETE FROM incoming_chat;");
 			rs.close();
+			//delete all the rows from the datebaseee
+			stmt.executeUpdate("DELETE FROM incoming_chat;");
 			stmt.close();
 			c.close();
 		} catch (SQLException | IOException e) {
