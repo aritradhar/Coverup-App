@@ -327,6 +327,7 @@ public class RepeatedDatabaseCheck {
 
 						stmt.close();
 						rs.close();
+						c.close();
 						return;
 
 					} catch (SQLException e) {
