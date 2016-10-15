@@ -292,15 +292,58 @@ public class BinUtils {
 	}
 	
 	
-	public static String chatMessageBinProcess(byte[] data)
+	public static String chatMessageBinProcess(byte[] data) throws NoSuchAlgorithmException
 	{
-		// 0		  1		 2	   3		4
-		//R_adder | S_addr | iv | len | enc_Data | sig (on 0|1|2|3|4)
+		//	   0		  1		 	 2	   	  3			 4
+		//R_adder (8)| S_addr(8) | iv(16) | len(4) | enc_Data (n) | sig (64) (on 0|1|2|3|4)
 		
+		
+		int tillNow = 0;
 		byte[] receiverAddress = new byte[ENV.PUBLIC_ADDRESS_LEN]; //holy shit this is me.
-		byte[] senderAddress = new byte[ENV.PUBLIC_ADDRESS_LEN]; //the guy or the girl (:)) who send this to me.
-		//byte[] iv = 
+		System.arraycopy(data, tillNow, receiverAddress, 0, receiverAddress.length);
+		tillNow += receiverAddress.length;
 		
+		byte[] senderAddress = new byte[ENV.PUBLIC_ADDRESS_LEN]; //who send this to me.
+		System.arraycopy(data, tillNow, senderAddress, 0, senderAddress.length);
+		tillNow += senderAddress.length;
+			
+		byte[] senderPublicKey = BinUtils.addresskeyMap.get(Base64.getUrlEncoder().encodeToString(receiverAddress));
+		if(senderPublicKey == null)
+			return null;
+		
+		int datalenStart = ENV.PUBLIC_ADDRESS_LEN * 2 + 16;
+		byte[] encDataLenBytes = new byte[4];
+		System.arraycopy(data, datalenStart, encDataLenBytes, 0, 4);
+		int encDataLen = ByteBuffer.wrap(encDataLenBytes).getInt();
+		int lenToVerify = datalenStart + 4 + encDataLen;
+		byte[] toVerify = Arrays.copyOf(data, lenToVerify);
+		
+		MessageDigest md = MessageDigest.getInstance("SHA-256");
+		byte[] hashedToVerify = md.digest(toVerify);
+		
+		byte[] signature = new byte[64];
+		System.arraycopy(data, lenToVerify, signature, 0, 64);
+		boolean res = Curve25519.getInstance(Curve25519.BEST).verifySignature(senderPublicKey, hashedToVerify, signature);
+			
+		if(res == false)
+			throw new RuntimeException(ENV.EXCEPTION_CHAT_SIGNATURE_ERROR);
+		
+		
+		byte[] sharedSecret = Curve25519.getInstance(Curve25519.BEST).calculateAgreement(senderPublicKey, BinUtils.myPrivateKey);
+		
+		md.reset();
+		byte[] hashedSharedSecret = md.digest(sharedSecret);
+		byte[] aesKey = new byte[hashedSharedSecret.length / 2];
+		byte[] aesIV = new byte[hashedSharedSecret.length / 2];
+		
+		System.arraycopy(hashedSharedSecret, 0, aesKey, 0, aesKey.length);
+		System.arraycopy(data, tillNow, aesIV, 0, aesIV.length);
+		tillNow += aesIV.length;
+		
+		tillNow += 4;
+		
+		
+		byte[] encryptedData = new byte[encDataLen];
 		return null;
 	}
 	
