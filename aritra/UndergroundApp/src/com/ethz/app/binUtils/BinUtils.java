@@ -304,6 +304,7 @@ public class BinUtils {
 	 * @return Array of string.
 	 * index 0 -> sender public address
 	 * index 1 -> decrypted chat data
+	 * index 2 -> data hash for databse indexing
 	 * @throws NoSuchAlgorithmException
 	 * @throws NoSuchPaddingException
 	 * @throws InvalidKeyException
@@ -372,7 +373,8 @@ public class BinUtils {
         
         byte[] decryptedChat = cipher.doFinal(encryptedData);
         
-		return new String[]{sernderAddressStr, new String(decryptedChat, StandardCharsets.UTF_8)};
+		return new String[]{sernderAddressStr, new String(decryptedChat, StandardCharsets.UTF_8), 
+				Base64.getUrlEncoder().encodeToString(hashedToVerify)};
 	}
 	
 	

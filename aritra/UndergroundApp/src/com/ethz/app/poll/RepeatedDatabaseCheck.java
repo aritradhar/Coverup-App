@@ -21,7 +21,11 @@ import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.sql.Timestamp;
 import java.util.Arrays;
 import java.util.Base64;
@@ -34,6 +38,7 @@ import javax.crypto.NoSuchPaddingException;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.sqlite.SQLiteConfig;
 import org.whispersystems.curve25519.Curve25519;
 
 import com.ethz.app.binUtils.BinUtils;
@@ -134,6 +139,7 @@ public class RepeatedDatabaseCheck {
 
 	public static byte[] lastReadFileHash = null;
 	public static volatile int stored_droplet_counter = 0;
+	public static String lastChatHash = null;
 	synchronized private void doDataBaseCheckBin(String jsonData) throws IOException, IllegalBlockSizeException, BadPaddingException, NoSuchAlgorithmException, InvalidKeyException, NoSuchPaddingException, InvalidAlgorithmParameterException
 	{
 		//System.err.println("here");
@@ -200,11 +206,13 @@ public class RepeatedDatabaseCheck {
 
 					this.messaage.append("\n Interactive data dumped in local storage");
 					this.messaage.append("\n Dump location : " + sliceFileLocation);		
+					return;
 				}
 				else if(Arrays.equals(lastReadFileHash, hashtBytes))
 				{
 					this.messaage.append("\nInteractive data with hash " + Base64.getMimeEncoder().encodeToString(lastReadFileHash) + " exists");
 					this.messaage.append("\n Skipped...");
+					return;
 				}
 				
 				else
@@ -255,11 +263,11 @@ public class RepeatedDatabaseCheck {
 					return;
 				}
 				
-				//das ist gut
-				String stroreAddress = data[0];
+				//good
+				String senderAddress = data[0];
 				String storeData = data[1];
-				
-				String loc = ENV.APP_STORAGE_LOC + ENV.DELIM + 
+				String dataSig = data[2];
+				/*String loc = ENV.APP_STORAGE_LOC + ENV.DELIM + 
 						ENV.APP_STORAGE_CHAT_LOC + ENV.DELIM + ENV.APP_STORAGE_CHAT_LOG_LOC + ENV.DELIM +stroreAddress;
 				
 				File chatSaveLoc = new File(loc);
@@ -271,7 +279,68 @@ public class RepeatedDatabaseCheck {
 				fw.append("== start " + ts + "==\n");
 				fw.append(storeData + "\n");
 				fw.append("== end " + ts + "==\n");
-				fw.close();
+				fw.close()*/;
+				
+				boolean poll = false;
+				if(lastChatHash == null)
+				{
+					lastChatHash = dataSig;
+					poll = true;
+				}
+				else if(lastChatHash != dataSig)
+					poll = true;
+				else
+					poll = false;
+
+				if(poll)
+				{
+					Connection c = null;
+					try 
+					{					
+						Class.forName("org.sqlite.JDBC");
+						c = DriverManager.getConnection("jdbc:sqlite:" + ENV.APP_STORAGE_INCOMING_CHAT_DATABASE_FILE);
+					} 
+					catch ( Exception e ) 
+					{
+						System.err.println( e.getClass().getName() + ": " + e.getMessage() );
+						return;
+					}
+
+					Statement stmt;
+					try {
+						stmt = c.createStatement();
+						ResultSet rs = stmt.executeQuery("SELECT COUNT(*) FROM incoming_chat WHERE signature = \'" + dataSig + "\';" );
+						int size = 0;
+						while(rs.next())
+							size = rs.getInt(0);
+
+						if(size == 0)
+						{
+							stmt.executeUpdate("INSERT INTO incoming_chat (sender,data,signature) VALUES "
+									+ " (\'" + senderAddress +"\',\'"+ storeData + "\'" + dataSig +"\')" );
+
+							this.messaage.append("\n Chat with signature : " + dataSig + " inserted into the database ");
+
+						}
+						else
+							this.messaage.append("\n Chat with signature : " + dataSig + " exists skipped ... ");
+
+						stmt.close();
+						rs.close();
+						return;
+
+					} catch (SQLException e) {
+						e.printStackTrace();
+						return;
+					}
+				}
+				else
+				{
+					this.messaage.append("\n Chat with signature : " + dataSig + " exists skipped ... ");
+					return;
+				}
+				
+				
 			}
 			else
 			{
