@@ -84,8 +84,6 @@ public class ChatApp {
 
 	public JFrame frame;
 	private JTextField chatText;
-	private JTextField txtUsername;
-	private String userName;
 	private StringBuffer dispatchStr;
 	private JTextField txtRemotePublicKey;
 	private JTextPane chatChatPane;
@@ -133,12 +131,10 @@ public class ChatApp {
 		keyFileGen();
 
 		this.addresskeyMap = new HashMap<>();
-		this.userName = "Anonymous";
 		this.oldChatLogBox = new JComboBox<>();
 		this.btnSend = new JButton("Send");
 		this.btnSend.setEnabled(false);
 		this.chatChatPane = new JTextPane();
-		this.label = new JLabel("0/" + ENV.FIXED_CHAT_LEN);
 		this.chatText = new JTextField();	
 		this.chatText.setEnabled(false);
 		this.allowDispatch = true;
@@ -232,7 +228,6 @@ public class ChatApp {
 		////////////////////////////////////////
 
 		this.dispatchStr = new StringBuffer("");
-		label.setText("0/" + ENV.FIXED_CHAT_LEN);
 		initialize();
 	}
 
@@ -294,8 +289,6 @@ public class ChatApp {
 
 		JButton setRemotePublicKeyBtn = new JButton("Add Remote PK");
 		panel_2.add(setRemotePublicKeyBtn);
-			
-		panel_2.add(label);
 		setRemotePublicKeyBtn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 
@@ -369,18 +362,25 @@ public class ChatApp {
 					Date date = new Date();
 					if(chatText.getText() != null && chatText.getText().length() > 0)
 					{
-						String chatMsg = null;
+						String chatMsg = "";
+						
 						if(chatChatPane.getText() == null)
-						{						
-							chatMsg = userName + " [" + new Timestamp(date.getTime()).toString() + "] : " + chatText.getText() + "\n";
+						{	
+							if(dispatchStr.length() == 0)
+								chatMsg = myPublicAddress + " [" + new Timestamp(date.getTime()).toString() + "] : ";
+							
+							chatMsg = chatMsg + chatText.getText() + "\n";
 							dispatchStr.append(chatMsg);
 							chatChatPane.setText(chatMsg);
 							chatText.setText("");					
 						}
 						else
 						{
-							String currentChatMessage =  userName + " [" + new Timestamp(date.getTime()).toString() + "] : " + chatText.getText() + "\n";
-							chatMsg = chatChatPane.getText() + currentChatMessage;
+							if(dispatchStr.length() == 0)
+								chatMsg = myPublicAddress + " [" + new Timestamp(date.getTime()).toString() + "] : ";
+							
+							String currentChatMessage =  chatText.getText() + "\n";
+							chatMsg = chatChatPane.getText() + chatMsg +currentChatMessage;
 							dispatchStr.append(currentChatMessage);
 							chatChatPane.setText(chatMsg);
 							chatText.setText("");
@@ -454,20 +454,25 @@ public class ChatApp {
 				Date date = new Date();
 				if(chatText.getText() != null && chatText.getText().length() > 0)
 				{
-					String chatMsg = null;
+					String chatMsg = "";
 					if(chatChatPane.getText() == null)
-					{						
-						chatMsg = userName + " [" + new Timestamp(date.getTime()).toString() + "] : " + chatText.getText() + "\n";
+					{	
+						if(dispatchStr.length() == 0)
+							chatMsg = new String(myPublicAddress + " [" + new Timestamp(date.getTime()).toString() + "] : ");
+						
+						chatMsg = chatMsg + chatText.getText() + "\n";
 						dispatchStr.append(chatMsg);
 						chatChatPane.setText(chatMsg);
 						chatText.setText("");
-
-
 					}
 					else
 					{
-						String currentChatMessage =  userName + " [" + new Timestamp(date.getTime()).toString() + "] : " + chatText.getText() + "\n";
-						chatMsg = chatChatPane.getText() + currentChatMessage;
+						if(dispatchStr.length() == 0)
+							chatMsg = new String(myPublicAddress + " [" + new Timestamp(date.getTime()).toString() + "] : ");
+						
+						String currentChatMessage =  chatText.getText() + "\n";
+						
+						chatMsg = chatChatPane.getText() + chatMsg + currentChatMessage;
 						dispatchStr.append(currentChatMessage);
 						chatChatPane.setText(chatMsg);
 						chatText.setText("");
@@ -529,21 +534,6 @@ public class ChatApp {
 		});
 		panel_1.add(btnPopulate);
 
-		txtUsername = new JTextField();
-		txtUsername.setText("userName");
-		panel_1.add(txtUsername);
-		txtUsername.setColumns(10);
-
-		JButton btnSet = new JButton("Set");
-		btnSet.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-
-				if(txtUsername.getText() != null && txtUsername.getText().trim().length() > 0)
-					userName = txtUsername.getText().trim();
-			}
-		});
-		panel_1.add(btnSet);
-
 		JButton btnDispatch = new JButton("Dispatch");
 		btnDispatch.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -577,6 +567,9 @@ public class ChatApp {
 			}
 		});
 		panel_1.add(btnDispatch);
+		this.label = new JLabel("0/" + ENV.FIXED_CHAT_LEN);
+		panel_1.add(label);
+		label.setText("0/" + ENV.FIXED_CHAT_LEN);
 	}
 
 
