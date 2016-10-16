@@ -18,6 +18,8 @@ import javax.swing.JOptionPane;
 import javax.swing.JTextPane;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 
 import org.json.JSONObject;
 import org.whispersystems.curve25519.Curve25519;
@@ -26,7 +28,6 @@ import org.whispersystems.curve25519.Curve25519KeyPair;
 import com.ethz.app.env.ENV;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -45,15 +46,11 @@ import javax.swing.ImageIcon;
 
 import java.awt.event.ActionListener;
 import java.sql.Timestamp;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Base64;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
@@ -77,7 +74,7 @@ import java.security.SecureRandom;
 import java.awt.GridLayout;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import javax.swing.JProgressBar;
+import javax.swing.JLabel;
 
 /**
  * @author Aritra
@@ -95,12 +92,15 @@ public class ChatApp {
 	private JComboBox<String> oldChatLogBox;
 	private String currentRemoteAddressInFocus;
 	private JButton btnSend;
+	private boolean allowDispatch;
 
 	private byte[] myPublicKey, myPrivateKey;
 	private String myPublicAddress;
 	
 	public Map<String, byte[]> addresskeyMap;
 	private ScheduledThreadPoolExecutor executor;
+	
+	private JLabel label;
 	/**
 	 * Launch the application.
 	 * @throws UnsupportedLookAndFeelException 
@@ -138,9 +138,10 @@ public class ChatApp {
 		this.btnSend = new JButton("Send");
 		this.btnSend.setEnabled(false);
 		this.chatChatPane = new JTextPane();
-
-		this.chatText = new JTextField();
+		this.label = new JLabel("0/" + ENV.FIXED_CHAT_LEN);
+		this.chatText = new JTextField();	
 		this.chatText.setEnabled(false);
+		this.allowDispatch = true;
 
 		//run the executor to get the chats on regular interval
 		Runnable myRunnable = new Runnable() {
@@ -179,6 +180,7 @@ public class ChatApp {
 							chatChatPane.setText(oldChats);
 							currentRemoteAddressInFocus = oldChatLogBox.getSelectedItem().toString();
 							dispatchStr = new StringBuffer("");
+							label.setText("0/" + ENV.FIXED_CHAT_LEN);
 						}
 					}
 					else
@@ -192,6 +194,8 @@ public class ChatApp {
 							chatChatPane.setText(oldChats);
 							currentRemoteAddressInFocus = oldChatLogBox.getSelectedItem().toString();
 							dispatchStr = new StringBuffer("");
+							label.setText("0/" + ENV.FIXED_CHAT_LEN);
+
 						}
 					}
 
@@ -228,6 +232,7 @@ public class ChatApp {
 		////////////////////////////////////////
 
 		this.dispatchStr = new StringBuffer("");
+		label.setText("0/" + ENV.FIXED_CHAT_LEN);
 		initialize();
 	}
 
@@ -239,6 +244,8 @@ public class ChatApp {
 		frame.setTitle("Forever Alone Messenger");
 		ImageIcon frameIcon = new ImageIcon("assets//fa.png");
 		frame.setIconImage(frameIcon.getImage());
+		
+		
 		
 		//frame closing logic
 		frame.addWindowListener(new WindowAdapter() {
@@ -287,9 +294,8 @@ public class ChatApp {
 
 		JButton setRemotePublicKeyBtn = new JButton("Add Remote PK");
 		panel_2.add(setRemotePublicKeyBtn);
-		
-		JProgressBar progressBar = new JProgressBar();
-		panel_2.add(progressBar);
+			
+		panel_2.add(label);
 		setRemotePublicKeyBtn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 
@@ -325,6 +331,8 @@ public class ChatApp {
 
 								currentRemoteAddressInFocus =  txtRemotePublicKey.getText();
 								dispatchStr = new StringBuffer("");
+								label.setText("0/" + ENV.FIXED_CHAT_LEN);
+
 							}
 						}
 						else
@@ -339,6 +347,8 @@ public class ChatApp {
 							makeNewChatDir(txtRemotePublicKey.getText());
 							currentRemoteAddressInFocus = txtRemotePublicKey.getText();
 							dispatchStr = new StringBuffer("");
+							label.setText("0/" + ENV.FIXED_CHAT_LEN);
+
 						}
 					}
 				}
@@ -354,7 +364,7 @@ public class ChatApp {
 			@Override
 			public void keyPressed(KeyEvent keyEvent) {
 
-				if(keyEvent.getKeyCode() == KeyEvent.VK_ENTER)
+				if(keyEvent.getKeyCode() == KeyEvent.VK_ENTER && allowDispatch)
 				{
 					Date date = new Date();
 					if(chatText.getText() != null && chatText.getText().length() > 0)
@@ -385,6 +395,55 @@ public class ChatApp {
 				}
 			}
 		});
+		
+		chatText.getDocument().addDocumentListener(new DocumentListener() {
+			
+			@Override
+			public void removeUpdate(DocumentEvent arg0) {
+				label.setText((chatText.getText().length() + dispatchStr.length()) + "/" + ENV.FIXED_CHAT_LEN);	
+				if((chatText.getText().length() + dispatchStr.length()) > ENV.FIXED_CHAT_LEN)
+				{
+					allowDispatch = false;
+					btnSend.setEnabled(false);
+				}
+				else
+				{
+					allowDispatch = true;
+					btnSend.setEnabled(true);
+				}
+			}
+			
+			@Override
+			public void insertUpdate(DocumentEvent arg0) {
+				label.setText((chatText.getText().length() + dispatchStr.length()) + "/" + ENV.FIXED_CHAT_LEN);		
+				if((chatText.getText().length() + dispatchStr.length()) > ENV.FIXED_CHAT_LEN)
+				{
+					allowDispatch = false;
+					btnSend.setEnabled(false);
+				}
+				else
+				{
+					allowDispatch = true;
+					btnSend.setEnabled(true);
+				}
+			}
+			
+			@Override
+			public void changedUpdate(DocumentEvent arg0) {		
+				label.setText((chatText.getText().length() + dispatchStr.length()) + "/" + ENV.FIXED_CHAT_LEN);	
+				if((chatText.getText().length() + dispatchStr.length()) >= ENV.FIXED_CHAT_LEN)
+				{
+					allowDispatch = false;
+					btnSend.setEnabled(false);
+				}
+				else
+				{
+					allowDispatch = true;
+					btnSend.setEnabled(true);
+				}
+			}
+		});
+		
 		panel.add(chatText);
 		chatText.setColumns(20);
 
@@ -508,6 +567,7 @@ public class ChatApp {
 							e1.printStackTrace();
 						}
 						dispatchStr = new StringBuffer("");
+						label.setText("0/" + ENV.FIXED_CHAT_LEN);
 					}
 				}
 				else
