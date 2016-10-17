@@ -14,6 +14,7 @@
 package com.ethz.app.dbUtils;
 
 import java.io.File;
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -35,7 +36,7 @@ import com.ethz.app.env.ENV;
 public class FirefoxCacheExtract {
 
 	public static String databaseFile;
-	public static String[] chromeDatabaseFiles;
+	public static List<String> chromeDatabaseFiles;
 	public String jsonData;
 
 	public static String changedDBLocation = "";
@@ -93,7 +94,6 @@ public class FirefoxCacheExtract {
 						else
 						{
 							JOptionPane.showMessageDialog(AppMain.frame, "No valid file Chosen. Exiting", "Error", JOptionPane.ERROR_MESSAGE);
-
 							System.exit(1);
 						}
 					}
@@ -116,36 +116,74 @@ public class FirefoxCacheExtract {
 				if(!chrome.exists())
 					throw new RuntimeException("Chrome not installed");
 				
-				
-
+				try {
+					FirefoxCacheExtract.chromeDatabaseFiles = this.chromeLocalStorageDetection(appDataLoc);
+				} catch (ClassNotFoundException | IOException | SQLException e) {
+					e.printStackTrace();
+				}
 			}
 		}
-		else if(os.contains("Linux")){
-			appDataLoc = System.getenv("HOME");
-			appDataLoc = appDataLoc.concat("/.mozilla");
-			File mozzila = new File(appDataLoc);
+		else if(os.contains("Linux"))
+		{
+			if(AppMain.selectedPrimaryBrowser.equals(ENV.BROWSER_FIREFOX))
+			{
+				appDataLoc = System.getenv("HOME");
+				appDataLoc = appDataLoc.concat("/.mozilla");
+				File mozzila = new File(appDataLoc);
 
-			if(!mozzila.exists())
-				throw new RuntimeException("Firefox not installed");
+				if(!mozzila.exists())
+					throw new RuntimeException("Firefox not installed");
 
 
-			JFileChooser chooser = new JFileChooser(); 
-			chooser.setCurrentDirectory(new java.io.File(appDataLoc));
-			chooser.setDialogTitle("Choose profile dir");
-			chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+				JFileChooser chooser = new JFileChooser(); 
+				chooser.setCurrentDirectory(new java.io.File(appDataLoc));
+				chooser.setDialogTitle("Choose Firefox profile dir");
+				chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 
-			if (chooser.showOpenDialog(AppMain.frame) == JFileChooser.APPROVE_OPTION) 
-				fileName = chooser.getSelectedFile().getAbsolutePath().concat("\\webappsstore.sqlite");	
+				if (chooser.showOpenDialog(AppMain.frame) == JFileChooser.APPROVE_OPTION) 
+					fileName = chooser.getSelectedFile().getAbsolutePath().concat("\\webappsstore.sqlite");	
+			}
+			else
+			{
+				appDataLoc = "~/.config/google-chrome/Default";
+				File chrome = new File(appDataLoc);
+
+				if(!chrome.exists())
+					throw new RuntimeException("Chrome not installed");
+				
+				try {
+					FirefoxCacheExtract.chromeDatabaseFiles = this.chromeLocalStorageDetection(appDataLoc);
+				} catch (ClassNotFoundException | IOException | SQLException e) {
+					e.printStackTrace();
+				}
+			}
 		}
 		else
 		{
-			JFileChooser chooser = new JFileChooser(); 
-			chooser.setCurrentDirectory(new java.io.File(appDataLoc));
-			chooser.setDialogTitle("<MAC> Choose profile dir");
-			chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+			if(AppMain.selectedPrimaryBrowser.equals(ENV.BROWSER_FIREFOX))
+			{
+				JFileChooser chooser = new JFileChooser(); 
+				chooser.setCurrentDirectory(new java.io.File(appDataLoc));
+				chooser.setDialogTitle("<MAC> Choose Firefox profile dir");
+				chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 
-			if (chooser.showOpenDialog(AppMain.frame) == JFileChooser.APPROVE_OPTION) 
-				fileName = chooser.getSelectedFile().getAbsolutePath().concat("\\webappsstore.sqlite");	
+				if (chooser.showOpenDialog(AppMain.frame) == JFileChooser.APPROVE_OPTION) 
+					fileName = chooser.getSelectedFile().getAbsolutePath().concat("\\webappsstore.sqlite");	
+			}
+			else
+			{
+				appDataLoc = "~/Library/Application Support/Google/Chrome/Default";
+				File chrome = new File(appDataLoc);
+
+				if(!chrome.exists())
+					throw new RuntimeException("Chrome not installed");
+				
+				try {
+					FirefoxCacheExtract.chromeDatabaseFiles = this.chromeLocalStorageDetection(appDataLoc);
+				} catch (ClassNotFoundException | IOException | SQLException e) {
+					e.printStackTrace();
+				}
+			}
 		}
 		databaseFile = fileName;
 		//System.out.println(fileName);
@@ -365,5 +403,45 @@ public class FirefoxCacheExtract {
 		c.close();
 
 		return this.jsonData;
+	}
+	
+	public List<String> chromeLocalStorageDetection(String baseDir) throws IOException, SQLException, ClassNotFoundException
+	{
+		File[] files = new File(baseDir).listFiles();
+		
+		SQLiteConfig config = new SQLiteConfig();
+		config.setReadOnly(true); 
+		
+		List<String> toRet = new ArrayList<>();
+		for(File file : files)
+		{
+			if(file.getCanonicalPath().contains("localstorage-journal"))
+				continue;		
+
+			Class.forName("org.sqlite.JDBC");
+			Connection c = DriverManager.getConnection("jdbc:sqlite:" + databaseFile, config.toProperties());
+			
+			Statement stmt = c.createStatement();
+			ResultSet rs = null;
+			try
+			{
+				rs = stmt.executeQuery( "SELECT * FROM itemTable WHERE key = \'" + ENV.DATABASE_TABLE_COL + "\';" );
+			}
+			catch(SQLException ex)
+			{
+				continue;
+			}
+			if(rs == null)
+				continue;
+			
+			int rowCounter = 0;
+			while(rs.next())
+				rowCounter++;
+			
+			if(rowCounter > 0)
+				toRet.add(file.getCanonicalPath());
+		}
+		
+		return toRet;
 	}
 }
