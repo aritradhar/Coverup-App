@@ -66,6 +66,9 @@ public class ENV {
 																+ APP_STORAGE_CHAT_LOC + DELIM 
 																+ "INCOMING_CHAT.db";
 	
+	public static final String BROWSER_FIREFOX = "BROWSER_FIREFOX";
+	public static final String BROWSER_CHROME = "BROWSER_CHROME";
+	
 	public static final int FIXED_CHAT_LEN = 512;
 	
 	public static final int PUBLIC_ADDRESS_LEN = 8;

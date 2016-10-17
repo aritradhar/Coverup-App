@@ -43,6 +43,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JCheckBoxMenuItem;
+import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -96,6 +97,7 @@ public class AppMain {
 	public static byte[] ivBytes;
 	private DataBasePollPresetPK dPool;
 
+	public static String selectedPrimaryBrowser;
 	public static boolean set = false;
 
 	public static void main(String[] args) throws ClassNotFoundException, InstantiationException, IllegalAccessException, UnsupportedLookAndFeelException {
@@ -126,6 +128,19 @@ public class AppMain {
 	//@SuppressWarnings("static-access")
 	public AppMain() throws NoSuchAlgorithmException, SQLException {
 
+		final JComboBox<String> combo = new JComboBox<>(new String[]{ENV.BROWSER_FIREFOX, ENV.BROWSER_CHROME});
+
+		String[] options = { "Select", "Exit"};
+
+		String title = "Select Primary Browser";
+		int selection = JOptionPane.showOptionDialog(null, combo, title,
+				JOptionPane.DEFAULT_OPTION, JOptionPane.PLAIN_MESSAGE, null,
+				options, options[0]);
+
+		if(selection > 0)
+			System.exit(1);
+		
+		AppMain.selectedPrimaryBrowser = combo.getSelectedItem().toString();
 
 		AppMain.ivBytes = new byte[16];
 		Arrays.fill(AppMain.ivBytes, (byte)0x00);
@@ -200,16 +215,16 @@ public class AppMain {
 		AppMain.ivBytes = new byte[16];
 		//TODO bad idea
 		Arrays.fill(AppMain.ivBytes, (byte)0x00);
-		
+
 		//initialize data for the chat
 		try {
 			BinUtils.initializeChatData();
 		} catch (Exception e) {
-			
+
 			JOptionPane.showMessageDialog(frame, "Error initializing chat data structures. Whatever!");
 			e.printStackTrace();
 		}
-		
+
 		initialize();
 	}
 
@@ -307,11 +322,11 @@ public class AppMain {
 
 		JMenuItem mntmCovertBrowsing = new JMenuItem("Covert Browsing");
 		mnCoolStuff.add(mntmCovertBrowsing);
-		
+
 		JMenuItem mntmMessenger = new JMenuItem("Messenger");
 		mntmMessenger.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				
+
 				EventQueue.invokeLater(new Runnable() {
 					public void run() {
 						try {
@@ -322,7 +337,7 @@ public class AppMain {
 						}
 					}
 				});
-				
+
 			}
 		});
 		mnCoolStuff.add(mntmMessenger);
@@ -343,7 +358,7 @@ public class AppMain {
 						}
 					}
 				});
-				
+
 				/*Display.getDefault().syncExec(new Runnable() {
 				    public void run() {
 				    	try {
@@ -354,10 +369,10 @@ public class AppMain {
 						}
 				    }
 				});*/
-				
+
 				/*Runnable myRunnable = new Runnable(){
 
-					
+
 					public void run(){
 						try {
 							CovertBrowserSA window = new CovertBrowserSA();				
