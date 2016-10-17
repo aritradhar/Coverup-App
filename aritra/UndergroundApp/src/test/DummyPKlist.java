@@ -10,7 +10,7 @@
 ///////////////////////////////////////////////// 									* *
 //*********************************************************************************** *
 //*************************************************************************************
-package com.ethz.app.env;
+package test;
 
 import java.io.FileWriter;
 import java.io.IOException;
@@ -18,6 +18,8 @@ import java.util.Base64;
 
 import org.whispersystems.curve25519.Curve25519;
 import org.whispersystems.curve25519.Curve25519KeyPair;
+
+import com.ethz.app.env.ENV;
 
 /**
  * @author Aritra
