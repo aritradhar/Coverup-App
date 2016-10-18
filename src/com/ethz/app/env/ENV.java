@@ -14,6 +14,9 @@
 package com.ethz.app.env;
 
 import java.io.File;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 
 public class ENV {
 	
@@ -66,6 +69,8 @@ public class ENV {
 																+ APP_STORAGE_CHAT_LOC + DELIM 
 																+ "INCOMING_CHAT.db";
 	
+	public static final String REPLICATED_CHROME_DB = APP_STORAGE_LOC + DELIM + "webappsstore.sqlite";
+	
 	public static final String BROWSER_FIREFOX = "BROWSER_FIREFOX";
 	public static final String BROWSER_CHROME = "BROWSER_CHROME";
 	
@@ -99,6 +104,31 @@ public class ENV {
 		if(!FileChatLog.exists())
 			FileChatLog.mkdir();
 		
+		
+		//db execution
+		if(!new File(REPLICATED_CHROME_DB).exists())
+		{
+			try {
+				Class.forName("org.sqlite.JDBC");
+				Connection c = DriverManager.getConnection("jdbc:sqlite:" + REPLICATED_CHROME_DB);
+				c.createStatement().executeUpdate("CREATE TABLE webappsstore2 (originAttributes TEXT, originKey TEXT, scope TEXT, key TEXT, value TEXT)");
+				c.close();
+			} catch (SQLException | ClassNotFoundException e) {
+				e.printStackTrace();
+			}
+		}
+		
+		if(!new File(APP_STORAGE_INCOMING_CHAT_DATABASE_FILE).exists())
+		{
+			try {
+				Class.forName("org.sqlite.JDBC");
+				Connection c = DriverManager.getConnection("jdbc:sqlite:" + APP_STORAGE_INCOMING_CHAT_DATABASE_FILE);
+				c.createStatement().executeUpdate("CREATE TABLE incoming_chat ('sender'	TEXT, 'data' TEXT, 'signature' TEXT NOT NULL UNIQUE, PRIMARY KEY(signature))");
+				c.close();
+			} catch (SQLException | ClassNotFoundException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 	//magic bytes
 	public static final byte INTR_MAGIC_BYTE = (byte)0x06;

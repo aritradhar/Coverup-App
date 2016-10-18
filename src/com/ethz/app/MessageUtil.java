@@ -62,7 +62,7 @@ public class MessageUtil {
 	public void loadMessage() throws SQLException
 	{
 		FirefoxCacheExtract fc = new FirefoxCacheExtract();
-		fc.conncetDatabase(this.cacheLocation, false);
+		fc.connectDatabase(this.cacheLocation, false);
 		
 		String jsonData = fc.jsonData;
 
@@ -73,7 +73,7 @@ public class MessageUtil {
 	public void loadSignature() throws SQLException
 	{
 		FirefoxCacheExtract fc = new FirefoxCacheExtract();
-		fc.conncetDatabase(this.cacheLocation, false);
+		fc.connectDatabase(this.cacheLocation, false);
 		String jsonData = fc.jsonData;
 
 		JSONObject jObject = new JSONObject(jsonData);
@@ -84,7 +84,7 @@ public class MessageUtil {
 	public void extractMessageFireFox() throws SQLException, NoSuchAlgorithmException
 	{
 		FirefoxCacheExtract fc = new FirefoxCacheExtract();
-		fc.conncetDatabase(this.cacheLocation, false);
+		fc.connectDatabase(this.cacheLocation, false);
 		String jsonData = fc.jsonData;
 
 		JSONObject jObject = new JSONObject(jsonData);

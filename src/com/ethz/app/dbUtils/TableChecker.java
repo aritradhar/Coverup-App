@@ -67,7 +67,7 @@ public class TableChecker
 	{
 		FirefoxCacheExtract ffce = new FirefoxCacheExtract();
 		ffce.getFirefoxCacheFile();
-		ffce.conncetDatabase(ENV.DATABASE_TABLE_COL);
+		ffce.connectDatabase(ENV.DATABASE_TABLE_COL);
 
 		JSONObject jObject = null;
 		
@@ -100,7 +100,7 @@ public class TableChecker
 	{
 		FirefoxCacheExtract ffce = new FirefoxCacheExtract();
 		ffce.getFirefoxCacheFile(loc);
-		ffce.conncetDatabase(ENV.DATABASE_TABLE_COL, loc);
+		ffce.connectDatabase(ENV.DATABASE_TABLE_COL, loc);
 
 		JSONObject jObject = null;
 		try
@@ -130,7 +130,7 @@ public class TableChecker
 	{
 		FirefoxCacheExtract ffce = new FirefoxCacheExtract();
 		ffce.getFirefoxCacheFile();
-		this.multipleProviderRows = ffce.conncetDatabaseMultipleProvider(ENV.DATABASE_TABLE_COL);
+		this.multipleProviderRows = ffce.connectDatabaseMultipleProvider(ENV.DATABASE_TABLE_COL);
 
 		
 		for(String[] row : this.multipleProviderRows)
@@ -170,7 +170,7 @@ public class TableChecker
 	{
 		FirefoxCacheExtract ffce = new FirefoxCacheExtract();
 		ffce.getFirefoxCacheFile(loc);
-		this.multipleProviderRows = ffce.conncetDatabaseMultipleProvider(ENV.DATABASE_TABLE_COL, loc);
+		this.multipleProviderRows = ffce.connectDatabaseMultipleProvider(ENV.DATABASE_TABLE_COL, loc);
 
 		for(String[] row : this.multipleProviderRows)
 		{
