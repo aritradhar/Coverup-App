@@ -191,7 +191,7 @@ public class FirefoxCacheExtract {
 		return fileName;
 	}
 
-	public void conncetDatabase(String loc, boolean flag) throws SQLException
+	public void connectDatabase(String loc, boolean flag) throws SQLException
 	{
 		if(loc == null)
 			this.getFirefoxCacheFile();
@@ -224,7 +224,7 @@ public class FirefoxCacheExtract {
 		c.close();
 	}
 
-	public String conncetDatabase(String key, String loc) throws SQLException
+	public String connectDatabase(String key, String loc) throws SQLException
 	{
 		//this.getFirefoxCacheFile(loc);
 		Connection c = null;
@@ -264,7 +264,7 @@ public class FirefoxCacheExtract {
 	 * @throws SQLException
 	 */
 
-	public List<String[]> conncetDatabaseMultipleProvider(String key, String loc) throws SQLException
+	public List<String[]> connectDatabaseMultipleProvider(String key, String loc) throws SQLException
 	{
 		//this.getFirefoxCacheFile(loc);
 		Connection c = null;
@@ -335,7 +335,7 @@ public class FirefoxCacheExtract {
 	 * @return
 	 * @throws SQLException
 	 */
-	public List<String[]> conncetDatabaseMultipleProvider(String key) throws SQLException
+	public List<String[]> connectDatabaseMultipleProvider(String key) throws SQLException
 	{
 		//this.getFirefoxCacheFile();
 		Connection c = null;
@@ -373,7 +373,7 @@ public class FirefoxCacheExtract {
 	}
 
 
-	public String conncetDatabase(String key) throws SQLException
+	public String connectDatabase(String key) throws SQLException
 	{
 		//this.getFirefoxCacheFile();
 		Connection c = null;
@@ -405,6 +405,14 @@ public class FirefoxCacheExtract {
 		return this.jsonData;
 	}
 	
+	/**
+	 *  Get List of sqlite files where tildem data exists
+	 * @param baseDir
+	 * @return
+	 * @throws IOException
+	 * @throws SQLException
+	 * @throws ClassNotFoundException
+	 */
 	public List<String> chromeLocalStorageDetection(String baseDir) throws IOException, SQLException, ClassNotFoundException
 	{
 		File[] files = new File(baseDir).listFiles();
@@ -415,11 +423,11 @@ public class FirefoxCacheExtract {
 		List<String> toRet = new ArrayList<>();
 		for(File file : files)
 		{
-			if(file.getCanonicalPath().contains("localstorage-journal"))
+			if(file.getCanonicalPath().contains("localstorage-journal") || file.toString().contains("__0.localstorage"))
 				continue;		
 
 			Class.forName("org.sqlite.JDBC");
-			Connection c = DriverManager.getConnection("jdbc:sqlite:" + databaseFile, config.toProperties());
+			Connection c = DriverManager.getConnection("jdbc:sqlite:" + file.getCanonicalPath(), config.toProperties());
 			
 			Statement stmt = c.createStatement();
 			ResultSet rs = null;
@@ -439,7 +447,10 @@ public class FirefoxCacheExtract {
 				rowCounter++;
 			
 			if(rowCounter > 0)
+			{
+				System.out.println(file.toString());
 				toRet.add(file.getCanonicalPath());
+			}
 		}
 		
 		return toRet;

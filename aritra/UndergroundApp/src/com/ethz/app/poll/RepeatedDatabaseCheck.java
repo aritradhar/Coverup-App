@@ -122,7 +122,7 @@ public class RepeatedDatabaseCheck {
 	{
 		FirefoxCacheExtract ffce = new FirefoxCacheExtract();
 		ffce.getFirefoxCacheFile(this.modifiedDatabaseLocation);
-		String jsonData = ffce.conncetDatabase(ENV.DATABASE_DROPLET_COL, this.modifiedDatabaseLocation);
+		String jsonData = ffce.connectDatabase(ENV.DATABASE_DROPLET_COL, this.modifiedDatabaseLocation);
 
 		try
 		{
@@ -507,7 +507,7 @@ public class RepeatedDatabaseCheck {
 	{
 		FirefoxCacheExtract ffce = new FirefoxCacheExtract();
 		ffce.getFirefoxCacheFile(this.modifiedDatabaseLocation);
-		List<String[]> rows = ffce.conncetDatabaseMultipleProvider(ENV.DATABASE_DROPLET_COL, this.modifiedDatabaseLocation);
+		List<String[]> rows = ffce.connectDatabaseMultipleProvider(ENV.DATABASE_DROPLET_COL, this.modifiedDatabaseLocation);
 
 		for(String[] row : rows)
 		{
