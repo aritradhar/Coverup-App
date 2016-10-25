@@ -685,8 +685,8 @@ public class ChatApp {
 					fwBin.flush();
 					fwBin.close();
 					
-					// 0		  1		 2	   3		4
-					//R_adder | S_addr | iv | len | enc_Data | sig (on 0|1|2|3|4)
+					// 			0		  1		 2	   3		4
+					//marker|R_adder | S_addr | iv | len | enc_Data | sig (on 0|1|2|3|4)
 					
 					FileOutputStream fwEncbin = new FileOutputStream(encChatDispatchLoc);
 					/*
@@ -813,6 +813,17 @@ public class ChatApp {
 		}
 	}
 	
+	/**
+	 * Make encrypted chat
+	 * @param stringToDispatch
+	 * @return
+	 * @throws NoSuchAlgorithmException
+	 * @throws NoSuchPaddingException
+	 * @throws IllegalBlockSizeException
+	 * @throws BadPaddingException
+	 * @throws InvalidKeyException
+	 * @throws InvalidAlgorithmParameterException
+	 */
 	public byte[] makeEncStuff(String stringToDispatch) throws NoSuchAlgorithmException, NoSuchPaddingException, IllegalBlockSizeException, BadPaddingException, InvalidKeyException, InvalidAlgorithmParameterException 
 	{
 		byte[] receiverPublicAddress = Base64.getUrlDecoder().decode(currentRemoteAddressInFocus);
@@ -836,19 +847,26 @@ public class ChatApp {
 		
 		//S_addr | iv | len | enc_Data 
 		byte[] toSign = new byte[receiverPublicAddress.length + senderAddressBytes.length + aesIV.length + encDatalenBytes.length + encData.length];
-		System.arraycopy(receiverPublicAddress, 0, toSign, 0, receiverPublicAddress.length);
-		System.arraycopy(senderAddressBytes, 0, toSign, receiverPublicAddress.length, senderAddressBytes.length);
-		System.arraycopy(aesIV, 0, toSign, receiverPublicAddress.length + senderAddressBytes.length, aesIV.length);
-		System.arraycopy(encDatalenBytes, 0, toSign, receiverPublicAddress.length + senderAddressBytes.length + aesIV.length, encDatalenBytes.length);
-		System.arraycopy(encData, 0, toSign, receiverPublicAddress.length + senderAddressBytes.length + aesIV.length + encDatalenBytes.length, encData.length);
+		int tillNow = 0;
+		System.arraycopy(receiverPublicAddress, 0, toSign, tillNow, receiverPublicAddress.length);
+		tillNow += receiverPublicAddress.length;
+		System.arraycopy(senderAddressBytes, 0, toSign, tillNow, senderAddressBytes.length);
+		tillNow += senderAddressBytes.length;
+		System.arraycopy(aesIV, 0, toSign, tillNow, aesIV.length);
+		tillNow += aesIV.length;
+		System.arraycopy(encDatalenBytes, 0, toSign, tillNow, encDatalenBytes.length);
+		tillNow += encDatalenBytes.length;
+		System.arraycopy(encData, 0, toSign, tillNow, encData.length);
 		
 		md.reset();
 		byte[] hashedToSign = md.digest(toSign);
 		byte[] signature = Curve25519.getInstance(Curve25519.BEST).calculateSignature(myPrivateKey, hashedToSign);
 		
-		byte[] toWrite = new byte[toSign.length + signature.length];
-		System.arraycopy(toSign, 0, toWrite, 0, toSign.length);
-		System.arraycopy(signature, 0, toWrite, toSign.length, signature.length);
+		byte[] toWrite = new byte[4 + toSign.length + signature.length];
+		byte[] preAmble = {0x02, 0x00, 0x00, 0x00};
+		System.arraycopy(preAmble, 0, toWrite, 0, preAmble.length);
+		System.arraycopy(toSign, 0, toWrite, preAmble.length, toSign.length);
+		System.arraycopy(signature, 0, toWrite, preAmble.length + toSign.length, signature.length);
 		
 		return toWrite;
 	}
