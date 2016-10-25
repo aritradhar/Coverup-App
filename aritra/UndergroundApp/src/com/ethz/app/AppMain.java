@@ -103,12 +103,12 @@ public class AppMain {
 	public static void main(String[] args) throws ClassNotFoundException, InstantiationException, IllegalAccessException, UnsupportedLookAndFeelException {
 
 		UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());	
-
+			
 		EventQueue.invokeLater(new Runnable() {
 			public void run() 
 			{
 				try 
-				{
+				{				
 					new AppMain();
 					AppMain.frame.setVisible(true);
 				} 
@@ -119,15 +119,9 @@ public class AppMain {
 			}
 		});
 	}
-
-	/**
-	 * Create the application.
-	 * @throws NoSuchAlgorithmException 
-	 * @throws SQLException 
-	 */
-	//@SuppressWarnings("static-access")
-	public AppMain() throws NoSuchAlgorithmException, SQLException {
-
+	
+	private static void initiateBrowserSelection()
+	{
 		final JComboBox<String> combo = new JComboBox<>(new String[]{ENV.BROWSER_FIREFOX, ENV.BROWSER_CHROME});
 
 		String[] options = { "Select", "Exit"};
@@ -141,7 +135,18 @@ public class AppMain {
 			System.exit(1);
 		
 		AppMain.selectedPrimaryBrowser = combo.getSelectedItem().toString();
+	}
 
+	/**
+	 * Create the application.
+	 * @throws NoSuchAlgorithmException 
+	 * @throws SQLException 
+	 */
+	//@SuppressWarnings("static-access")
+	public AppMain() throws NoSuchAlgorithmException, SQLException {	
+
+		initiateBrowserSelection();
+		
 		AppMain.ivBytes = new byte[16];
 		Arrays.fill(AppMain.ivBytes, (byte)0x00);
 

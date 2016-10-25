@@ -104,7 +104,7 @@ public class ENV {
 		if(!FileChatLog.exists())
 			FileChatLog.mkdir();
 		
-		
+		//Initialization
 		//db execution
 		if(!new File(REPLICATED_CHROME_DB).exists())
 		{
@@ -149,7 +149,7 @@ public class ENV {
 	public static final String EXCEPTION_MESSAGE_EMPTY_TABLE = "EMPTY_TABLE";
 	//////////////////////////////////////////////////////
 	
-	public static final int DISPACTH_REQUEST_THRESHOLD = 10;
+	public static final int DISPACTH_REQUEST_THRESHOLD = 0;
 	
 	public static final int AES_KEY_SIZE = 16;
 	
