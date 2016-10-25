@@ -86,7 +86,7 @@ public class FirefoxCacheExtract {
 					{	
 						JFileChooser chooser = new JFileChooser(); 
 						chooser.setCurrentDirectory(new java.io.File(appDataLoc));
-						chooser.setDialogTitle("Multiple profile found. Choose one");
+						chooser.setDialogTitle("Multiple profiles found. Choose one");
 						chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 
 						if (chooser.showOpenDialog(AppMain.frame) == JFileChooser.APPROVE_OPTION) 

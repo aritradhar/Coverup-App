@@ -17,6 +17,7 @@ import java.util.List;
 import org.whispersystems.libsignal.IdentityKeyPair;
 import org.whispersystems.libsignal.InvalidKeyException;
 import org.whispersystems.libsignal.state.PreKeyRecord;
+import org.whispersystems.libsignal.state.PreKeyStore;
 import org.whispersystems.libsignal.state.SignedPreKeyRecord;
 import org.whispersystems.libsignal.util.KeyHelper;
 
@@ -33,6 +34,7 @@ public class TestMain {
 		List<PreKeyRecord> preKeys         = KeyHelper.generatePreKeys(0, 100);
 		SignedPreKeyRecord signedPreKey    = KeyHelper.generateSignedPreKey(identityKeyPair, 5);
 
+		
 		
 	}
 

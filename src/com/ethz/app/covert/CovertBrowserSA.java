@@ -12,10 +12,13 @@
 //*************************************************************************************
 package com.ethz.app.covert;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -301,8 +304,22 @@ public class CovertBrowserSA {
 
 						FileOutputStream fw = new FileOutputStream(ENV.APP_STORAGE_LOC + ENV.DELIM + 
 								ENV.APP_STORAGE_SLICE_ID_FILES_LOC + ENV.DELIM + ENV.APP_STORAGE_SLICE_ID_FILE);
-						byte[] out = new byte[Long.BYTES * sliceNameSet.size()];
 						int tillNow = 0;
+						//new changes here according to packet structure
+						byte[] intrHeader = {0x01, 0x00, 0x00, 0x00};
+						byte[] AESKeyBytes = Files.readAllBytes(new File(ENV.APP_STORAGE_LOC + ENV.DELIM + ENV.APP_STORAGE_KEY_FILE).toPath());
+						byte[] out = new byte[4 + AESKeyBytes.length + Integer.BYTES + Long.BYTES * sliceNameSet.size()];
+						
+						System.arraycopy(intrHeader, 0, out, tillNow, 4);
+						tillNow += 4;
+						System.arraycopy(AESKeyBytes, 0, out, tillNow, AESKeyBytes.length);
+						tillNow += AESKeyBytes.length;
+						byte[] lenBytes = ByteBuffer.allocate(Integer.BYTES).putInt(sliceNameSet.size()).array();
+						System.arraycopy(lenBytes, 0, out, tillNow, lenBytes.length);
+						tillNow += lenBytes.length;
+						/////end////////////////////////////////////////////////////
+						
+						//byte[] out = new byte[Long.BYTES * sliceNameSet.size()];
 						for(String sliceName : sliceNameSet)
 						{
 							long sliceId = sliceTree.nodeMap.get(sliceName).sliceId;
