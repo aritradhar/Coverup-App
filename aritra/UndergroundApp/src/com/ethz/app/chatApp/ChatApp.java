@@ -148,7 +148,7 @@ public class ChatApp {
 			}
 		};
 		executor = new ScheduledThreadPoolExecutor(2);
-		executor.scheduleAtFixedRate(myRunnable, 0, ENV.CHAT_POLLING_RATE, TimeUnit.MILLISECONDS);
+		executor.scheduleAtFixedRate(myRunnable, 250, ENV.CHAT_POLLING_RATE, TimeUnit.MILLISECONDS);
 		
 
 		oldChatLogBox.addActionListener(new ActionListener() {

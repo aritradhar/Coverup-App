@@ -52,6 +52,7 @@ public class IncomingChatPoll {
 			while(rs.next())
 			{
 				String senderAddress = rs.getString("sender");
+				System.out.println(senderAddress);
 				String data = rs.getString("data");
 				
 				String saveLocStr = ENV.APP_STORAGE_LOC + ENV.DELIM + ENV.APP_STORAGE_CHAT_LOC + ENV.DELIM + 
