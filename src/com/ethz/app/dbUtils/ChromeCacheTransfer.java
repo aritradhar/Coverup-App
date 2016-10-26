@@ -31,9 +31,9 @@ import com.ethz.app.env.ENV;
  *
  */
 public class ChromeCacheTransfer {
-	
+
 	String baseDir;
-	
+
 	public ChromeCacheTransfer(String baseDir) {	
 		this.baseDir = baseDir;
 	}
@@ -41,11 +41,15 @@ public class ChromeCacheTransfer {
 	public void transfer() throws IOException, ClassNotFoundException, SQLException
 	{
 		File[] files = new File(baseDir).listFiles();
-		
+
 		SQLiteConfig config = new SQLiteConfig();
 		config.setReadOnly(true); 
-		
+
 		Connection replicatedFileconn = DriverManager.getConnection("jdbc:sqlite:" + ENV.REPLICATED_CHROME_DB);
+		Statement innerStatement = replicatedFileconn.createStatement();
+
+		innerStatement.executeUpdate("DELETE FROM webappsstore2");
+
 		for(File file : files)
 		{
 			if(file.getCanonicalPath().contains("localstorage-journal") || file.toString().contains("__0.localstorage"))
@@ -53,7 +57,7 @@ public class ChromeCacheTransfer {
 
 			Class.forName("org.sqlite.JDBC");
 			Connection c = DriverManager.getConnection("jdbc:sqlite:" + file.getCanonicalPath(), config.toProperties());
-			
+
 			Statement stmt = c.createStatement();
 			ResultSet rs = null;
 			try
@@ -66,39 +70,40 @@ public class ChromeCacheTransfer {
 			}
 			if(rs == null)
 				continue;
-			
+
 			while(rs.next())
 			{
 				String key = rs.getString("key");
 				String value = rs.getString("value");
-				
-				Statement innerStatement = replicatedFileconn.createStatement();
-				
-				//rs = innerStatement.executeQuery("SELECT * from webappsstore2 where originKey ");
-				
-				ResultSet rs_int = innerStatement.executeQuery("SELECT * FROM webappsstore2 WHERE originKey = '" + file.getName() + "';");
-				boolean keyExists = false;
-				while(rs_int.next())
-				{
-					keyExists = true;
-					break;
-				}
-				
-				if(keyExists)
-				{
-					innerStatement.executeUpdate("INSERT INTO webappsstore2 (originKey, scope, key, value) "
-						+ "VALUES ((SELECT originKey from webappsstore2 WHERE scope = '" + file.getName() + "') , '" + 
-						file.getName() + "','" + key + "','" +  value + "');");
-				}
-				else
-					innerStatement.executeUpdate("INSERT INTO webappsstore2 (originKey, scope, key, value) "
-						+ "VALUES ((SELECT originKey from webappsstore2 WHERE scope = '" + file.getName() + "') , '" + 
-						file.getName() + "','" + key + "','" +  value + "');");
+
+				innerStatement.executeUpdate("INSERT INTO webappsstore2 (originKey, scope, key, value) "
+						+ "VALUES ('" + file.getName() + "' , '" + file.getName() + "','" + key + "','" +  value + "');");
 			}
+
+			try
+			{
+				rs = stmt.executeQuery( "SELECT * FROM itemTable WHERE key = \'" + ENV.DATABASE_DROPLET_COL + "\';" );
+			}
+			catch(SQLException ex)
+			{
+				continue;
+			}
+			if(rs == null)
+				continue;
+
+			while(rs.next())
+			{
+				String key = rs.getString("key");
+				String value = rs.getString("value");
+
+				innerStatement.executeUpdate("INSERT INTO webappsstore2 (originKey, scope, key, value) "
+						+ "VALUES ('" + file.getName() + "' , '" + file.getName() + "','" + key + "','" +  value + "');");
+			}
+
 		}
 	}
 	public static void main(String[] args) throws ClassNotFoundException, IOException, SQLException {
-		
+
 		new ChromeCacheTransfer("C:\\Users\\Aritra\\AppData\\Local\\Google\\Chrome\\User Data\\Default\\Local Storage").transfer();
 	}
 }

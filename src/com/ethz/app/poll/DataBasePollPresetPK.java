@@ -40,7 +40,7 @@ public class DataBasePollPresetPK extends JFrame {
 	private static final long serialVersionUID = -9079243269473511003L;
 	public JFrame frame;
 	private ScheduledThreadPoolExecutor executor;
-	private static String databaseFileLocation;
+	public static String databaseFileLocation;
 	public static volatile int pollingRate = 1000;
 	public JLabel progressLabel;
 	public static int progress = 0;
@@ -132,6 +132,7 @@ public class DataBasePollPresetPK extends JFrame {
 				// TODO Auto-generated method stub
 				try 
 				{
+					System.out.println(DataBasePollPresetPK.databaseFileLocation);
 					RepeatedDatabaseCheck t = new RepeatedDatabaseCheck(DataBasePollPresetPK.databaseFileLocation);
 					progress %= 4;
 					progressLabel.setText(new String(new char[]{ENV.PROGRESS_SYMB[progress++]}));

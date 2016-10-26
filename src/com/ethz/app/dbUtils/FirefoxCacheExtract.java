@@ -121,6 +121,9 @@ public class FirefoxCacheExtract {
 				} catch (ClassNotFoundException | IOException | SQLException e) {
 					e.printStackTrace();
 				}
+				fileName = ENV.REPLICATED_CHROME_DB;
+				databaseFile = fileName;
+				return fileName;
 			}
 		}
 		else if(os.contains("Linux"))
@@ -156,6 +159,9 @@ public class FirefoxCacheExtract {
 				} catch (ClassNotFoundException | IOException | SQLException e) {
 					e.printStackTrace();
 				}
+				fileName = ENV.REPLICATED_CHROME_DB;
+				databaseFile = fileName;
+				return fileName;
 			}
 		}
 		else
@@ -183,6 +189,10 @@ public class FirefoxCacheExtract {
 				} catch (ClassNotFoundException | IOException | SQLException e) {
 					e.printStackTrace();
 				}
+				
+				fileName = ENV.REPLICATED_CHROME_DB;
+				databaseFile = fileName;
+				return fileName;
 			}
 		}
 		databaseFile = fileName;

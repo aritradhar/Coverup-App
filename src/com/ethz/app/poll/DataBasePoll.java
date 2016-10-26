@@ -39,6 +39,7 @@ import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.text.DefaultCaret;
 
 import com.ethz.app.AppMain;
+import com.ethz.app.env.ENV;
 
 public class DataBasePoll extends JFrame {
 
@@ -49,7 +50,7 @@ public class DataBasePoll extends JFrame {
 	public JFrame frame;
 	private JTextField txtQq;
 	private ScheduledThreadPoolExecutor executor;
-	private static String databaseFileLocation;
+	public static String databaseFileLocation;
 	
 	JFileChooser chooser;
 	
@@ -189,8 +190,7 @@ public class DataBasePoll extends JFrame {
 									(
 											new RepeatedDatabaseCheck().messaage.toString()
 									)
-							);*/
-							
+							);*/						
 							RepeatedDatabaseCheck t = new RepeatedDatabaseCheck(DataBasePoll.databaseFileLocation);
 							//System.out.println(DataBasePoll.databaseFileLocation);
 							textArea.append("\n".concat(t.messaage.toString()));
