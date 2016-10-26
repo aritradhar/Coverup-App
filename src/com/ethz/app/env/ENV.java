@@ -145,6 +145,7 @@ public class ENV {
 	public static final String EXCEPTION_MESSAGE_CIPHER_FAILURE = "EXCEPTION_MESSAGE_CIPHER_FAILURE";
 	public static final String EXCEPTION_MESSAGE_GARBAGE_PACKET = "EXCEPTION_MESSAGE_GARBAGE_PACKET";
 	public static final String EXCEPTION_CHAT_SIGNATURE_ERROR = "EXCEPTION_CHAT_SIGNATURE_ERROR";
+	public static final String EXCEPTION_BROWSER_EXTENSION_MISSING = "EXCEPTION_BROWSER_EXTENSION_MISSING";
 	
 	public static final String EXCEPTION_MESSAGE_EMPTY_TABLE = "EMPTY_TABLE";
 	//////////////////////////////////////////////////////

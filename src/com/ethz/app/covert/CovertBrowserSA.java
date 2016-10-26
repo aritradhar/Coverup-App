@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.util.Base64;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -41,6 +42,7 @@ import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
+import com.ethz.app.dispatchSocket.TCPClient;
 import com.ethz.app.env.ENV;
 import com.ethz.app.poll.RepeatedDatabaseCheck;
 import com.ethz.tree.Node;
@@ -327,9 +329,17 @@ public class CovertBrowserSA {
 							System.arraycopy(sliceBytes, 0, out, tillNow, sliceBytes.length);
 							tillNow += sliceBytes.length;
 						}
+						
+						//TCPClient.connectToBrowser(out);						
+						//System.out.println(Base64.getEncoder().encodeToString(out));
+						//System.out.println(out.length);
+						
 						fw.write(out);
 						fw.close();
 					} catch (IOException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					} catch (Exception e1) {
 						// TODO Auto-generated catch block
 						e1.printStackTrace();
 					};
