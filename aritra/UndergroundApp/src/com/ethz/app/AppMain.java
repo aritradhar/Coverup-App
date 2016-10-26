@@ -68,6 +68,7 @@ import com.ethz.app.chatApp.ChatApp;
 import com.ethz.app.covert.CovertBrowserSA;
 import com.ethz.app.dbUtils.TableChecker;
 import com.ethz.app.env.ENV;
+import com.ethz.app.poll.DataBasePoll;
 import com.ethz.app.poll.DataBasePollPresetPK;
 
 /**
@@ -146,6 +147,9 @@ public class AppMain {
 	public AppMain() throws NoSuchAlgorithmException, SQLException {	
 
 		initiateBrowserSelection();
+		
+		if(AppMain.selectedPrimaryBrowser.equals(ENV.BROWSER_CHROME))
+			DataBasePollPresetPK.databaseFileLocation = ENV.REPLICATED_CHROME_DB;
 		
 		AppMain.ivBytes = new byte[16];
 		Arrays.fill(AppMain.ivBytes, (byte)0x00);

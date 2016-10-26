@@ -13,8 +13,13 @@
 package com.ethz.app.dispatchSocket;
 
 import java.io.DataOutputStream;
+import java.io.File;
 import java.net.Socket;
+import java.nio.file.Files;
 import java.util.Base64;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import com.ethz.app.env.ENV;
 
@@ -42,7 +47,21 @@ public class TCPClient {
 	
 	public static void main(String[] args) throws Exception {
 		
-		connectToBrowser(null);
+		byte[] data = Files.readAllBytes(new File(ENV.APP_STORAGE_LOC + ENV.DELIM + 
+								ENV.APP_STORAGE_SLICE_ID_FILES_LOC + ENV.DELIM + ENV.APP_STORAGE_SLICE_ID_FILE).toPath());
+		
+		ScheduledExecutorService execService
+		=	Executors.newScheduledThreadPool(50);
+		
+	
+		execService.scheduleAtFixedRate(()->{
+		try {
+			connectToBrowser(data);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		}, 0, 200L, TimeUnit.MILLISECONDS);
 	}
 
 }
