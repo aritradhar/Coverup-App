@@ -76,10 +76,24 @@ public class ChromeCacheTransfer {
 				
 				//rs = innerStatement.executeQuery("SELECT * from webappsstore2 where originKey ");
 				
-				int a = innerStatement.executeUpdate("INSERT OR REPLACE INTO webappsstore2 (originKey, scope, key, value) "
+				ResultSet rs_int = innerStatement.executeQuery("SELECT * FROM webappsstore2 WHERE originKey = '" + file.getName() + "';");
+				boolean keyExists = false;
+				while(rs_int.next())
+				{
+					keyExists = true;
+					break;
+				}
+				
+				if(keyExists)
+				{
+					innerStatement.executeUpdate("INSERT INTO webappsstore2 (originKey, scope, key, value) "
 						+ "VALUES ((SELECT originKey from webappsstore2 WHERE scope = '" + file.getName() + "') , '" + 
 						file.getName() + "','" + key + "','" +  value + "');");
-				System.out.println(a);
+				}
+				else
+					innerStatement.executeUpdate("INSERT INTO webappsstore2 (originKey, scope, key, value) "
+						+ "VALUES ((SELECT originKey from webappsstore2 WHERE scope = '" + file.getName() + "') , '" + 
+						file.getName() + "','" + key + "','" +  value + "');");
 			}
 		}
 	}
