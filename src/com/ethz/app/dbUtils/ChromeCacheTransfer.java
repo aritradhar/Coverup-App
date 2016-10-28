@@ -52,6 +52,7 @@ public class ChromeCacheTransfer {
 
 		for(File file : files)
 		{
+			//System.out.println("Here");
 			if(file.getCanonicalPath().contains("localstorage-journal") || file.toString().contains("__0.localstorage"))
 				continue;		
 
@@ -78,6 +79,7 @@ public class ChromeCacheTransfer {
 
 				innerStatement.executeUpdate("INSERT INTO webappsstore2 (originKey, scope, key, value) "
 						+ "VALUES ('" + file.getName() + "' , '" + file.getName() + "','" + key + "','" +  value + "');");
+				//System.out.println(file);
 			}
 
 			try

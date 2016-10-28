@@ -135,7 +135,7 @@ public class BinUtils {
 					Arrays.fill(idealInteractiveMagicBytes, ENV.INTR_MAGIC_BYTE);
 					
 					byte[] idealChatMagicBytes = new byte[ENV.CHAT_MAGIC_BYTES_LEN];
-					Arrays.fill(idealInteractiveMagicBytes, ENV.CHAT_MAGIC_BYTES);
+					Arrays.fill(idealChatMagicBytes, ENV.CHAT_MAGIC_BYTES);
 					
 					//magic byte for interactive data found!
 					if(Arrays.equals(idealInteractiveMagicBytes, magicBytes))
@@ -313,13 +313,14 @@ public class BinUtils {
 	 * @throws BadPaddingException
 	 */
 	
-	public static String[] chatMessageBinProcess(byte[] data) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, InvalidAlgorithmParameterException, IllegalBlockSizeException, BadPaddingException
+	public static String[] chatMessageBinProcess(byte[] _data) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, InvalidAlgorithmParameterException, IllegalBlockSizeException, BadPaddingException
 	{
+		//packet len(4) | seedlen (4) ->0 | Magic (8) | Data | Padding
 		//	   0		  1		 	 2	   	  3			 4
 		//R_adder (8)| S_addr(8) | iv(16) | len(4) | enc_Data (n) | sig (64) (on 0|1|2|3|4)
-		
-		
-		int tillNow = 0;
+		byte[] data = AppMain.cipher.doFinal(_data);
+			
+		int tillNow = 16;
 		byte[] receiverAddress = new byte[ENV.PUBLIC_ADDRESS_LEN]; //holy shit this is me.
 		System.arraycopy(data, tillNow, receiverAddress, 0, receiverAddress.length);
 		tillNow += receiverAddress.length;
@@ -333,18 +334,20 @@ public class BinUtils {
 		if(senderPublicKey == null)
 			return null;
 		
-		int datalenStart = ENV.PUBLIC_ADDRESS_LEN * 2 + 16;
+		int datalenStart = ENV.PUBLIC_ADDRESS_LEN * 2 + 16 + 16; //next 16 is for the preamble stuff
 		byte[] encDataLenBytes = new byte[4];
 		System.arraycopy(data, datalenStart, encDataLenBytes, 0, 4);
 		int encDataLen = ByteBuffer.wrap(encDataLenBytes).getInt();
-		int lenToVerify = datalenStart + 4 + encDataLen;
-		byte[] toVerify = Arrays.copyOf(data, lenToVerify);
+		int lenToVerify = ENV.PUBLIC_ADDRESS_LEN * 2 + 16 + 4 + encDataLen;
+		byte[] toVerify = new byte[lenToVerify];
+		System.arraycopy(data, 16, toVerify, 0, toVerify.length);
+		//byte[] toVerify = Arrays.copyOf(data, lenToVerify);
 		
 		MessageDigest md = MessageDigest.getInstance("SHA-256");
 		byte[] hashedToVerify = md.digest(toVerify);
 		
 		byte[] signature = new byte[64];
-		System.arraycopy(data, lenToVerify, signature, 0, 64);
+		System.arraycopy(data, lenToVerify + 16, signature, 0, 64);
 		boolean res = Curve25519.getInstance(Curve25519.BEST).verifySignature(senderPublicKey, hashedToVerify, signature);
 			
 		if(res == false)
@@ -369,7 +372,7 @@ public class BinUtils {
 		
 		SecretKey key = new SecretKeySpec(aesKey, "AES");
 		Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
-        cipher.init(Cipher.ENCRYPT_MODE, key, new IvParameterSpec(aesIV));
+        cipher.init(Cipher.DECRYPT_MODE, key, new IvParameterSpec(aesIV));
         
         byte[] decryptedChat = cipher.doFinal(encryptedData);
         

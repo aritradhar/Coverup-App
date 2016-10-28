@@ -66,6 +66,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.MessageDigest;
@@ -823,8 +824,9 @@ public class ChatApp {
 	 * @throws BadPaddingException
 	 * @throws InvalidKeyException
 	 * @throws InvalidAlgorithmParameterException
+	 * @throws IOException 
 	 */
-	public byte[] makeEncStuff(String stringToDispatch) throws NoSuchAlgorithmException, NoSuchPaddingException, IllegalBlockSizeException, BadPaddingException, InvalidKeyException, InvalidAlgorithmParameterException 
+	public byte[] makeEncStuff(String stringToDispatch) throws NoSuchAlgorithmException, NoSuchPaddingException, IllegalBlockSizeException, BadPaddingException, InvalidKeyException, InvalidAlgorithmParameterException, IOException 
 	{
 		byte[] receiverPublicAddress = Base64.getUrlDecoder().decode(currentRemoteAddressInFocus);
 		byte[] receiverPublicKey = this.addresskeyMap.get(currentRemoteAddressInFocus);
@@ -845,7 +847,8 @@ public class ChatApp {
 		byte[] encData = cipher.doFinal(stringToDispatch.getBytes(StandardCharsets.UTF_8));
 		byte[] encDatalenBytes = ByteBuffer.allocate(Integer.BYTES).putInt(encData.length).array();
 		
-		//S_addr | iv | len | enc_Data 
+		//receiver address |S_addr | iv | len | enc_Data 
+		
 		byte[] toSign = new byte[receiverPublicAddress.length + senderAddressBytes.length + aesIV.length + encDatalenBytes.length + encData.length];
 		int tillNow = 0;
 		System.arraycopy(receiverPublicAddress, 0, toSign, tillNow, receiverPublicAddress.length);
@@ -862,11 +865,25 @@ public class ChatApp {
 		byte[] hashedToSign = md.digest(toSign);
 		byte[] signature = Curve25519.getInstance(Curve25519.BEST).calculateSignature(myPrivateKey, hashedToSign);
 		
-		byte[] toWrite = new byte[4 + toSign.length + signature.length];
+		
+		//preamble | AES key | datalen | data | Signature
+		
+		byte[] toWrite = new byte[4 + 4 + 16 + toSign.length + signature.length];
 		byte[] preAmble = {0x02, 0x00, 0x00, 0x00};
 		System.arraycopy(preAmble, 0, toWrite, 0, preAmble.length);
-		System.arraycopy(toSign, 0, toWrite, preAmble.length, toSign.length);
-		System.arraycopy(signature, 0, toWrite, preAmble.length + toSign.length, signature.length);
+		byte[] packetEncKey = Files.readAllBytes(new File(ENV.APP_STORAGE_LOC + ENV.DELIM + ENV.APP_STORAGE_KEY_FILE).toPath());
+		
+		System.arraycopy(packetEncKey, 0, toWrite, preAmble.length, packetEncKey.length);
+		int dataLen = toSign.length + signature.length;
+		byte[] dataLenBytes = ByteBuffer.allocate(Integer.BYTES).putInt(dataLen).array();
+		System.arraycopy(dataLenBytes, 0, toWrite, preAmble.length + packetEncKey.length, dataLenBytes.length);
+		System.arraycopy(toSign, 0, toWrite, preAmble.length + packetEncKey.length + dataLenBytes.length, toSign.length);
+		System.arraycopy(signature, 0, toWrite, preAmble.length + packetEncKey.length + dataLenBytes.length + toSign.length, signature.length);
+		
+		
+		System.out.println("Rec address : " + Base64.getEncoder().encodeToString(receiverPublicAddress));
+		System.out.println(Base64.getEncoder().encodeToString(toWrite));
+		System.out.println("Sig len : " + signature.length);
 		
 		return toWrite;
 	}

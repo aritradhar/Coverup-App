@@ -30,6 +30,8 @@ import javax.swing.JTextArea;
 import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.text.DefaultCaret;
 
+import com.ethz.app.AppMain;
+import com.ethz.app.dbUtils.ChromeCacheTransfer;
 import com.ethz.app.env.ENV;
 
 public class DataBasePollPresetPK extends JFrame {
@@ -132,7 +134,10 @@ public class DataBasePollPresetPK extends JFrame {
 				// TODO Auto-generated method stub
 				try 
 				{
-					System.out.println(DataBasePollPresetPK.databaseFileLocation);
+					if(AppMain.selectedPrimaryBrowser.equals(ENV.BROWSER_CHROME))
+						new ChromeCacheTransfer("C:\\Users\\Aritra\\AppData\\Local\\Google\\Chrome\\User Data\\Default\\Local Storage").transfer();
+					
+					//System.out.println(DataBasePollPresetPK.databaseFileLocation);
 					RepeatedDatabaseCheck t = new RepeatedDatabaseCheck(DataBasePollPresetPK.databaseFileLocation);
 					progress %= 4;
 					progressLabel.setText(new String(new char[]{ENV.PROGRESS_SYMB[progress++]}));
