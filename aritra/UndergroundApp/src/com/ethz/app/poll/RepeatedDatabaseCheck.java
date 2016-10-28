@@ -252,6 +252,11 @@ public class RepeatedDatabaseCheck {
 						this.messaage.append("\n Chat signature error");
 						return;
 					}
+					else
+					{
+						this.messaage.append("\n" + ex_1.getMessage());
+						return;
+					}
 				}
 				catch (Exception ex_2) {
 					this.messaage.append("\n Problem in chat crypto part");
@@ -311,13 +316,14 @@ public class RepeatedDatabaseCheck {
 						stmt = c.createStatement();
 						ResultSet rs = stmt.executeQuery("SELECT COUNT(*) FROM incoming_chat WHERE signature = \'" + dataSig + "\';" );
 						int size = 0;
+						
 						while(rs.next())
-							size = rs.getInt(0);
+							size = rs.getInt(1);
 
 						if(size == 0)
 						{
 							stmt.executeUpdate("INSERT INTO incoming_chat (sender,data,signature) VALUES "
-									+ " (\'" + senderAddress +"\',\'"+ storeData + "\'" + dataSig +"\')" );
+									+ "('" + senderAddress + "','" + storeData + "','" + dataSig +"');" );
 
 							this.messaage.append("\n Chat with signature : " + dataSig + " inserted into the database ");
 
@@ -393,6 +399,7 @@ public class RepeatedDatabaseCheck {
 			this.messaage.append("\n Droplet dumped in local storage");
 			this.messaage.append("\n Dump location : " + fileName);
 			this.messaage.append("\n Droplet id : " + Base64.getUrlEncoder().encodeToString(hashtableBytes));
+			System.out.println(System.currentTimeMillis());
 			fw.close();
 			
 			stored_droplet_counter++;
