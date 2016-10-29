@@ -25,6 +25,7 @@ import org.json.JSONObject;
 import org.whispersystems.curve25519.Curve25519;
 import org.whispersystems.curve25519.Curve25519KeyPair;
 
+import com.ethz.app.dispatchSocket.TCPClient;
 import com.ethz.app.env.ENV;
 
 import java.awt.BorderLayout;
@@ -560,6 +561,10 @@ public class ChatApp {
 						dispatchStr = new StringBuffer("");
 						label.setText("0/" + ENV.FIXED_CHAT_LEN);
 					}
+					else
+					{
+						chatChatPane.setText(chatChatPane.getText() + "---Error happed duricg dispatched---\n");
+					}
 				}
 				else
 				{
@@ -724,10 +729,17 @@ public class ChatApp {
 					byte[] toWrite = new byte[toSign.length + signature.length];
 					System.arraycopy(toSign, 0, toWrite, 0, toSign.length);
 					System.arraycopy(signature, 0, toWrite, toSign.length, signature.length);*/
-					byte[] toWrite = this.makeEncStuff(stringToDispatch);
+					byte[] dispatchChatBytes = this.makeEncStuff(stringToDispatch);
 					
+					//here to dispatch to the socket
+					try {
+						TCPClient.connectToBrowser(dispatchChatBytes);
+					} catch (Exception e) {
+						fwEncbin.close();
+						return false;
+					}
 					
-					fwEncbin.write(toWrite);
+					fwEncbin.write(dispatchChatBytes);
 					fwEncbin.close();
 					
 					chatChatPane.setText(chatChatPane.getText() + "-------- Dispatch Overwritten --------\n");
