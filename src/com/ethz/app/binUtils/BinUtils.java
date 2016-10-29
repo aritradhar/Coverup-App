@@ -304,7 +304,7 @@ public class BinUtils {
 	 * @return Array of string.
 	 * index 0 -> sender public address
 	 * index 1 -> decrypted chat data
-	 * index 2 -> data hash for databse indexing
+	 * index 2 -> data hash for database indexing
 	 * @throws NoSuchAlgorithmException
 	 * @throws NoSuchPaddingException
 	 * @throws InvalidKeyException
@@ -321,24 +321,25 @@ public class BinUtils {
 		byte[] data = AppMain.cipher.doFinal(_data);
 			
 		int tillNow = 16;
-		byte[] receiverAddress = new byte[ENV.PUBLIC_ADDRESS_LEN]; //holy shit this is me.
+		byte[] receiverAddress = new byte[ENV.CHAT_PUBLIC_ADDRESS_LEN]; //holy shit this is me.
 		System.arraycopy(data, tillNow, receiverAddress, 0, receiverAddress.length);
 		tillNow += receiverAddress.length;
 		
-		byte[] senderAddress = new byte[ENV.PUBLIC_ADDRESS_LEN]; //who send this to me.
+		byte[] senderAddress = new byte[ENV.CHAT_PUBLIC_ADDRESS_LEN]; //who send this to me.
 		System.arraycopy(data, tillNow, senderAddress, 0, senderAddress.length);
 		tillNow += senderAddress.length;
 		
 		String sernderAddressStr = Base64.getUrlEncoder().encodeToString(senderAddress);
 		byte[] senderPublicKey = BinUtils.addresskeyMap.get(sernderAddressStr);
+		
 		if(senderPublicKey == null)
 			return null;
 		
-		int datalenStart = ENV.PUBLIC_ADDRESS_LEN * 2 + 16 + 16; //next 16 is for the preamble stuff
+		int datalenStart = ENV.CHAT_PUBLIC_ADDRESS_LEN * 2 + 16 + 16; //next 16 is for the preamble stuff
 		byte[] encDataLenBytes = new byte[4];
 		System.arraycopy(data, datalenStart, encDataLenBytes, 0, 4);
 		int encDataLen = ByteBuffer.wrap(encDataLenBytes).getInt();
-		int lenToVerify = ENV.PUBLIC_ADDRESS_LEN * 2 + 16 + 4 + encDataLen;
+		int lenToVerify = ENV.CHAT_PUBLIC_ADDRESS_LEN * 2 + 16 + 4 + encDataLen;
 		byte[] toVerify = new byte[lenToVerify];
 		System.arraycopy(data, 16, toVerify, 0, toVerify.length);
 		//byte[] toVerify = Arrays.copyOf(data, lenToVerify);
@@ -405,7 +406,7 @@ public class BinUtils {
 			byte[] pk = Base64.getUrlDecoder().decode(str);
 			MessageDigest md = MessageDigest.getInstance("SHA-256");
 			byte[] hashedPk = md.digest(pk);
-			byte[] publicAddressBytes = Arrays.copyOf(hashedPk, ENV.PUBLIC_ADDRESS_LEN);
+			byte[] publicAddressBytes = Arrays.copyOf(hashedPk, ENV.CHAT_PUBLIC_ADDRESS_LEN);
 			String address = Base64.getUrlEncoder().encodeToString(publicAddressBytes);
 			
 			addresskeyMap.put(address, pk);
@@ -428,7 +429,7 @@ public class BinUtils {
 
 			MessageDigest md = MessageDigest.getInstance("SHA-256");
 			byte[] hasheddPk = md.digest(myPublicKey);
-			byte[] publicAddressBytes = Arrays.copyOf(hasheddPk, ENV.PUBLIC_ADDRESS_LEN);
+			byte[] publicAddressBytes = Arrays.copyOf(hasheddPk, ENV.CHAT_PUBLIC_ADDRESS_LEN);
 			myPublicAddress = Base64.getUrlEncoder().encodeToString(publicAddressBytes);
 			
 			JSONObject jObject = new JSONObject();

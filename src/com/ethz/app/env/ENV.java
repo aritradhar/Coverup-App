@@ -76,8 +76,9 @@ public class ENV {
 	
 	public static final int FIXED_CHAT_LEN = 512;
 	
-	public static final int PUBLIC_ADDRESS_LEN = 8;
-	public static int CHAT_POLLING_RATE = 775;
+	public static final int CHAT_PUBLIC_ADDRESS_LEN = 8;
+	public static final int CHAT_POLLING_RATE = 775;
+	public static final boolean CHAT_ACCEPT_UNKOWN_PUBLIC_KEY = true;
 	
 	public static final String APP_STORAGE_CHAT_KEY_FILE = APP_STORAGE_LOC + DELIM + APP_STORAGE_CHAT_LOC + DELIM + "KeyFile.key";
 	public static final String APP_STORAGE_PUBLIC_KEY_LIST = APP_STORAGE_LOC + DELIM + APP_STORAGE_CHAT_LOC + DELIM + "pkList.txt";

@@ -784,7 +784,7 @@ public class ChatApp {
 
 			MessageDigest md = MessageDigest.getInstance("SHA-256");
 			byte[] hasheddPk = md.digest(myPublicKey);
-			byte[] publicAddressBytes = Arrays.copyOf(hasheddPk, ENV.PUBLIC_ADDRESS_LEN);
+			byte[] publicAddressBytes = Arrays.copyOf(hasheddPk, ENV.CHAT_PUBLIC_ADDRESS_LEN);
 			this.myPublicAddress = Base64.getUrlEncoder().encodeToString(publicAddressBytes);
 			
 			JSONObject jObject = new JSONObject();
@@ -910,15 +910,15 @@ public class ChatApp {
 				continue;
 				
 			byte[] pk = Base64.getUrlDecoder().decode(str);
-			MessageDigest md = MessageDigest.getInstance("SHA-256");
+			/*MessageDigest md = MessageDigest.getInstance("SHA-256");
 			byte[] hashedPk = md.digest(pk);
-			byte[] publicAddressBytes = Arrays.copyOf(hashedPk, ENV.PUBLIC_ADDRESS_LEN);
-			String address = Base64.getUrlEncoder().encodeToString(publicAddressBytes);
-			
+			byte[] publicAddressBytes = Arrays.copyOf(hashedPk, ENV.PUBLIC_ADDRESS_LEN);*/
+			String address = ChatUtils.publicKeyToAddress(str);
 			this.addresskeyMap.put(address, pk);
 		}
 		br.close();
 		
 		return this.addresskeyMap.keySet();
 	}
+	
 }
