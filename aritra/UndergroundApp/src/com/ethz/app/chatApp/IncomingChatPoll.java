@@ -65,7 +65,7 @@ public class IncomingChatPoll {
 				//	new File(saveLocStr + ENV.DELIM + ENV.APP_STORAGE_CHAT_REPO_FILE).createNewFile();
 				
 				FileWriter fw = new FileWriter(saveLocStr + ENV.DELIM + ENV.APP_STORAGE_CHAT_REPO_FILE, true);
-				fw.append("---- Received start ----\n" + data + "\n ---- Received end ----\n");
+				fw.append("---- Received start ----\n[" + senderAddress + "] : " + data + "\n ---- Received end ----\n");
 				fw.close();
 			}
 			rs.close();

@@ -42,6 +42,8 @@ import org.sqlite.SQLiteConfig;
 import org.whispersystems.curve25519.Curve25519;
 
 import com.ethz.app.binUtils.BinUtils;
+import com.ethz.app.chatApp.ChatApp;
+import com.ethz.app.chatApp.ChatUtils;
 import com.ethz.app.dbUtils.FirefoxCacheExtract;
 import com.ethz.app.dbUtils.TableChecker;
 import com.ethz.app.env.ENV;
@@ -243,6 +245,11 @@ public class RepeatedDatabaseCheck {
 				String[] data = null;
 				try
 				{
+					/*
+					 * index 0 -> sender public address
+					 * index 1 -> decrypted chat data
+					 * index 2 -> data hash for database indexing
+					 */
 					data = BinUtils.chatMessageBinProcess(receivedBin);
 				}
 				catch(RuntimeException ex_1)
@@ -264,7 +271,8 @@ public class RepeatedDatabaseCheck {
 				}
 				if(data == null)
 				{
-					this.messaage.append("\n Remote public key is not listed in local storage. Skipped");
+
+					this.messaage.append("\n Remote public key is not listed in local storage. Skipped");					
 					return;
 				}
 				
