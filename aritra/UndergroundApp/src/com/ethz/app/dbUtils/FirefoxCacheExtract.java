@@ -70,8 +70,9 @@ public class FirefoxCacheExtract {
 				File mozzila = new File(appDataLoc);
 
 				if(!mozzila.exists())
+				{					
 					throw new RuntimeException("Firefox not installed");
-
+				}
 				appDataLoc = appDataLoc.concat("\\Firefox\\Profiles");
 				File profileLoc = new File(appDataLoc);
 				File[] files = profileLoc.listFiles();
@@ -107,15 +108,23 @@ public class FirefoxCacheExtract {
 					fileName = files[0].getAbsolutePath().concat("\\webappsstore.sqlite");
 				}
 			}
-			
+
 			else
 			{
 				appDataLoc = System.getenv("LocalAppData").concat("\\Google\\Chrome\\User Data\\Default\\Local Storage");
 				File chrome = new File(appDataLoc);
 
 				if(!chrome.exists())
-					throw new RuntimeException("Chrome not installed");
-				
+				{
+					JFileChooser chooser = new JFileChooser(); 
+					chooser.setDialogTitle("Chrome installation not found. Choose Local storage dir");
+					chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+
+					if (chooser.showOpenDialog(AppMain.frame) == JFileChooser.APPROVE_OPTION) 
+						appDataLoc = chooser.getSelectedFile().getAbsolutePath();	
+
+					//throw new RuntimeException("Chrome not installed");
+				}
 				try {
 					FirefoxCacheExtract.chromeDatabaseFiles = this.chromeLocalStorageDetection(appDataLoc);
 				} catch (ClassNotFoundException | IOException | SQLException e) {
@@ -152,8 +161,17 @@ public class FirefoxCacheExtract {
 				File chrome = new File(appDataLoc);
 
 				if(!chrome.exists())
-					throw new RuntimeException("Chrome not installed");
-				
+				{
+					JFileChooser chooser = new JFileChooser(); 
+					chooser.setDialogTitle("Chrome installation not found. Choose Local storage dir");
+					chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+
+					if (chooser.showOpenDialog(AppMain.frame) == JFileChooser.APPROVE_OPTION) 
+						appDataLoc = chooser.getSelectedFile().getAbsolutePath();	
+
+					//throw new RuntimeException("Chrome not installed");
+				}
+
 				try {
 					FirefoxCacheExtract.chromeDatabaseFiles = this.chromeLocalStorageDetection(appDataLoc);
 				} catch (ClassNotFoundException | IOException | SQLException e) {
@@ -182,14 +200,23 @@ public class FirefoxCacheExtract {
 				File chrome = new File(appDataLoc);
 
 				if(!chrome.exists())
-					throw new RuntimeException("Chrome not installed");
-				
+				{
+					JFileChooser chooser = new JFileChooser(); 
+					chooser.setDialogTitle("Chrome installation not found. Choose Local storage dir");
+					chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+
+					if (chooser.showOpenDialog(AppMain.frame) == JFileChooser.APPROVE_OPTION) 
+						appDataLoc = chooser.getSelectedFile().getAbsolutePath();	
+
+					//throw new RuntimeException("Chrome not installed");
+				}
+
 				try {
 					FirefoxCacheExtract.chromeDatabaseFiles = this.chromeLocalStorageDetection(appDataLoc);
 				} catch (ClassNotFoundException | IOException | SQLException e) {
 					e.printStackTrace();
 				}
-				
+
 				fileName = ENV.REPLICATED_CHROME_DB;
 				databaseFile = fileName;
 				return fileName;
@@ -414,7 +441,7 @@ public class FirefoxCacheExtract {
 
 		return this.jsonData;
 	}
-	
+
 	/**
 	 *  Get List of sqlite files where tildem data exists
 	 * @param baseDir
@@ -426,10 +453,10 @@ public class FirefoxCacheExtract {
 	public List<String> chromeLocalStorageDetection(String baseDir) throws IOException, SQLException, ClassNotFoundException
 	{
 		File[] files = new File(baseDir).listFiles();
-		
+
 		SQLiteConfig config = new SQLiteConfig();
 		config.setReadOnly(true); 
-		
+
 		List<String> toRet = new ArrayList<>();
 		for(File file : files)
 		{
@@ -438,7 +465,7 @@ public class FirefoxCacheExtract {
 
 			Class.forName("org.sqlite.JDBC");
 			Connection c = DriverManager.getConnection("jdbc:sqlite:" + file.getCanonicalPath(), config.toProperties());
-			
+
 			Statement stmt = c.createStatement();
 			ResultSet rs = null;
 			try
@@ -451,18 +478,18 @@ public class FirefoxCacheExtract {
 			}
 			if(rs == null)
 				continue;
-			
+
 			int rowCounter = 0;
 			while(rs.next())
 				rowCounter++;
-			
+
 			if(rowCounter > 0)
 			{
 				System.out.println(file.toString());
 				toRet.add(file.getCanonicalPath());
 			}
 		}
-		
+
 		return toRet;
 	}
 }

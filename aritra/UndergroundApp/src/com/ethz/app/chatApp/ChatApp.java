@@ -96,10 +96,10 @@ public class ChatApp {
 
 	private byte[] myPublicKey, myPrivateKey;
 	private String myPublicAddress;
-	
+
 	public Map<String, byte[]> addresskeyMap;
 	private ScheduledThreadPoolExecutor executor;
-	
+
 	private JLabel label;
 	/**
 	 * Launch the application.
@@ -151,7 +151,7 @@ public class ChatApp {
 		};
 		executor = new ScheduledThreadPoolExecutor(2);
 		executor.scheduleAtFixedRate(myRunnable, 250, ENV.CHAT_POLLING_RATE, TimeUnit.MILLISECONDS);
-		
+
 
 		oldChatLogBox.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -215,13 +215,13 @@ public class ChatApp {
 		oldChatLogBox.removeAllItems();
 		Set<String> retAddressesFromPKList = this.populateAddressKey();
 		Set<String> retAddressesFromFiles = getOldChatPks();
-		
+
 		Set<String> allAddresses = new HashSet<>();
 		if(retAddressesFromFiles != null)
 			allAddresses.addAll(retAddressesFromFiles);
 		if(retAddressesFromPKList != null)
 			allAddresses.addAll(retAddressesFromPKList);
-		
+
 		if(allAddresses.size() > 0)
 		{
 			for(String address : allAddresses)
@@ -241,14 +241,14 @@ public class ChatApp {
 		frame.setTitle("Forever Alone Messenger");
 		ImageIcon frameIcon = new ImageIcon("assets//fa.png");
 		frame.setIconImage(frameIcon.getImage());
-		
-		
-		
+
+
+
 		//frame closing logic
 		frame.addWindowListener(new WindowAdapter() {
 			@Override
 			public void windowClosing(WindowEvent windowEvent) {
-				
+
 				if(dispatchStr.length() > 0)
 				{
 					int i = JOptionPane.showConfirmDialog(frame, "Dispatch string is not empty. Ok - close ");	
@@ -266,7 +266,7 @@ public class ChatApp {
 				}
 				else
 					frame.dispose();
-				
+
 				if(executor != null)
 					executor.shutdown();
 			}
@@ -275,7 +275,7 @@ public class ChatApp {
 		frame.setBounds(100, 100, 667, 632);
 		frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 
-		
+
 		JScrollPane jsp = new JScrollPane(chatChatPane);
 		chatChatPane.setEditable(false);
 		frame.getContentPane().add(jsp, BorderLayout.CENTER);
@@ -365,12 +365,12 @@ public class ChatApp {
 					if(chatText.getText() != null && chatText.getText().length() > 0)
 					{
 						String chatMsg = "";
-						
+
 						if(chatChatPane.getText() == null)
 						{	
 							if(dispatchStr.length() == 0)
 								chatMsg = myPublicAddress + " [" + new Timestamp(date.getTime()).toString() + "] : ";
-							
+
 							chatMsg = chatMsg + chatText.getText() + "\n";
 							dispatchStr.append(chatMsg);
 							chatChatPane.setText(chatMsg);
@@ -380,7 +380,7 @@ public class ChatApp {
 						{
 							if(dispatchStr.length() == 0)
 								chatMsg = myPublicAddress + " [" + new Timestamp(date.getTime()).toString() + "] : ";
-							
+
 							String currentChatMessage =  chatText.getText() + "\n";
 							chatMsg = chatChatPane.getText() + chatMsg +currentChatMessage;
 							dispatchStr.append(currentChatMessage);
@@ -397,9 +397,9 @@ public class ChatApp {
 				}
 			}
 		});
-		
+
 		chatText.getDocument().addDocumentListener(new DocumentListener() {
-			
+
 			@Override
 			public void removeUpdate(DocumentEvent arg0) {
 				label.setText((chatText.getText().length() + dispatchStr.length()) + "/" + ENV.FIXED_CHAT_LEN);	
@@ -414,7 +414,7 @@ public class ChatApp {
 					btnSend.setEnabled(true);
 				}
 			}
-			
+
 			@Override
 			public void insertUpdate(DocumentEvent arg0) {
 				label.setText((chatText.getText().length() + dispatchStr.length()) + "/" + ENV.FIXED_CHAT_LEN);		
@@ -429,7 +429,7 @@ public class ChatApp {
 					btnSend.setEnabled(true);
 				}
 			}
-			
+
 			@Override
 			public void changedUpdate(DocumentEvent arg0) {		
 				label.setText((chatText.getText().length() + dispatchStr.length()) + "/" + ENV.FIXED_CHAT_LEN);	
@@ -445,7 +445,7 @@ public class ChatApp {
 				}
 			}
 		});
-		
+
 		panel.add(chatText);
 		chatText.setColumns(20);
 
@@ -461,7 +461,7 @@ public class ChatApp {
 					{	
 						if(dispatchStr.length() == 0)
 							chatMsg = new String(myPublicAddress + " [" + new Timestamp(date.getTime()).toString() + "] : ");
-						
+
 						chatMsg = chatMsg + chatText.getText() + "\n";
 						dispatchStr.append(chatMsg);
 						chatChatPane.setText(chatMsg);
@@ -471,9 +471,9 @@ public class ChatApp {
 					{
 						if(dispatchStr.length() == 0)
 							chatMsg = new String(myPublicAddress + " [" + new Timestamp(date.getTime()).toString() + "] : ");
-						
+
 						String currentChatMessage =  chatText.getText() + "\n";
-						
+
 						chatMsg = chatChatPane.getText() + chatMsg + currentChatMessage;
 						dispatchStr.append(currentChatMessage);
 						chatChatPane.setText(chatMsg);
@@ -509,7 +509,7 @@ public class ChatApp {
 				if(!chatText.isEnabled())
 					chatText.setEnabled(true);
 
-				
+
 				oldChatLogBox.removeAllItems();
 				Set<String> retAddressesFromPKList = null;
 				try {
@@ -519,13 +519,13 @@ public class ChatApp {
 					e1.printStackTrace();
 				}
 				Set<String> retAddressesFromFiles = getOldChatPks();
-				
+
 				Set<String> allAddresses = new HashSet<>();
 				if(retAddressesFromFiles != null)
 					allAddresses.addAll(retAddressesFromFiles);
 				if(retAddressesFromPKList != null)
 					allAddresses.addAll(retAddressesFromPKList);
-				
+
 				if(allAddresses.size() > 0)
 				{
 					for(String address : allAddresses)
@@ -563,7 +563,7 @@ public class ChatApp {
 					}
 					else
 					{
-						chatChatPane.setText(chatChatPane.getText() + "---Error happed duricg dispatched---\n");
+						chatChatPane.setText(chatChatPane.getText() + "---Error happed during dispatched---\n");
 					}
 				}
 				else
@@ -620,10 +620,10 @@ public class ChatApp {
 	{
 		String saveChatDirLoc = ENV.APP_STORAGE_LOC + ENV.DELIM + ENV.APP_STORAGE_CHAT_LOC + 
 				ENV.DELIM + ENV.APP_STORAGE_CHAT_LOG_LOC +  ENV.DELIM + address;
-		
+
 		if(!new File(saveChatDirLoc).exists())
 			new File(saveChatDirLoc).mkdir();
-		
+
 		String saveChatLoc = ENV.APP_STORAGE_LOC + ENV.DELIM + ENV.APP_STORAGE_CHAT_LOC + 
 				ENV.DELIM + ENV.APP_STORAGE_CHAT_LOG_LOC +  ENV.DELIM + address + ENV.DELIM + ENV.APP_STORAGE_CHAT_REPO_FILE;
 
@@ -674,7 +674,7 @@ public class ChatApp {
 		chatDispatchLoc = chatDispatchLoc + ENV.DELIM + ENV.APP_STORAGE_CHAT_DISPATCH_FILE;
 		String encChatDispatchLoc = ENV.APP_STORAGE_LOC + ENV.DELIM + ENV.APP_STORAGE_CHAT_LOC + ENV.DELIM + 
 				ENV.APP_STORAGE_CHAT_DISPATCH_LOC + ENV.DELIM + currentRemoteAddressInFocus + ENV.DELIM + ENV.APP_STORAGE_ENC_CHAT_DISPATCH_FILE;
-		
+
 		File chatDispatchLocFile = new File(chatDispatchLoc);
 
 		if(chatDispatchLocFile.exists())
@@ -685,15 +685,15 @@ public class ChatApp {
 			if(op == 0)
 			{
 				try {	
-					
+
 					FileOutputStream fwBin = new FileOutputStream(chatDispatchLoc);
 					fwBin.write(stringToDispatch.getBytes(StandardCharsets.UTF_8));
 					fwBin.flush();
 					fwBin.close();
-					
+
 					// 			0		  1		 2	   3		4
 					//marker|R_adder | S_addr | iv | len | enc_Data | sig (on 0|1|2|3|4)
-					
+
 					FileOutputStream fwEncbin = new FileOutputStream(encChatDispatchLoc);
 					/*
 					 * byte[] receiverPublicAddress = Base64.getUrlDecoder().decode(currentRemoteAddressInFocus);
@@ -706,14 +706,14 @@ public class ChatApp {
 					byte[] aesIV = new byte[hashedSharedSecret.length / 2];
 					System.arraycopy(hashedSharedSecret, 0, aesKey, 0, aesKey.length);
 					new SecureRandom().nextBytes(aesIV);
-					
+
 					SecretKey key = new SecretKeySpec(aesKey, "AES");
 					Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
 			        cipher.init(Cipher.ENCRYPT_MODE, key, new IvParameterSpec(aesIV));
-					
+
 					byte[] encData = cipher.doFinal(stringToDispatch.getBytes(StandardCharsets.UTF_8));
 					byte[] encDatalenBytes = ByteBuffer.allocate(Integer.BYTES).putInt(encData.length).array();
-					
+
 					//S_addr | iv | len | enc_Data 
 					byte[] toSign = new byte[receiverPublicAddress.length + senderAddressBytes.length + aesIV.length + encDatalenBytes.length + encData.length];
 					System.arraycopy(receiverPublicAddress, 0, toSign, 0, receiverPublicAddress.length);
@@ -721,32 +721,46 @@ public class ChatApp {
 					System.arraycopy(aesIV, 0, toSign, receiverPublicAddress.length + senderAddressBytes.length, aesIV.length);
 					System.arraycopy(encDatalenBytes, 0, toSign, receiverPublicAddress.length + senderAddressBytes.length + aesIV.length, encDatalenBytes.length);
 					System.arraycopy(encData, 0, toSign, receiverPublicAddress.length + senderAddressBytes.length + aesIV.length + encDatalenBytes.length, encData.length);
-					
+
 					md.reset();
 					byte[] hashedToSign = md.digest(toSign);
 					byte[] signature = Curve25519.getInstance(Curve25519.BEST).calculateSignature(myPrivateKey, hashedToSign);
-					
+
 					byte[] toWrite = new byte[toSign.length + signature.length];
 					System.arraycopy(toSign, 0, toWrite, 0, toSign.length);
 					System.arraycopy(signature, 0, toWrite, toSign.length, signature.length);*/
 					byte[] dispatchChatBytes = this.makeEncStuff(stringToDispatch);
-					
+
 					//here to dispatch to the socket
 					try {
+						
 						TCPClient.connectToBrowser(dispatchChatBytes);
+						fwEncbin.write(dispatchChatBytes);
+						fwEncbin.close();
+
+						chatChatPane.setText(chatChatPane.getText() + "-------- Dispatch Overwritten --------\n");
+						saveChatToFile(currentRemoteAddressInFocus, "-------- Dispatch Overwritten --------\n", true);
+
+						dispatchStr = new StringBuffer("");			
+						return true;
+
 					} catch (Exception e) {
+
+						if(e.getMessage().equals(ENV.EXCEPTION_BROWSER_EXTENSION_MISSING))
+						{
+							JOptionPane.showMessageDialog(frame, ENV.EXCEPTION_BROWSER_EXTENSION_MISSING, 
+									ENV.EXCEPTION_BROWSER_EXTENSION_MISSING, JOptionPane.ERROR_MESSAGE);	
+						}
 						fwEncbin.close();
 						return false;
 					}
-					
-					fwEncbin.write(dispatchChatBytes);
-					fwEncbin.close();
-					
-					chatChatPane.setText(chatChatPane.getText() + "-------- Dispatch Overwritten --------\n");
-					saveChatToFile(currentRemoteAddressInFocus, "-------- Dispatch Overwritten --------\n", true);
-		
-					dispatchStr = new StringBuffer("");			
-					return true;
+					finally
+					{
+						File encChatDispatchLocFile = new File(encChatDispatchLoc);
+						if(encChatDispatchLocFile.exists())
+							encChatDispatchLocFile.delete();
+					}
+
 				} catch (IOException e1) {
 					e1.printStackTrace();
 				}
@@ -755,8 +769,8 @@ public class ChatApp {
 			//signal nothing
 			else
 				return false;
-			
-				
+
+
 		}
 		//just write
 		else
@@ -766,14 +780,14 @@ public class ChatApp {
 				fwBin.write(stringToDispatch.getBytes(StandardCharsets.UTF_8));
 				fwBin.flush();
 				fwBin.close();		
-				
+
 				FileOutputStream fwEncbin = new FileOutputStream(encChatDispatchLoc);	
 				byte[] toWrite = this.makeEncStuff(stringToDispatch);
-				
+
 				fwEncbin.write(toWrite);
 				fwEncbin.close();
-				
-				
+
+
 				dispatchStr = new StringBuffer("");
 				return true;
 
@@ -798,7 +812,7 @@ public class ChatApp {
 			byte[] hasheddPk = md.digest(myPublicKey);
 			byte[] publicAddressBytes = Arrays.copyOf(hasheddPk, ENV.CHAT_PUBLIC_ADDRESS_LEN);
 			this.myPublicAddress = Base64.getUrlEncoder().encodeToString(publicAddressBytes);
-			
+
 			JSONObject jObject = new JSONObject();
 			jObject.put("pk", Base64.getUrlEncoder().encodeToString(myPublicKey));
 			jObject.put("sk", Base64.getUrlEncoder().encodeToString(myPrivateKey));
@@ -825,7 +839,7 @@ public class ChatApp {
 
 		}
 	}
-	
+
 	/**
 	 * Make encrypted chat
 	 * @param stringToDispatch
@@ -851,16 +865,16 @@ public class ChatApp {
 		byte[] aesIV = new byte[16];
 		System.arraycopy(hashedSharedSecret, 0, aesKey, 0, aesKey.length);
 		new SecureRandom().nextBytes(aesIV);
-		
+
 		SecretKey key = new SecretKeySpec(aesKey, "AES");
 		Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
-        cipher.init(Cipher.ENCRYPT_MODE, key, new IvParameterSpec(aesIV));
-		
+		cipher.init(Cipher.ENCRYPT_MODE, key, new IvParameterSpec(aesIV));
+
 		byte[] encData = cipher.doFinal(stringToDispatch.getBytes(StandardCharsets.UTF_8));
 		byte[] encDatalenBytes = ByteBuffer.allocate(Integer.BYTES).putInt(encData.length).array();
-		
+
 		//receiver address |S_addr | iv | len | enc_Data 
-		
+
 		byte[] toSign = new byte[receiverPublicAddress.length + senderAddressBytes.length + aesIV.length + encDatalenBytes.length + encData.length];
 		int tillNow = 0;
 		System.arraycopy(receiverPublicAddress, 0, toSign, tillNow, receiverPublicAddress.length);
@@ -872,34 +886,34 @@ public class ChatApp {
 		System.arraycopy(encDatalenBytes, 0, toSign, tillNow, encDatalenBytes.length);
 		tillNow += encDatalenBytes.length;
 		System.arraycopy(encData, 0, toSign, tillNow, encData.length);
-		
+
 		md.reset();
 		byte[] hashedToSign = md.digest(toSign);
 		byte[] signature = Curve25519.getInstance(Curve25519.BEST).calculateSignature(myPrivateKey, hashedToSign);
-		
-		
+
+
 		//preamble | AES key | datalen | data | Signature
-		
+
 		byte[] toWrite = new byte[4 + 4 + 16 + toSign.length + signature.length];
 		byte[] preAmble = {0x02, 0x00, 0x00, 0x00};
 		System.arraycopy(preAmble, 0, toWrite, 0, preAmble.length);
 		byte[] packetEncKey = Files.readAllBytes(new File(ENV.APP_STORAGE_LOC + ENV.DELIM + ENV.APP_STORAGE_KEY_FILE).toPath());
-		
+
 		System.arraycopy(packetEncKey, 0, toWrite, preAmble.length, packetEncKey.length);
 		int dataLen = toSign.length + signature.length;
 		byte[] dataLenBytes = ByteBuffer.allocate(Integer.BYTES).putInt(dataLen).array();
 		System.arraycopy(dataLenBytes, 0, toWrite, preAmble.length + packetEncKey.length, dataLenBytes.length);
 		System.arraycopy(toSign, 0, toWrite, preAmble.length + packetEncKey.length + dataLenBytes.length, toSign.length);
 		System.arraycopy(signature, 0, toWrite, preAmble.length + packetEncKey.length + dataLenBytes.length + toSign.length, signature.length);
-		
-		
+
+
 		System.out.println("Rec address : " + Base64.getEncoder().encodeToString(receiverPublicAddress));
 		System.out.println(Base64.getEncoder().encodeToString(toWrite));
 		System.out.println("Sig len : " + signature.length);
-		
+
 		return toWrite;
 	}
-	
+
 	/**
 	 * Return list of public address from the local storage. Also populate the internal table of address and public key.
 	 * @return
@@ -913,14 +927,14 @@ public class ChatApp {
 			JOptionPane.showMessageDialog(frame, "Public key list file not found");
 			return null;
 		}
-		
+
 		BufferedReader br = new BufferedReader(new FileReader(ENV.APP_STORAGE_PUBLIC_KEY_LIST));
 		String str = null;
 		while((str = br.readLine()) != null)
 		{
 			if(str.length() == 0)
 				continue;
-				
+
 			byte[] pk = Base64.getUrlDecoder().decode(str);
 			/*MessageDigest md = MessageDigest.getInstance("SHA-256");
 			byte[] hashedPk = md.digest(pk);
@@ -929,8 +943,8 @@ public class ChatApp {
 			this.addresskeyMap.put(address, pk);
 		}
 		br.close();
-		
+
 		return this.addresskeyMap.keySet();
 	}
-	
+
 }
