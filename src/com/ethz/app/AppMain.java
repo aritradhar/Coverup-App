@@ -34,6 +34,7 @@ import java.util.Arrays;
 import java.util.Base64;
 import java.util.List;
 
+import javax.annotation.processing.SupportedSourceVersion;
 import javax.crypto.Cipher;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.IvParameterSpec;
@@ -65,7 +66,7 @@ import org.json.JSONObject;
 
 import com.ethz.app.binUtils.BinUtils;
 import com.ethz.app.chatApp.ChatApp;
-import com.ethz.app.covert.CovertBrowserSA;
+import com.ethz.app.covertBrowser.CovertBrowserSA;
 import com.ethz.app.dbUtils.TableChecker;
 import com.ethz.app.env.ENV;
 import com.ethz.app.poll.DataBasePoll;
@@ -97,6 +98,8 @@ public class AppMain {
 	public static Cipher cipher;
 	public static byte[] ivBytes;
 	private DataBasePollPresetPK dPool;
+	
+	public static boolean backGroundAssembling = false;
 
 	public static String selectedPrimaryBrowser;
 	public static boolean set = false;
@@ -203,7 +206,9 @@ public class AppMain {
 		catch(Exception ex)
 		{
 			if(ex instanceof RuntimeException && ex.getMessage().equals(ENV.EXCEPTION_MESSAGE_EMPTY_TABLE))
-				JOptionPane.showMessageDialog(frame, "Database empty.");
+				//ex.printStackTrace();
+				JOptionPane.showMessageDialog(frame, "Database empty. Run polling");
+			
 			else
 			{
 				chooser = new JFileChooser(); 
@@ -324,7 +329,13 @@ public class AppMain {
 		mnSettings.add(mntmShowPollingWindow);
 
 		JCheckBoxMenuItem menuBackgroundAssembling = new JCheckBoxMenuItem("Background Assembling");
-		mnSettings.add(menuBackgroundAssembling);
+		menuBackgroundAssembling.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				AppMain.backGroundAssembling = menuBackgroundAssembling.getState();
+				System.out.println(AppMain.backGroundAssembling);
+			}
+		});
+		mnSettings.add(menuBackgroundAssembling);	
 
 		JMenu mnCoolStuff = new JMenu("Cool Stuff");
 		menuBar.add(mnCoolStuff);
