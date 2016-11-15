@@ -59,7 +59,7 @@ public class TCPClient {
 		//outToServer.writeBytes(bytesToHex(data) + "\n");
 		outToServer.write(data);
 		outToServer.flush();
-		//System.out.println(System.currentTimeMillis());
+		System.out.println(System.currentTimeMillis());
 		//System.out.println(Base64.getEncoder().encodeToString(data));
 		clientSocket.close();
 	}
@@ -76,7 +76,7 @@ public class TCPClient {
 		
 		//data = new byte[32];
 		//testing for normal droplets
-		Arrays.fill(data, (byte)0x00);
+		//Arrays.fill(data, (byte)0x01);
 		
 		ScheduledExecutorService execService
 		= Executors.newScheduledThreadPool(50);
