@@ -16,6 +16,7 @@ import java.awt.EventQueue;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JTextPane;
+import javax.swing.ListCellRenderer;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.event.DocumentEvent;
@@ -29,6 +30,7 @@ import com.ethz.app.dispatchSocket.TCPClient;
 import com.ethz.app.env.ENV;
 
 import java.awt.BorderLayout;
+import java.awt.Component;
 
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -77,6 +79,7 @@ import java.awt.GridLayout;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import javax.swing.JLabel;
+import javax.swing.JList;
 
 /**
  * @author Aritra
@@ -108,6 +111,7 @@ public class ChatApp {
 	 * @throws InstantiationException 
 	 * @throws ClassNotFoundException 
 	 */
+	
 	public static void main(String[] args) throws ClassNotFoundException, InstantiationException, IllegalAccessException, UnsupportedLookAndFeelException {
 
 		UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());	
@@ -134,6 +138,7 @@ public class ChatApp {
 
 		this.addresskeyMap = new HashMap<>();
 		this.oldChatLogBox = new JComboBox<>();
+        
 		this.btnSend = new JButton("Send");
 		this.btnSend.setEnabled(false);
 		this.chatChatPane = new JTextPane();
@@ -230,6 +235,10 @@ public class ChatApp {
 		////////////////////////////////////////
 
 		this.dispatchStr = new StringBuffer("");
+		
+		oldChatLogBox.setRenderer(new MyComboBoxRenderer("Chat logs"));
+		oldChatLogBox.setSelectedIndex(-1); 
+		
 		initialize();
 	}
 
@@ -947,4 +956,33 @@ public class ChatApp {
 		return this.addresskeyMap.keySet();
 	}
 
+}
+
+
+class MyComboBoxRenderer extends JLabel implements ListCellRenderer<Object>
+{
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 2825790195769508237L;
+	private String _title;
+
+    public MyComboBoxRenderer(String title)
+    {
+        _title = title;
+    }
+
+   
+
+	/* (non-Javadoc)
+	 * @see javax.swing.ListCellRenderer#getListCellRendererComponent(javax.swing.JList, java.lang.Object, int, boolean, boolean)
+	 */
+	@Override
+	 public Component getListCellRendererComponent(@SuppressWarnings("rawtypes") JList list, Object value,
+	            int index, boolean isSelected, boolean hasFocus)
+	    {
+	        if (index == -1 && value == null) setText(_title);
+	        else setText(value.toString());
+	        return this;
+	    }
 }

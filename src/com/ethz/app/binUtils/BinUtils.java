@@ -59,7 +59,10 @@ public class BinUtils {
 		
 		byte[] fixedPacketSizeByte = new byte[Integer.BYTES];
 		System.arraycopy(tableBytes, 0, fixedPacketSizeByte, 0, fixedPacketSizeByte.length);
-		//int fixePacketSize = ByteBuffer.wrap(fixedPacketSizeByte).getInt();
+		int fixePacketSize = ByteBuffer.wrap(fixedPacketSizeByte).getInt();
+		if(fixePacketSize != tableBytes.length)
+			throw new RuntimeException("Table packet size mismatch");
+		
 		
 		byte[] tableLenBytes = new byte[Integer.BYTES];
 		System.arraycopy(tableBytes, fixedPacketSizeByte.length, tableLenBytes, 0, tableLenBytes.length);

@@ -334,14 +334,22 @@ public class CovertBrowserSA {
 						//System.out.println(Base64.getEncoder().encodeToString(out));
 						//System.out.println(out.length);
 						
+						TCPClient.connectToBrowser(out);
+						
 						fw.write(out);
 						fw.close();
 					} catch (IOException e1) {
 						// TODO Auto-generated catch block
 						e1.printStackTrace();
 					} catch (Exception e1) {
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
+						
+						if(e1.getMessage().equals(ENV.EXCEPTION_BROWSER_EXTENSION_MISSING))
+						{
+							MessageBox messageBox = new MessageBox(shell ,SWT.ICON_ERROR);
+							messageBox.setMessage(ENV.EXCEPTION_BROWSER_EXTENSION_MISSING);
+							messageBox.setText(ENV.EXCEPTION_BROWSER_EXTENSION_MISSING);
+							messageBox.open();
+						}
 					};
 
 					synchronized(this)
@@ -389,7 +397,7 @@ public class CovertBrowserSA {
 				catch(Exception ex)
 				{
 					MessageBox messageBox = new MessageBox(shell ,SWT.ICON_INFORMATION);
-					messageBox.setMessage("Slice tree file possibly empty : \n" + ex.toString());
+					messageBox.setMessage("Slice tree file possibly empty. Solution: run AppMain and dump the tree");
 					messageBox.setText("Error");
 					messageBox.open();
 				}
