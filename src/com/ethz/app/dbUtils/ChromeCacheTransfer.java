@@ -41,7 +41,7 @@ public class ChromeCacheTransfer {
 	public void transfer() throws IOException, ClassNotFoundException, SQLException
 	{
 		File[] files = new File(baseDir).listFiles();
-
+		System.out.println(baseDir);
 		SQLiteConfig config = new SQLiteConfig();
 		config.setReadOnly(true); 
 
@@ -104,8 +104,8 @@ public class ChromeCacheTransfer {
 
 		}
 	}
-	public static void main(String[] args) throws ClassNotFoundException, IOException, SQLException {
+	//public static void main(String[] args) throws ClassNotFoundException, IOException, SQLException {
 
-		new ChromeCacheTransfer("C:\\Users\\Aritra\\AppData\\Local\\Google\\Chrome\\User Data\\Default\\Local Storage").transfer();
-	}
+		//new ChromeCacheTransfer("C:\\Users\\Aritra\\AppData\\Local\\Google\\Chrome\\User Data\\Default\\Local Storage").transfer();
+	//}
 }
