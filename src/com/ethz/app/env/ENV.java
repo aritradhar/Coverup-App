@@ -106,14 +106,6 @@ public class ENV {
 		File FileChatLog = new File(APP_STORAGE_LOC + DELIM + APP_STORAGE_CHAT_LOC + DELIM + APP_STORAGE_CHAT_LOG_LOC);
 		if(!FileChatLog.exists())
 			FileChatLog.mkdir();
-	
-		File fileKeyList = new File(APP_STORAGE_PUBLIC_KEY_LIST);
-		if(!fileKeyList.exists())
-			try {
-				fileKeyList.createNewFile();
-			} catch (IOException e2) {
-				e2.printStackTrace(); // should never happen
-			}
 		
 		File chatFIle = new File(APP_STORAGE_PUBLIC_KEY_LIST);
 		if(chatFIle.exists())
