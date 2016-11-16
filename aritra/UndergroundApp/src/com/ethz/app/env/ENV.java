@@ -85,6 +85,7 @@ public class ENV {
 	
 	static
 	{
+		
 		File fileI = new File(APP_STORAGE_LOC + DELIM + APP_STORAGE_INTERACTIVE_DATA);
 		if(!fileI.exists())
 			fileI.mkdir();
@@ -104,6 +105,10 @@ public class ENV {
 		File FileChatLog = new File(APP_STORAGE_LOC + DELIM + APP_STORAGE_CHAT_LOC + DELIM + APP_STORAGE_CHAT_LOG_LOC);
 		if(!FileChatLog.exists())
 			FileChatLog.mkdir();
+	
+		File chatFIle = new File(APP_STORAGE_PUBLIC_KEY_LIST);
+		if(chatFIle.exists())
+			chatFIle.createNewFile();
 		
 		//Initialization
 		//db execution
