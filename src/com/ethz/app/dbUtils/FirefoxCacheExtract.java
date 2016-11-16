@@ -150,7 +150,7 @@ public class FirefoxCacheExtract {
 					throw new RuntimeException("Firefox not installed");
 
 
-				JFileChooser chooser = new JFileChooser(); 
+		 		JFileChooser chooser = new JFileChooser(); 
 				chooser.setCurrentDirectory(new java.io.File(appDataLoc));
 				chooser.setDialogTitle("Choose Firefox profile dir");
 				chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
