@@ -236,8 +236,8 @@ public class ChatApp {
 
 		this.dispatchStr = new StringBuffer("");
 		
-		oldChatLogBox.setRenderer(new MyComboBoxRenderer("Chat logs"));
-		oldChatLogBox.setSelectedIndex(-1); 
+		//oldChatLogBox.setRenderer(new MyComboBoxRenderer("Chat logs"));
+		//oldChatLogBox.setSelectedIndex(-1); 
 		
 		initialize();
 	}
@@ -791,8 +791,14 @@ public class ChatApp {
 				fwBin.close();		
 
 				FileOutputStream fwEncbin = new FileOutputStream(encChatDispatchLoc);	
+				
 				byte[] toWrite = this.makeEncStuff(stringToDispatch);
-
+				try {
+					TCPClient.connectToBrowser(toWrite);
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 				fwEncbin.write(toWrite);
 				fwEncbin.close();
 
