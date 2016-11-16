@@ -32,6 +32,7 @@ import javax.swing.text.DefaultCaret;
 
 import com.ethz.app.AppMain;
 import com.ethz.app.dbUtils.ChromeCacheTransfer;
+import com.ethz.app.dbUtils.FirefoxCacheExtract;
 import com.ethz.app.env.ENV;
 
 public class DataBasePollPresetPK extends JFrame {
@@ -135,7 +136,7 @@ public class DataBasePollPresetPK extends JFrame {
 				try 
 				{
 					if(AppMain.selectedPrimaryBrowser.equals(ENV.BROWSER_CHROME))
-						new ChromeCacheTransfer("C:\\Users\\Aritra\\AppData\\Local\\Google\\Chrome\\User Data\\Default\\Local Storage").transfer();
+						new ChromeCacheTransfer(FirefoxCacheExtract.APP_DATA_CHROME_LOC).transfer();
 					
 					//System.out.println(DataBasePollPresetPK.databaseFileLocation);
 					RepeatedDatabaseCheck t = new RepeatedDatabaseCheck(DataBasePollPresetPK.databaseFileLocation);

@@ -38,6 +38,8 @@ public class FirefoxCacheExtract {
 	public static String databaseFile;
 	public static List<String> chromeDatabaseFiles;
 	public String jsonData;
+	
+	public static String APP_DATA_CHROME_LOC;
 
 	public static String changedDBLocation = "";
 
@@ -157,7 +159,7 @@ public class FirefoxCacheExtract {
 			}
 			else
 			{
-				appDataLoc = "~/.config/google-chrome/Default";
+				appDataLoc = System.getenv("HOME") + "/.config/google-chrome/Default/Local Storage";
 				File chrome = new File(appDataLoc);
 
 				if(!chrome.exists())
@@ -177,6 +179,8 @@ public class FirefoxCacheExtract {
 				} catch (ClassNotFoundException | IOException | SQLException e) {
 					e.printStackTrace();
 				}
+				
+				APP_DATA_CHROME_LOC = appDataLoc;
 				fileName = ENV.REPLICATED_CHROME_DB;
 				databaseFile = fileName;
 				return fileName;
