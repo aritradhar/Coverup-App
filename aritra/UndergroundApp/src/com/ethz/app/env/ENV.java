@@ -14,6 +14,7 @@
 package com.ethz.app.env;
 
 import java.io.File;
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -108,7 +109,12 @@ public class ENV {
 	
 		File chatFIle = new File(APP_STORAGE_PUBLIC_KEY_LIST);
 		if(chatFIle.exists())
-			chatFIle.createNewFile();
+			try {
+				chatFIle.createNewFile();
+			} catch (IOException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
 		
 		//Initialization
 		//db execution
