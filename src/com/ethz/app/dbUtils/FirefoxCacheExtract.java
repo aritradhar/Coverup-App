@@ -39,7 +39,7 @@ public class FirefoxCacheExtract {
 	public static List<String> chromeDatabaseFiles;
 	public String jsonData;
 	
-	public static String APP_DATA_CHROME_LOC;
+	public static String APP_DATA_LOC_CHROME;
 
 	public static String changedDBLocation = "";
 
@@ -132,6 +132,7 @@ public class FirefoxCacheExtract {
 				} catch (ClassNotFoundException | IOException | SQLException e) {
 					e.printStackTrace();
 				}
+				APP_DATA_LOC_CHROME = appDataLoc;
 				fileName = ENV.REPLICATED_CHROME_DB;
 				databaseFile = fileName;
 				return fileName;
@@ -180,7 +181,7 @@ public class FirefoxCacheExtract {
 					e.printStackTrace();
 				}
 				
-				APP_DATA_CHROME_LOC = appDataLoc;
+				APP_DATA_LOC_CHROME = appDataLoc;
 				fileName = ENV.REPLICATED_CHROME_DB;
 				databaseFile = fileName;
 				return fileName;
