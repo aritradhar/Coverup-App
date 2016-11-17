@@ -134,7 +134,7 @@ public class AssembleFrame {
 	private void initialize() {
 		frame = new JFrame();
 		frame.setBounds(100, 100, 832, 635);
-		ImageIcon frameIcon = new ImageIcon("assets//doge.png");
+		ImageIcon frameIcon = new ImageIcon("assets/doge.png");
 		frame.setIconImage(frameIcon.getImage());
 		frame.setTitle("Fountain assemble");
 		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
