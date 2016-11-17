@@ -49,6 +49,7 @@ import com.ethz.tree.Node;
 
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
+import org.eclipse.wb.swt.SWTResourceManager;
 
 /**
  * @author Aritra
@@ -94,8 +95,7 @@ public class CovertBrowserSA {
 		createContents();
 		try
 		{
-			Image small = new Image(display,"assets//hb.jpg");
-			shell.setImage(small);    
+			shell.setImage(SWTResourceManager.getImage(CovertBrowserSA.class, "/com/hb.jpg"));    
 		}
 		catch(Exception ex)
 		{
