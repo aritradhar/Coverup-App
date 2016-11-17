@@ -41,9 +41,9 @@ import org.json.JSONObject;
 
 import com.ethz.app.dbUtils.TableChecker;
 import com.ethz.app.env.ENV;
+import com.ethz.compressUtil.CompressUtil;
 import com.ethz.fountain.Droplet;
 import com.ethz.fountain.Fountain;
-import com.ethz.ugs.compressUtil.CompressUtil;
 
 import javax.swing.JProgressBar;
 
