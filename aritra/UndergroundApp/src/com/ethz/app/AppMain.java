@@ -252,7 +252,7 @@ public class AppMain {
 		frame = new JFrame();
 		frame.setTitle("Ninja Pumpkin: The most awesome thing ever happened to humanity");
 		frame.setBounds(100, 100, 823, 848);
-		ImageIcon frameIcon = new ImageIcon("assets//doge.png");
+		ImageIcon frameIcon = new ImageIcon(AssembleFrame.class.getResource("/doge.png"));
 		frame.setIconImage(frameIcon.getImage());
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 

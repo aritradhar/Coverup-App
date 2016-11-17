@@ -26,6 +26,7 @@ import org.json.JSONObject;
 import org.whispersystems.curve25519.Curve25519;
 import org.whispersystems.curve25519.Curve25519KeyPair;
 
+import com.ethz.app.AssembleFrame;
 import com.ethz.app.dispatchSocket.TCPClient;
 import com.ethz.app.env.ENV;
 
@@ -248,7 +249,7 @@ public class ChatApp {
 	private void initialize() {
 		frame = new JFrame();
 		frame.setTitle("Forever Alone Messenger");
-		ImageIcon frameIcon = new ImageIcon("assets//fa.png");
+		ImageIcon frameIcon = new ImageIcon(AssembleFrame.class.getResource("/fa.png"));
 		frame.setIconImage(frameIcon.getImage());
 
 
