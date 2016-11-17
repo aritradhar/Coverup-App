@@ -112,7 +112,7 @@ public class ChatApp {
 	 * @throws InstantiationException 
 	 * @throws ClassNotFoundException 
 	 */
-	
+
 	public static void main(String[] args) throws ClassNotFoundException, InstantiationException, IllegalAccessException, UnsupportedLookAndFeelException {
 
 		UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());	
@@ -139,7 +139,7 @@ public class ChatApp {
 
 		this.addresskeyMap = new HashMap<>();
 		this.oldChatLogBox = new JComboBox<>();
-        
+
 		this.btnSend = new JButton("Send");
 		this.btnSend.setEnabled(false);
 		this.chatChatPane = new JTextPane();
@@ -236,10 +236,10 @@ public class ChatApp {
 		////////////////////////////////////////
 
 		this.dispatchStr = new StringBuffer("");
-		
+
 		//oldChatLogBox.setRenderer(new MyComboBoxRenderer("Chat logs"));
 		//oldChatLogBox.setSelectedIndex(-1); 
-		
+
 		initialize();
 	}
 
@@ -743,7 +743,7 @@ public class ChatApp {
 
 					//here to dispatch to the socket
 					try {
-						
+
 						TCPClient.connectToBrowser(dispatchChatBytes);
 						fwEncbin.write(dispatchChatBytes);
 						fwEncbin.close();
@@ -792,24 +792,25 @@ public class ChatApp {
 				fwBin.close();		
 
 				FileOutputStream fwEncbin = new FileOutputStream(encChatDispatchLoc);	
-				
+
 				byte[] toWrite = this.makeEncStuff(stringToDispatch);
-				try {
-					TCPClient.connectToBrowser(toWrite);
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+
+				TCPClient.connectToBrowser(toWrite);
+
 				fwEncbin.write(toWrite);
 				fwEncbin.close();
-
 
 				dispatchStr = new StringBuffer("");
 				return true;
 
-			} catch (IOException e1) {
+			} catch (Exception e1) {
 
-				e1.printStackTrace();
+				if(e1.getMessage().equals(ENV.EXCEPTION_BROWSER_EXTENSION_MISSING))
+					JOptionPane.showMessageDialog(frame, ENV.EXCEPTION_BROWSER_EXTENSION_MISSING, ENV.EXCEPTION_BROWSER_EXTENSION_MISSING, JOptionPane.ERROR_MESSAGE);
+				
+				else
+					JOptionPane.showMessageDialog(frame, "Some other exception we have no idea about :P", "Error", JOptionPane.ERROR_MESSAGE);
+				
 				return false;
 			}
 		}
@@ -968,28 +969,28 @@ public class ChatApp {
 
 class MyComboBoxRenderer extends JLabel implements ListCellRenderer<Object>
 {
-    /**
+	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 2825790195769508237L;
 	private String _title;
 
-    public MyComboBoxRenderer(String title)
-    {
-        _title = title;
-    }
+	public MyComboBoxRenderer(String title)
+	{
+		_title = title;
+	}
 
-   
+
 
 	/* (non-Javadoc)
 	 * @see javax.swing.ListCellRenderer#getListCellRendererComponent(javax.swing.JList, java.lang.Object, int, boolean, boolean)
 	 */
 	@Override
-	 public Component getListCellRendererComponent(@SuppressWarnings("rawtypes") JList list, Object value,
-	            int index, boolean isSelected, boolean hasFocus)
-	    {
-	        if (index == -1 && value == null) setText(_title);
-	        else setText(value.toString());
-	        return this;
-	    }
+	public Component getListCellRendererComponent(@SuppressWarnings("rawtypes") JList list, Object value,
+			int index, boolean isSelected, boolean hasFocus)
+	{
+		if (index == -1 && value == null) setText(_title);
+		else setText(value.toString());
+		return this;
+	}
 }
