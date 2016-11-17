@@ -9,16 +9,5 @@
 	<classpathentry kind="lib" path="lib/fountainAON.jar"/>
 	<classpathentry kind="lib" path="lib/SWT win x64/swt.jar" sourcepath="lib/SWT win x64/src.zip"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/SliceTree"/>
-	<classpathentry kind="lib" path="swing2swt.jar"/>
-	<classpathentry kind="lib" path="lib/signal/signal-protocol-java-2.2.0.jar" sourcepath="lib/signal/signal-protocol-java-2.2.0-sources.jar">
-		<attributes>
-			<attribute name="javadoc_location" value="jar:platform:/resource/UndergroundApp/lib/signal/signal-protocol-java-2.2.0-javadoc.jar!/"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="lib" path="lib/Protobuf/protobuf-java-3.1.0.jar" sourcepath="lib/Protobuf/protobuf-java-3.1.0-sources.jar">
-		<attributes>
-			<attribute name="javadoc_location" value="jar:platform:/resource/UndergroundApp/lib/Protobuf/protobuf-java-3.1.0-javadoc.jar!/"/>
-		</attributes>
-	</classpathentry>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
