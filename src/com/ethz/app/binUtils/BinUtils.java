@@ -392,6 +392,8 @@ public class BinUtils {
 
 	public static void initializeChatData() throws Exception
 	{
+		if(!new File(ENV.APP_STORAGE_PUBLIC_KEY_LIST).exists())
+			new File(ENV.APP_STORAGE_PUBLIC_KEY_LIST).createNewFile();
 		BinUtils.populateAddressKey();
 		BinUtils.keyFileGenChat();
 	}
