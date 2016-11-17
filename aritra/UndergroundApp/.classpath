@@ -9,6 +9,6 @@
 	<classpathentry kind="lib" path="lib/fountainAON.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/SliceTree"/>
 	<classpathentry kind="lib" path="lib/xz-1.5.jar"/>
-	<classpathentry kind="lib" path="lib/swt_win64.jar"/>
+	<classpathentry kind="lib" path="lib/swt_Win86.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
