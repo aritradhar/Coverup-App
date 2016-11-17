@@ -92,8 +92,15 @@ public class CovertBrowserSA {
 
 		Display display = Display.getDefault();
 		createContents();
-		Image small = new Image(display,"assets//hb.jpg");
-		shell.setImage(small);    
+		try
+		{
+			Image small = new Image(display,"assets//hb.jpg");
+			shell.setImage(small);    
+		}
+		catch(Exception ex)
+		{
+			System.err.println("Image file not found. Moving on");
+		}
 
 		shell.open();
 		shell.layout();
@@ -311,7 +318,7 @@ public class CovertBrowserSA {
 						byte[] intrHeader = {0x01, 0x00, 0x00, 0x00};
 						byte[] AESKeyBytes = Files.readAllBytes(new File(ENV.APP_STORAGE_LOC + ENV.DELIM + ENV.APP_STORAGE_KEY_FILE).toPath());
 						byte[] out = new byte[4 + AESKeyBytes.length + Integer.BYTES + Long.BYTES * sliceNameSet.size()];
-						
+
 						System.arraycopy(intrHeader, 0, out, tillNow, 4);
 						tillNow += 4;
 						System.arraycopy(AESKeyBytes, 0, out, tillNow, AESKeyBytes.length);
@@ -320,7 +327,7 @@ public class CovertBrowserSA {
 						System.arraycopy(lenBytes, 0, out, tillNow, lenBytes.length);
 						tillNow += lenBytes.length;
 						/////end////////////////////////////////////////////////////
-						
+
 						//byte[] out = new byte[Long.BYTES * sliceNameSet.size()];
 						for(String sliceName : sliceNameSet)
 						{
@@ -329,20 +336,20 @@ public class CovertBrowserSA {
 							System.arraycopy(sliceBytes, 0, out, tillNow, sliceBytes.length);
 							tillNow += sliceBytes.length;
 						}
-						
+
 						//TCPClient.connectToBrowser(out);						
 						//System.out.println(Base64.getEncoder().encodeToString(out));
 						//System.out.println(out.length);
-						
+
 						TCPClient.connectToBrowser(out);
-						
+
 						fw.write(out);
 						fw.close();
 					} catch (IOException e1) {
 						// TODO Auto-generated catch block
 						e1.printStackTrace();
 					} catch (Exception e1) {
-						
+
 						if(e1.getMessage().equals(ENV.EXCEPTION_BROWSER_EXTENSION_MISSING))
 						{
 							MessageBox messageBox = new MessageBox(shell ,SWT.ICON_ERROR);

@@ -6,8 +6,8 @@
 	<classpathentry exported="true" kind="lib" path="lib/json.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="lib/fountainAON.jar"/>
-	<classpathentry kind="lib" path="lib/SWT win x64/swt.jar" sourcepath="lib/SWT win x64/src.zip"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/SliceTree"/>
 	<classpathentry kind="lib" path="lib/xz-1.5.jar"/>
+	<classpathentry kind="lib" path="lib/swt_win64.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
