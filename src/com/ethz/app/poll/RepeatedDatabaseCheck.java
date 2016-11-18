@@ -160,7 +160,7 @@ public class RepeatedDatabaseCheck {
 			//ex.printStackTrace();
 			if(ex.getMessage() == null)
 			{
-				this.messaage.append("Data not according to spec: garbage");
+				this.messaage.append("Something wen horribly wrong");
 				return;
 			}
 			else if(ex.getMessage().equalsIgnoreCase(ENV.EXCEPTION_MESSAGE_GARBAGE_PACKET))

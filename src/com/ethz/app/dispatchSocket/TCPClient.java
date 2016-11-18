@@ -54,6 +54,7 @@ public class TCPClient {
 		}
 		catch(Exception ex)
 		{
+			ex.printStackTrace();
 			throw new RuntimeException(ENV.EXCEPTION_BROWSER_EXTENSION_MISSING);
 		}
 		DataOutputStream outToServer = new DataOutputStream(clientSocket.getOutputStream());

@@ -38,7 +38,7 @@ public class IncomingChatPoll {
 	{
 		Connection c = null;
 		try 
-		{					
+		{				
 			Class.forName("org.sqlite.JDBC");
 			c = DriverManager.getConnection("jdbc:sqlite:" + ENV.APP_STORAGE_INCOMING_CHAT_DATABASE_FILE);
 		} 

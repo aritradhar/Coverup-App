@@ -885,6 +885,12 @@ public class ChatApp {
 		byte[] receiverPublicAddress = Base64.getUrlDecoder().decode(currentRemoteAddressInFocus);
 		byte[] receiverPublicKey = this.addresskeyMap.get(currentRemoteAddressInFocus);
 		byte[] senderAddressBytes = Base64.getUrlDecoder().decode(myPublicAddress);
+		
+		if(receiverPublicKey != null)
+			System.out.println("Rek " + receiverPublicKey.length);
+		if(myPrivateKey != null)
+			System.out.println("MyP " + myPrivateKey.length);
+		
 		byte[] sharedSecret = Curve25519.getInstance(Curve25519.BEST).calculateAgreement(receiverPublicKey, myPrivateKey);
 		MessageDigest md = MessageDigest.getInstance("SHA-256");
 		byte[] hashedSharedSecret = md.digest(sharedSecret);
