@@ -40,6 +40,7 @@
             <zipfileset excludes="META-INF/*.SF" src="${dir.workspace}/lib/fountainAON.jar"/>
             <zipfileset excludes="META-INF/*.SF" src="${dir.workspace}/lib/xz-1.5.jar"/>
             <zipfileset excludes="META-INF/*.SF" src="${dir.workspace}/lib/json.jar"/>
+        	<zipfileset excludes="META-INF/*.SF" src="${dir.workspace}/lib/win64/swt_win64.jar"/> 
             <fileset dir="${dir.sliceTree}/bin"/>    
         </jar>
     </target>
