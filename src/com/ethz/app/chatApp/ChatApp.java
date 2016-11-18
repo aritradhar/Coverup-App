@@ -99,7 +99,7 @@ public class ChatApp {
 	private boolean allowDispatch;
 
 	private byte[] myPublicKey, myPrivateKey;
-	private String myPublicAddress;
+	private String myPublicAddress; 
 
 	public Map<String, byte[]> addresskeyMap;
 	private ScheduledThreadPoolExecutor executor;
