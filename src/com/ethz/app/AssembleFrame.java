@@ -36,6 +36,8 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
+import javax.swing.text.html.HTMLDocument;
+import javax.swing.text.html.HTMLEditorKit;
 
 import org.json.JSONObject;
 
@@ -143,9 +145,17 @@ public class AssembleFrame {
 		frame.getContentPane().add(panel, BorderLayout.SOUTH);
 
 		JScrollPane scrollPane = new JScrollPane();
+		scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+		
 		frame.getContentPane().add(scrollPane, BorderLayout.CENTER);
 
-		JEditorPane textArea = new JEditorPane("text/html", "");
+		JEditorPane textArea = new JEditorPane(new HTMLEditorKit().getContentType(), "");
+		Font font = UIManager.getFont("Label.font");
+        String bodyRule = "body { font-family: " + font.getFamily() + "; " +
+                "font-size: " + font.getSize() + "pt; }";
+        ((HTMLDocument) textArea.getDocument()).getStyleSheet().addRule(bodyRule);
+        
+        
 		textArea.setForeground(Color.BLACK);
 		textArea.putClientProperty(JEditorPane.HONOR_DISPLAY_PROPERTIES, Boolean.TRUE);
 		textArea.setFont(new Font("Consolas",Font.PLAIN, 15));
