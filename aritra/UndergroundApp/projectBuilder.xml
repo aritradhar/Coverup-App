@@ -4,7 +4,7 @@
     <property name="dir.sliceTree" value="../SliceTree"/>
     <property name="dir.workspace" value="${dir.buildfile}"/>
     <property name="dir.jarfile" value="jars"/>
-    
+  
     <echo message="Building jars"/>
     <target name="create_run_jar_win86">
         <jar destfile="${dir.jarfile}/CoverUp_Win86.jar" filesetmanifest="mergewithoutmain">
