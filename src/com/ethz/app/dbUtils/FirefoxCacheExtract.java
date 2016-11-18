@@ -148,8 +148,7 @@ public class FirefoxCacheExtract {
 
 				if(!mozzila.exists())
 					throw new RuntimeException("Firefox not installed");
-
-
+				
 		 		JFileChooser chooser = new JFileChooser(); 
 				chooser.setCurrentDirectory(new java.io.File(appDataLoc));
 				chooser.setDialogTitle("Choose Firefox profile dir");
@@ -228,7 +227,11 @@ public class FirefoxCacheExtract {
 			}
 		}
 		databaseFile = fileName;
-		//System.out.println(fileName);
+		APP_DATA_LOC_CHROME = appDataLoc;
+		fileName = ENV.REPLICATED_CHROME_DB;
+		
+		System.out.println("FileName "  + fileName);
+		System.out.println("APP_DATA_LOC_CHROME : " + APP_DATA_LOC_CHROME);
 
 		return fileName;
 	}
