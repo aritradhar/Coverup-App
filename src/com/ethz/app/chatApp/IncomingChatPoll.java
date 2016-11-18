@@ -15,11 +15,13 @@ package com.ethz.app.chatApp;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Base64;
 
 import com.ethz.app.env.ENV;
 
@@ -53,8 +55,8 @@ public class IncomingChatPoll {
 			{
 				String senderAddress = rs.getString("sender");
 				System.out.println(senderAddress);
-				String data = rs.getString("data");
-				
+				String _data = rs.getString("data");
+				String data = new String(Base64.getMimeDecoder().decode(_data), StandardCharsets.UTF_8);
 				String saveLocStr = ENV.APP_STORAGE_LOC + ENV.DELIM + ENV.APP_STORAGE_CHAT_LOC + ENV.DELIM + 
 						ENV.APP_STORAGE_CHAT_LOG_LOC + ENV.DELIM + senderAddress;
 				File saveLoc = new File(saveLocStr);

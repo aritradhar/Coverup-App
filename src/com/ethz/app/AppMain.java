@@ -114,7 +114,7 @@ public class AppMain {
 				try 
 				{				
 					new AppMain();
-					AppMain.frame.setVisible(true);
+					AppMain.frame.setVisible(true); 
 				} 
 				catch (Exception e) 
 				{

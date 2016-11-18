@@ -74,7 +74,7 @@ public class RepeatedDatabaseCheck {
 
 		this.messaage = new StringBuffer();
 		boolean tableSuccess = false;
-		
+
 		try
 		{
 			tableSuccess = this.doTableCheck();
@@ -83,7 +83,7 @@ public class RepeatedDatabaseCheck {
 		{
 			tableSuccess = false;
 		}
-		
+
 		if(tableSuccess)
 		{
 			if(!ENV.MULTIPLE_PROVIDER_SUPPORT)
@@ -91,14 +91,14 @@ public class RepeatedDatabaseCheck {
 			else
 				doDataBaseCheckMultipleProvider();
 		}
-		
+
 		else
 		{
 			this.messaage.append("Table error");
 			count %= 4;
 			this.messaage.append("\n---------------" + ENV.PROGRESS_SYMB[count++] + "---------------");
 		}
-		
+
 	}
 
 
@@ -117,7 +117,7 @@ public class RepeatedDatabaseCheck {
 		{
 			return false;
 		}
-		
+
 		return true;
 	}
 	private void doDataBaseCheck() throws SQLException, IOException, IllegalBlockSizeException, BadPaddingException, NoSuchAlgorithmException, InvalidKeyException, NoSuchPaddingException, InvalidAlgorithmParameterException
@@ -148,12 +148,12 @@ public class RepeatedDatabaseCheck {
 		String jsonBinData = null;
 		byte[] receivedBin = Base64.getDecoder().decode(jsonData);
 		//System.out.println(receivedBin.length);
-		
+
 		try
 		{
 			jsonBinData = BinUtils.dropletBinToDropletJson
 					(receivedBin, RepeatedDatabaseCheck.ServerPublickey, this.messaage);	
-			
+
 		}
 		catch(RuntimeException ex)
 		{
@@ -194,14 +194,14 @@ public class RepeatedDatabaseCheck {
 				{
 					lastReadFileHash = new byte[hashtBytes.length];
 					System.arraycopy(hashtBytes, 0, lastReadFileHash, 0, hashtBytes.length);
-					
-					
+
+
 					//save the slice files in .slice format and the data in it in base64 encode format to stay consistent as the server data format
 					String sliceDirLocation = ENV.APP_STORAGE_LOC + ENV.DELIM + ENV.APP_STORAGE_INTERACTIVE_DATA + ENV.DELIM + sliceId;
 					if(!new File(sliceDirLocation).exists())
 						new File(sliceDirLocation).mkdir();
 					String sliceFileLocation = sliceDirLocation + ENV.DELIM + sliceIndex + ENV.APP_STORAGE_SLICE_FILE_FORMAT;
-					
+
 					FileWriter fw = new FileWriter(sliceFileLocation);
 					fw.append(Base64.getEncoder().encodeToString(intrDataBytes));
 					fw.close();
@@ -216,18 +216,18 @@ public class RepeatedDatabaseCheck {
 					this.messaage.append("\n Skipped...");
 					return;
 				}
-				
+
 				else
 				{
 					lastReadFileHash = new byte[hashtBytes.length];
 					System.arraycopy(hashtBytes, 0, lastReadFileHash, 0, hashtBytes.length);
-					
+
 					//save the slice files in .slice format and the data in it in base64 encode format to stay consistent as the server data format
 					String sliceDirLocation = ENV.APP_STORAGE_LOC + ENV.DELIM + ENV.APP_STORAGE_INTERACTIVE_DATA + ENV.DELIM + sliceId;
 					if(!new File(sliceDirLocation).exists())
 						new File(sliceDirLocation).mkdir();
 					String sliceFileLocation = sliceDirLocation + ENV.DELIM + sliceIndex + ENV.APP_STORAGE_SLICE_FILE_FORMAT;
-					
+
 					FileWriter fw = new FileWriter(sliceFileLocation);
 					fw.append(Base64.getEncoder().encodeToString(intrDataBytes));
 					fw.close();
@@ -275,32 +275,32 @@ public class RepeatedDatabaseCheck {
 					this.messaage.append("\n Remote public key is not listed in local storage. Skipped");					
 					return;
 				}
-				
+
 				//good
 				String senderAddress = data[0];
 				String storeData = data[1];
 				String dataSig = data[2];
 				/*String loc = ENV.APP_STORAGE_LOC + ENV.DELIM + 
 						ENV.APP_STORAGE_CHAT_LOC + ENV.DELIM + ENV.APP_STORAGE_CHAT_LOG_LOC + ENV.DELIM +stroreAddress;
-				
+
 				File chatSaveLoc = new File(loc);
 				if(!chatSaveLoc.exists())
 					chatSaveLoc.mkdir();
-				
+
 				FileWriter fw = new FileWriter(loc + "incoming.txt");
 				Timestamp ts =  new Timestamp(new Date().getTime());
 				fw.append("== start " + ts + "==\n");
 				fw.append(storeData + "\n");
 				fw.append("== end " + ts + "==\n");
 				fw.close()*/;
-				
+
 				boolean poll = false;
 				if(lastChatHash == null)
 				{
 					lastChatHash = dataSig;
 					poll = true;
 				}
-				else if(lastChatHash != dataSig)
+				else if(!lastChatHash.equals(dataSig))
 					poll = true;
 				else
 					poll = false;
@@ -324,20 +324,32 @@ public class RepeatedDatabaseCheck {
 						stmt = c.createStatement();
 						ResultSet rs = stmt.executeQuery("SELECT COUNT(*) FROM incoming_chat WHERE signature = \'" + dataSig + "\';" );
 						int size = 0;
-						
+
 						while(rs.next())
 							size = rs.getInt(1);
 
 						if(size == 0)
 						{
-							stmt.executeUpdate("INSERT INTO incoming_chat (sender,data,signature) VALUES "
-									+ "('" + senderAddress + "','" + storeData + "','" + dataSig +"');" );
+							try
+							{					
+								// if the chat has ; problem. Encode it to base 64
+								stmt.executeUpdate("INSERT INTO incoming_chat (sender,data,signature) VALUES (\'" 
+							+ senderAddress + "\',\'" + Base64.getMimeEncoder().encodeToString(storeData.getBytes(StandardCharsets.UTF_8))
+							+ "\',\'" + dataSig +"\');" );
+								//stmt.executeUpdate("INSERT INTO incoming_chat (sender,data,signature) VALUES ('bla', 'bla', '5');" );
+								this.messaage.append("\nChat with signature : " + dataSig + " inserted into the database\n-----------------------------------------------");
 
-							this.messaage.append("\n Chat with signature : " + dataSig + " inserted into the database ");
-
+							}
+							catch(SQLException ex1)
+							{
+								if(ex1.getMessage().contains("UNIQUE constraint failed"))
+									this.messaage.append("\n Chat with signature : " + dataSig + " exists skipped ... \n-----------------------------------------------");
+								else
+									ex1.printStackTrace();
+							}					
 						}
 						else
-							this.messaage.append("\n Chat with signature : " + dataSig + " exists skipped ... ");
+							this.messaage.append("\nChat with signature : " + dataSig + " exists skipped ... \n-----------------------------------------------");
 
 						stmt.close();
 						rs.close();
@@ -351,11 +363,11 @@ public class RepeatedDatabaseCheck {
 				}
 				else
 				{
-					this.messaage.append("\n Chat with signature : " + dataSig + " exists skipped ... ");
+					this.messaage.append("\nChat with signature : " + dataSig + " exists skipped ... \n-----------------------------------------------");
 					return;
 				}
-				
-				
+
+
 			}
 			else
 			{
@@ -395,7 +407,7 @@ public class RepeatedDatabaseCheck {
 
 		if(!new File(ENV.APP_STORAGE_LOC + ENV.DELIM + dropletLocation).exists())
 			new File(ENV.APP_STORAGE_LOC + ENV.DELIM + dropletLocation).mkdir();
-		
+
 
 		File file = new File(fileName);
 		File dropletUrlFile = new File(dropletUrlFileName);
@@ -409,7 +421,7 @@ public class RepeatedDatabaseCheck {
 			this.messaage.append("\n Droplet id : " + Base64.getUrlEncoder().encodeToString(hashtableBytes));
 			System.out.println(System.currentTimeMillis());
 			fw.close();
-			
+
 			stored_droplet_counter++;
 		}
 		else
@@ -536,7 +548,7 @@ public class RepeatedDatabaseCheck {
 			{
 				this.doDataBaseCheckBin(row[0]);
 			}
-			
+
 		}
 	}
 

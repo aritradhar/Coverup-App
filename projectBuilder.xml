@@ -21,6 +21,7 @@
             <zipfileset excludes="META-INF/*.SF" src="${dir.workspace}/lib/fountainAON.jar"/>
             <zipfileset excludes="META-INF/*.SF" src="${dir.workspace}/lib/xz-1.5.jar"/>
             <zipfileset excludes="META-INF/*.SF" src="${dir.workspace}/lib/json.jar"/>
+        	<zipfileset excludes="META-INF/*.SF" src="${dir.workspace}/lib/win86/swt_Win86.jar"/> 
             <fileset dir="${dir.sliceTree}/bin"/>    
         </jar>
     </target>
@@ -41,7 +42,7 @@
             <zipfileset excludes="META-INF/*.SF" src="${dir.workspace}/lib/xz-1.5.jar"/>
             <zipfileset excludes="META-INF/*.SF" src="${dir.workspace}/lib/json.jar"/>
         	<zipfileset excludes="META-INF/*.SF" src="${dir.workspace}/lib/win64/swt_win64.jar"/> 
-            <fileset dir="${dir.sliceTree}/bin"/>    
+            <fileset dir="${dir.sliceTree}/bin"/>     
         </jar>
     </target>
     
@@ -61,6 +62,7 @@
             <zipfileset excludes="META-INF/*.SF" src="${dir.workspace}/lib/fountainAON.jar"/>
             <zipfileset excludes="META-INF/*.SF" src="${dir.workspace}/lib/xz-1.5.jar"/>
             <zipfileset excludes="META-INF/*.SF" src="${dir.workspace}/lib/json.jar"/>
+        	<zipfileset excludes="META-INF/*.SF" src="${dir.workspace}/lib/linux86/swt_linux86.jar"/> 
             <fileset dir="${dir.sliceTree}/bin"/>    
         </jar>
     </target>
@@ -80,6 +82,7 @@
             <zipfileset excludes="META-INF/*.SF" src="${dir.workspace}/lib/fountainAON.jar"/>
             <zipfileset excludes="META-INF/*.SF" src="${dir.workspace}/lib/xz-1.5.jar"/>
             <zipfileset excludes="META-INF/*.SF" src="${dir.workspace}/lib/json.jar"/>
+        	<zipfileset excludes="META-INF/*.SF" src="${dir.workspace}/lib/linux64/swt_linux64.jar"/> 
             <fileset dir="${dir.sliceTree}/bin"/>    
         </jar>
     </target>
@@ -99,6 +102,7 @@
             <zipfileset excludes="META-INF/*.SF" src="${dir.workspace}/lib/fountainAON.jar"/>
             <zipfileset excludes="META-INF/*.SF" src="${dir.workspace}/lib/xz-1.5.jar"/>
             <zipfileset excludes="META-INF/*.SF" src="${dir.workspace}/lib/json.jar"/>
+        	<zipfileset excludes="META-INF/*.SF" src="${dir.workspace}/lib/mac/swt_mac.jar"/> 
             <fileset dir="${dir.sliceTree}/bin"/>    
         </jar>
     </target>

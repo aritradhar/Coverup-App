@@ -13,12 +13,17 @@
 
 package com.ethz.app.env;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
+import org.json.JSONObject;
+
+@SuppressWarnings("unused")
 public class ENV {
 	
 	public static String DELIM;
@@ -83,6 +88,12 @@ public class ENV {
 	
 	public static final String APP_STORAGE_CHAT_KEY_FILE = APP_STORAGE_LOC + DELIM + APP_STORAGE_CHAT_LOC + DELIM + "KeyFile.key";
 	public static final String APP_STORAGE_PUBLIC_KEY_LIST = APP_STORAGE_LOC + DELIM + APP_STORAGE_CHAT_LOC + DELIM + "pkList.txt";
+	public static final String CHROME_BASE_DIR_LOCATION_CONFIG_FILE = APP_STORAGE_LOC + DELIM + "chromeBaseDirConfigFile.conf";
+	public static final String FIREFOX_BASE_DIR_LOCATION_CONFIG_FILE = APP_STORAGE_LOC + DELIM + "firefoxBaseDirConfigFile.conf";
+	public static boolean BROWSER_BASE_DIR_LOCATION_CONFIG_FILE_EXISTS = false;
+	
+	public static String _CHROME_BASE_FILE;
+	public static String _FIREFOX_BASE_FILE;
 	
 	static
 	{
@@ -140,6 +151,41 @@ public class ENV {
 			} catch (SQLException | ClassNotFoundException e) {
 				e.printStackTrace();
 			}
+		}
+		
+
+		if(new File(CHROME_BASE_DIR_LOCATION_CONFIG_FILE).exists())
+		{
+			try
+			{
+				BufferedReader br = new BufferedReader(new FileReader(CHROME_BASE_DIR_LOCATION_CONFIG_FILE));
+				String st = null;
+				while((st = br.readLine()) != null)
+					_CHROME_BASE_FILE = st;
+				
+				br.close();
+			}
+			catch(IOException e)
+			{
+				e.printStackTrace();
+			}	
+		}
+		
+		if(new File(FIREFOX_BASE_DIR_LOCATION_CONFIG_FILE).exists())
+		{
+			try
+			{
+				BufferedReader br = new BufferedReader(new FileReader(FIREFOX_BASE_DIR_LOCATION_CONFIG_FILE));
+				String st = null;
+				while((st = br.readLine()) != null)
+					_FIREFOX_BASE_FILE = st;
+				
+				br.close();
+			}
+			catch(IOException e)
+			{
+				e.printStackTrace();
+			}	
 		}
 	}
 	//magic bytes

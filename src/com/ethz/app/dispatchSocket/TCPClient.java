@@ -48,8 +48,9 @@ public class TCPClient {
 	{
 		Socket clientSocket = null;
 		try
-		{
+		{		
 			clientSocket = new Socket("localhost", 12345);
+			clientSocket.setSoTimeout(5000);
 		}
 		catch(Exception ex)
 		{
