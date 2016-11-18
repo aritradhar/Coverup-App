@@ -152,13 +152,13 @@ public class AssembleFrame {
 		JEditorPane textArea = new JEditorPane(new HTMLEditorKit().getContentType(), "");
 		Font font = UIManager.getFont("Label.font");
         String bodyRule = "body { font-family: " + font.getFamily() + "; " +
-                "font-size: " + font.getSize() + "pt; }";
+                "font-size: " + 16 + "pt; }";
         ((HTMLDocument) textArea.getDocument()).getStyleSheet().addRule(bodyRule);
         
         
 		textArea.setForeground(Color.BLACK);
 		textArea.putClientProperty(JEditorPane.HONOR_DISPLAY_PROPERTIES, Boolean.TRUE);
-		textArea.setFont(new Font("Consolas",Font.PLAIN, 15));
+		textArea.setFont(new Font("Lucida Console", Font.PLAIN, 16));
 		//textArea.setLineWrap(true);
 		textArea.setEditable(false);
 		//scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
