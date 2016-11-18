@@ -105,6 +105,7 @@ public class ChatApp {
 	private ScheduledThreadPoolExecutor executor;
 
 	private JLabel label;
+	private JButton btnMyPk;
 	/**
 	 * Launch the application.
 	 * @throws UnsupportedLookAndFeelException 
@@ -301,6 +302,16 @@ public class ChatApp {
 
 		JButton setRemotePublicKeyBtn = new JButton("Add Remote PK");
 		panel_2.add(setRemotePublicKeyBtn);
+		
+		btnMyPk = new JButton("My PK");
+		btnMyPk.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				
+				
+				JOptionPane.showMessageDialog(frame, Base64.getEncoder().encodeToString(myPublicKey));
+			}
+		});
+		panel_2.add(btnMyPk);
 		setRemotePublicKeyBtn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 

@@ -41,7 +41,7 @@ public class ChromeCacheTransfer {
 	public void transfer() throws IOException, ClassNotFoundException, SQLException
 	{
 		File[] files = new File(baseDir).listFiles();
-		System.out.println(baseDir);
+		//System.out.println(baseDir);
 		SQLiteConfig config = new SQLiteConfig();
 		config.setReadOnly(true); 
 
