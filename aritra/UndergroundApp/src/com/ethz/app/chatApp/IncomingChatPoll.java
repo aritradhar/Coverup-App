@@ -12,7 +12,9 @@
 //*************************************************************************************
 package com.ethz.app.chatApp;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -66,9 +68,28 @@ public class IncomingChatPoll {
 				//if(!new File(saveLocStr + ENV.DELIM + ENV.APP_STORAGE_CHAT_REPO_FILE).exists())
 				//	new File(saveLocStr + ENV.DELIM + ENV.APP_STORAGE_CHAT_REPO_FILE).createNewFile();
 				
-				FileWriter fw = new FileWriter(saveLocStr + ENV.DELIM + ENV.APP_STORAGE_CHAT_REPO_FILE, true);
-				fw.append("---- Received start ----\n[" + senderAddress + "] : " + data + "\n ---- Received end ----\n");
-				fw.close();
+				//check for duplicate messages
+				String messageToInsert = "---- Received start ----\n[" + senderAddress + "] : " + data + "\n ---- Received end ----\n";
+				BufferedReader br = new BufferedReader(new FileReader(saveLocStr + ENV.DELIM + ENV.APP_STORAGE_CHAT_REPO_FILE));
+				StringBuffer stb = new StringBuffer();
+				String str = null;
+				while((str = br.readLine()) != null)
+					stb.append(str).append("\n");
+				// + 3 IS FOR THE 3 NEW LINE
+				String lastEnteredMessage = stb.substring(stb.length() - messageToInsert.length(), stb.length());
+				br.close();
+				
+				System.out.println(lastEnteredMessage.length());
+				System.out.println(messageToInsert.length());
+				if(lastEnteredMessage.equals(messageToInsert))
+					
+					System.out.println("Duplicate message dectected");
+				else
+				{
+					FileWriter fw = new FileWriter(saveLocStr + ENV.DELIM + ENV.APP_STORAGE_CHAT_REPO_FILE, true);
+					fw.append("---- Received start ----\n[" + senderAddress + "] : " + data + "\n ---- Received end ----\n");
+					fw.close();
+				}
 			}
 			rs.close();
 			//delete all the rows from the datebaseee
