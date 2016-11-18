@@ -716,41 +716,7 @@ public class ChatApp {
 					//marker|R_adder | S_addr | iv | len | enc_Data | sig (on 0|1|2|3|4)
 
 					FileOutputStream fwEncbin = new FileOutputStream(encChatDispatchLoc);
-					/*
-					 * byte[] receiverPublicAddress = Base64.getUrlDecoder().decode(currentRemoteAddressInFocus);
-					byte[] receiverPublicKey = this.addresskeyMap.get(currentRemoteAddressInFocus);
-					byte[] senderAddressBytes = Base64.getUrlDecoder().decode(myPublicAddress);
-					byte[] sharedSecret = Curve25519.getInstance(Curve25519.BEST).calculateAgreement(receiverPublicKey, myPrivateKey);
-					MessageDigest md = MessageDigest.getInstance("SHA-256");
-					byte[] hashedSharedSecret = md.digest(sharedSecret);
-					byte[] aesKey = new byte[hashedSharedSecret.length / 2];
-					byte[] aesIV = new byte[hashedSharedSecret.length / 2];
-					System.arraycopy(hashedSharedSecret, 0, aesKey, 0, aesKey.length);
-					new SecureRandom().nextBytes(aesIV);
-
-					SecretKey key = new SecretKeySpec(aesKey, "AES");
-					Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
-			        cipher.init(Cipher.ENCRYPT_MODE, key, new IvParameterSpec(aesIV));
-
-					byte[] encData = cipher.doFinal(stringToDispatch.getBytes(StandardCharsets.UTF_8));
-					byte[] encDatalenBytes = ByteBuffer.allocate(Integer.BYTES).putInt(encData.length).array();
-
-					//S_addr | iv | len | enc_Data 
-					byte[] toSign = new byte[receiverPublicAddress.length + senderAddressBytes.length + aesIV.length + encDatalenBytes.length + encData.length];
-					System.arraycopy(receiverPublicAddress, 0, toSign, 0, receiverPublicAddress.length);
-					System.arraycopy(senderAddressBytes, 0, toSign, receiverPublicAddress.length, senderAddressBytes.length);
-					System.arraycopy(aesIV, 0, toSign, receiverPublicAddress.length + senderAddressBytes.length, aesIV.length);
-					System.arraycopy(encDatalenBytes, 0, toSign, receiverPublicAddress.length + senderAddressBytes.length + aesIV.length, encDatalenBytes.length);
-					System.arraycopy(encData, 0, toSign, receiverPublicAddress.length + senderAddressBytes.length + aesIV.length + encDatalenBytes.length, encData.length);
-
-					md.reset();
-					byte[] hashedToSign = md.digest(toSign);
-					byte[] signature = Curve25519.getInstance(Curve25519.BEST).calculateSignature(myPrivateKey, hashedToSign);
-
-					byte[] toWrite = new byte[toSign.length + signature.length];
-					System.arraycopy(toSign, 0, toWrite, 0, toSign.length);
-					System.arraycopy(signature, 0, toWrite, toSign.length, signature.length);*/
-					byte[] dispatchChatBytes = this.makeEncStuff(stringToDispatch);
+					byte[] dispatchChatBytes = this.genEncChatPacket(stringToDispatch);
 
 					//here to dispatch to the socket
 					try {
@@ -804,7 +770,7 @@ public class ChatApp {
 
 				FileOutputStream fwEncbin = new FileOutputStream(encChatDispatchLoc);	
 
-				byte[] toWrite = this.makeEncStuff(stringToDispatch);
+				byte[] toWrite = this.genEncChatPacket(stringToDispatch);
 
 				TCPClient.connectToBrowser(toWrite);
 
@@ -880,16 +846,16 @@ public class ChatApp {
 	 * @throws InvalidAlgorithmParameterException
 	 * @throws IOException 
 	 */
-	public byte[] makeEncStuff(String stringToDispatch) throws NoSuchAlgorithmException, NoSuchPaddingException, IllegalBlockSizeException, BadPaddingException, InvalidKeyException, InvalidAlgorithmParameterException, IOException 
+	public byte[] genEncChatPacket(String stringToDispatch) throws NoSuchAlgorithmException, NoSuchPaddingException, IllegalBlockSizeException, BadPaddingException, InvalidKeyException, InvalidAlgorithmParameterException, IOException 
 	{
 		byte[] receiverPublicAddress = Base64.getUrlDecoder().decode(currentRemoteAddressInFocus);
 		byte[] receiverPublicKey = this.addresskeyMap.get(currentRemoteAddressInFocus);
 		byte[] senderAddressBytes = Base64.getUrlDecoder().decode(myPublicAddress);
 		
-		if(receiverPublicKey != null)
+		/*if(receiverPublicKey != null)
 			System.out.println("Rek " + receiverPublicKey.length);
 		if(myPrivateKey != null)
-			System.out.println("MyP " + myPrivateKey.length);
+			System.out.println("MyP " + myPrivateKey.length);*/
 		
 		byte[] sharedSecret = Curve25519.getInstance(Curve25519.BEST).calculateAgreement(receiverPublicKey, myPrivateKey);
 		MessageDigest md = MessageDigest.getInstance("SHA-256");

@@ -197,7 +197,7 @@ public class AssembleFrameUtils {
 			catch(NullPointerException ex)
 			{
 				ex.printStackTrace();
-				JOptionPane.showMessageDialog(frame, "Droplet dir missing!!");
+				JOptionPane.showMessageDialog(frame, "Sorry. you have to wait a bit :)");
 			}
 			catch(Exception ex)
 			{
@@ -218,6 +218,7 @@ public class AssembleFrameUtils {
 		else
 		{	
 			File[] files =  new File(AssembleFrame.JSONDirPath).listFiles();		
+			
 			Glass glass = null;
 			try
 			{
