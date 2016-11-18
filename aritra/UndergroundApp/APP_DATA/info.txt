@@ -142,3 +142,5 @@
 /home/ubuntu/tomcat/bin/BROADCAST_SRC/1.txt
 /home/ubuntu/tomcat/bin/BROADCAST_SRC/1.txt
 /home/ubuntu/tomcat/bin/BROADCAST_SRC/1.txt
+/home/ubuntu/tomcat/bin/BROADCAST_SRC/1.txt
+/home/ubuntu/tomcat/bin/BROADCAST_SRC/1.txt
