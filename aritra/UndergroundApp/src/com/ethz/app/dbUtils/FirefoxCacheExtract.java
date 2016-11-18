@@ -186,6 +186,7 @@ public class FirefoxCacheExtract {
 				return fileName;
 			}
 		}
+		//mac
 		else
 		{
 			if(AppMain.selectedPrimaryBrowser.equals(ENV.BROWSER_FIREFOX))
@@ -200,12 +201,12 @@ public class FirefoxCacheExtract {
 			}
 			else
 			{
-				appDataLoc = "~/Library/Application Support/Google/Chrome/Default";
+				appDataLoc = System.getenv("HOME") + "/Library/Application Support/Google/Chrome/Default/Local Storage";
 				File chrome = new File(appDataLoc);
 
 				if(!chrome.exists())
 				{
-					JFileChooser chooser = new JFileChooser(); 
+					JFileChooser chooser = new JFileChooser(System.getenv("HOME") + "/Library/Application Support/Google/Chrome"); 
 					chooser.setDialogTitle("Chrome installation not found. Choose Local storage dir");
 					chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 
@@ -221,6 +222,7 @@ public class FirefoxCacheExtract {
 					e.printStackTrace();
 				}
 
+				APP_DATA_LOC_CHROME = appDataLoc;
 				fileName = ENV.REPLICATED_CHROME_DB;
 				databaseFile = fileName;
 				return fileName;
