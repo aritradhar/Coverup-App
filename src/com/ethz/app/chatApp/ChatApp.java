@@ -893,8 +893,9 @@ public class ChatApp {
 	public byte[] genEncChatPacket(String stringToDispatch, boolean broadCast) throws NoSuchAlgorithmException, NoSuchPaddingException, IllegalBlockSizeException, BadPaddingException, InvalidKeyException, InvalidAlgorithmParameterException, IOException 
 	{
 		if(broadCast)
-			return null;
-		
+		{
+			return genEncChatPacketForBroadcast(stringToDispatch);
+		}
 		
 		byte[] receiverPublicAddress = Base64.getUrlDecoder().decode(currentRemoteAddressInFocus);
 		byte[] receiverPublicKey = this.addresskeyMap.get(currentRemoteAddressInFocus);
@@ -979,7 +980,6 @@ public class ChatApp {
 	 */
 	public byte[] genEncChatPacketForBroadcast(String stringToDispatch) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, InvalidAlgorithmParameterException, IllegalBlockSizeException, BadPaddingException 
 	{
-		byte[] receiverPublicAddress = Base64.getUrlDecoder().decode(currentRemoteAddressInFocus);
 		byte[] receiverPublicKey = this.addresskeyMap.get(currentRemoteAddressInFocus);
 			
 		byte[] sharedSecret = Curve25519.getInstance(Curve25519.BEST).calculateAgreement(receiverPublicKey, myPrivateKey);
