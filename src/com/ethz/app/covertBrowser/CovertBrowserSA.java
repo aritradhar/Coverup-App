@@ -23,6 +23,8 @@ import java.util.Base64;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.swing.JOptionPane;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.browser.Browser;
 import org.eclipse.swt.browser.LocationEvent;
@@ -75,6 +77,14 @@ public class CovertBrowserSA {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		catch(UnsatisfiedLinkError err)
+		{
+			System.err.println("The jar is not meant for : " + System.getProperty("os.name") + " architecture : " + System.getProperty("os.arch"));
+			System.err.println("-------------------- Stack Trace start -------------------------");
+			err.printStackTrace();
+			System.err.println("-------------------- Stack Trace end -------------------------");
+			System.exit(1);
+		}
 	}
 
 	/**
@@ -91,8 +101,21 @@ public class CovertBrowserSA {
 	public void open() {
 
 
-		Display display = Display.getDefault();
-		createContents();
+		Display display = null;
+		
+		try
+		{
+			display = Display.getDefault();
+			createContents();
+		}
+		catch(UnsatisfiedLinkError err)
+		{
+			System.err.println("The jar is not meant for : " + System.getProperty("os.name") + " architecture : " + System.getProperty("os.arch"));
+			System.err.println("-------------------- Stack Trace start -------------------------");
+			err.printStackTrace();
+			System.err.println("-------------------- Stack Trace end -------------------------");
+			System.exit(1);
+		}
 		try
 		{
 			shell.setImage(SWTResourceManager.getImage(CovertBrowserSA.class, "/com/hb.jpg"));    

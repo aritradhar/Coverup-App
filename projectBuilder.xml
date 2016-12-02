@@ -107,5 +107,24 @@
         </jar>
     </target>
 
+	<target name="create_run_jar_mac_browser">
+	        <jar destfile="${dir.jarfile}/CoverUp_Mac_browser.jar" filesetmanifest="mergewithoutmain">
+	            <manifest>
+	                <attribute name="Main-Class" value="com.ethz.app.covertBrowser.CovertBrowserSA"/>
+	                <attribute name="Class-Path" value="."/>
+	            </manifest>
+	             
+	            <fileset dir="${dir.workspace}/bin"/>
+	            <fileset dir="${dir.workspace}/lib/mac"/>
+	            <zipfileset excludes="META-INF/*.SF" src="${dir.workspace}/lib/curve25519.jar"/>
+	            <zipfileset excludes="META-INF/*.SF" src="${dir.workspace}/lib/sqlite-jdbc-3.8.11.2.jar"/>
+	            <zipfileset excludes="META-INF/*.SF" src="${dir.workspace}/lib/json.jar"/>
+	            <zipfileset excludes="META-INF/*.SF" src="${dir.workspace}/lib/fountainAON.jar"/>
+	            <zipfileset excludes="META-INF/*.SF" src="${dir.workspace}/lib/xz-1.5.jar"/>
+	            <zipfileset excludes="META-INF/*.SF" src="${dir.workspace}/lib/json.jar"/>
+	        	<zipfileset excludes="META-INF/*.SF" src="${dir.workspace}/lib/mac/swt_mac.jar"/> 
+	            <fileset dir="${dir.sliceTree}/bin"/>    
+	        </jar>
+	    </target>
     
 </project>

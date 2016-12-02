@@ -194,6 +194,9 @@ public class ENV {
 	
 	public static final byte CHAT_MAGIC_BYTES = (byte)0x0A;
 	public static final int CHAT_MAGIC_BYTES_LEN = 8;
+	
+	public static final byte BROADCAST_CHAT_MAGIC_BYTES = (byte)0x0B;
+	public static final int BROADCAST_CHAT_MAGIC_BYTES_LEN = 16;
 	//magic byte ends
 	//Specific exception messages for exception handling
 	public static final String EXCEPTION_INTR_MESSAGE_MAGIC_BYTES = "EXCEPTION_INTR_MESSAGE_MAGIC_BYTES";
