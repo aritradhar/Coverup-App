@@ -79,7 +79,7 @@ import com.ethz.app.poll.DataBasePollPresetPK;
  */
 public class AppMain {
 
-	private JTable table;
+	public static JTable table;
 
 	public static JFrame frame;
 

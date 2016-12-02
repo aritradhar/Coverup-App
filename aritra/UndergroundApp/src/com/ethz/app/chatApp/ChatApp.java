@@ -106,6 +106,7 @@ public class ChatApp {
 
 	private JLabel label;
 	private JButton btnMyPk;
+	private JButton btnBroadcast;
 	/**
 	 * Launch the application.
 	 * @throws UnsupportedLookAndFeelException 
@@ -308,7 +309,8 @@ public class ChatApp {
 			public void actionPerformed(ActionEvent arg0) {
 				
 				
-				JOptionPane.showMessageDialog(frame, Base64.getEncoder().encodeToString(myPublicKey));
+				//JOptionPane.showMessageDialog(frame, Base64.getEncoder().encodeToString(myPublicKey));
+				JOptionPane.showInputDialog("Your Public key", Base64.getEncoder().encodeToString(myPublicKey));
 			}
 		});
 		panel_2.add(btnMyPk);
@@ -566,7 +568,8 @@ public class ChatApp {
 					boolean dispatch = false;
 					//dispatch the string to local file storage
 					try {
-						dispatch = dispatchChat(dispatchStr.toString());
+						//directed chat
+						dispatch = dispatchChat(dispatchStr.toString(), false);
 					} catch (IOException | NoSuchAlgorithmException | InvalidKeyException | NoSuchPaddingException 
 							| InvalidAlgorithmParameterException | IllegalBlockSizeException | BadPaddingException e1) {
 						e1.printStackTrace();
@@ -594,6 +597,45 @@ public class ChatApp {
 			}
 		});
 		panel_1.add(btnDispatch);
+		
+		btnBroadcast = new JButton("Broadcast");
+		btnBroadcast.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				
+				if(dispatchStr.length() > 0)
+				{		
+					boolean dispatch = false;
+					//dispatch the string to local file storage
+					try {
+						//broadcast chat
+						dispatch = dispatchChat(dispatchStr.toString(), true);
+					} catch (IOException | NoSuchAlgorithmException | InvalidKeyException | NoSuchPaddingException 
+							| InvalidAlgorithmParameterException | IllegalBlockSizeException | BadPaddingException e1) {
+						e1.printStackTrace();
+					}
+					if(dispatch)
+					{
+						chatChatPane.setText(chatChatPane.getText() + "-------- Dispatched <Secure Broadcast> --------\n");
+						try {
+							saveChatToFile(currentRemoteAddressInFocus, "-------- Dispatched <Secure Broadcast> --------\n", true);
+						} catch (IOException e1) {
+							e1.printStackTrace();
+						}
+						dispatchStr = new StringBuffer("");
+						label.setText("0/" + ENV.FIXED_CHAT_LEN);
+					}
+					else
+					{
+						chatChatPane.setText(chatChatPane.getText() + "---Error happed during dispatched <Secure Broadcast> ---\n");
+					}
+				}
+				else
+				{
+					JOptionPane.showMessageDialog(frame, "Nothing to dispatch");
+				}
+			}
+		});
+		panel_1.add(btnBroadcast);
 		this.label = new JLabel("0/" + ENV.FIXED_CHAT_LEN);
 		panel_1.add(label);
 		label.setText("0/" + ENV.FIXED_CHAT_LEN);
@@ -674,6 +716,7 @@ public class ChatApp {
 	 * True - ok
 	 * False - do nothing
 	 * @param stringToDispatch
+	 * @param broadCast true if this is used for broadcasting the chat message
 	 * @return
 	 * @throws IOException
 	 * @throws NoSuchAlgorithmException 
@@ -683,7 +726,7 @@ public class ChatApp {
 	 * @throws BadPaddingException 
 	 * @throws IllegalBlockSizeException 
 	 */
-	private boolean dispatchChat(String stringToDispatch) throws IOException, NoSuchAlgorithmException, 
+	private boolean dispatchChat(String stringToDispatch, boolean broadCast) throws IOException, NoSuchAlgorithmException, 
 	InvalidKeyException, NoSuchPaddingException, InvalidAlgorithmParameterException, IllegalBlockSizeException, BadPaddingException
 	{
 		String chatDispatchLoc = ENV.APP_STORAGE_LOC + ENV.DELIM + ENV.APP_STORAGE_CHAT_LOC + ENV.DELIM + ENV.APP_STORAGE_CHAT_DISPATCH_LOC + ENV.DELIM + currentRemoteAddressInFocus;
@@ -716,7 +759,7 @@ public class ChatApp {
 					//marker|R_adder | S_addr | iv | len | enc_Data | sig (on 0|1|2|3|4)
 
 					FileOutputStream fwEncbin = new FileOutputStream(encChatDispatchLoc);
-					byte[] dispatchChatBytes = this.genEncChatPacket(stringToDispatch);
+					byte[] dispatchChatBytes = this.genEncChatPacket(stringToDispatch, broadCast);
 
 					//here to dispatch to the socket
 					try {
@@ -770,7 +813,7 @@ public class ChatApp {
 
 				FileOutputStream fwEncbin = new FileOutputStream(encChatDispatchLoc);	
 
-				byte[] toWrite = this.genEncChatPacket(stringToDispatch);
+				byte[] toWrite = this.genEncChatPacket(stringToDispatch, broadCast);
 
 				TCPClient.connectToBrowser(toWrite);
 
@@ -837,6 +880,7 @@ public class ChatApp {
 	/**
 	 * Make encrypted chat
 	 * @param stringToDispatch
+	 * @param broadCast true if the chat is broadcast
 	 * @return
 	 * @throws NoSuchAlgorithmException
 	 * @throws NoSuchPaddingException
@@ -846,8 +890,12 @@ public class ChatApp {
 	 * @throws InvalidAlgorithmParameterException
 	 * @throws IOException 
 	 */
-	public byte[] genEncChatPacket(String stringToDispatch) throws NoSuchAlgorithmException, NoSuchPaddingException, IllegalBlockSizeException, BadPaddingException, InvalidKeyException, InvalidAlgorithmParameterException, IOException 
+	public byte[] genEncChatPacket(String stringToDispatch, boolean broadCast) throws NoSuchAlgorithmException, NoSuchPaddingException, IllegalBlockSizeException, BadPaddingException, InvalidKeyException, InvalidAlgorithmParameterException, IOException 
 	{
+		if(broadCast)
+			return null;
+		
+		
 		byte[] receiverPublicAddress = Base64.getUrlDecoder().decode(currentRemoteAddressInFocus);
 		byte[] receiverPublicKey = this.addresskeyMap.get(currentRemoteAddressInFocus);
 		byte[] senderAddressBytes = Base64.getUrlDecoder().decode(myPublicAddress);
@@ -912,6 +960,64 @@ public class ChatApp {
 		System.out.println("Sig len : " + signature.length);
 
 		return toWrite;
+	}
+	
+	/** Create the encrypted chat packet for broadcast transmission. All such packets should be cryptographically indistinguishable.
+	 * <p>
+	 * Structure :
+	 * <p>
+	 * ENC<key = shared secret>(iv (16) | magic bytes (16) | sender's Public address | data len | data (n))
+	 * 
+	 * @param stringToDispatch
+	 * @return
+	 * @throws NoSuchAlgorithmException 
+	 * @throws NoSuchPaddingException 
+	 * @throws InvalidAlgorithmParameterException 
+	 * @throws InvalidKeyException 
+	 * @throws BadPaddingException 
+	 * @throws IllegalBlockSizeException 
+	 */
+	public byte[] genEncChatPacketForBroadcast(String stringToDispatch) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, InvalidAlgorithmParameterException, IllegalBlockSizeException, BadPaddingException 
+	{
+		byte[] receiverPublicAddress = Base64.getUrlDecoder().decode(currentRemoteAddressInFocus);
+		byte[] receiverPublicKey = this.addresskeyMap.get(currentRemoteAddressInFocus);
+			
+		byte[] sharedSecret = Curve25519.getInstance(Curve25519.BEST).calculateAgreement(receiverPublicKey, myPrivateKey);
+		MessageDigest md = MessageDigest.getInstance("SHA-256");
+		byte[] hashedSharedSecret = md.digest(sharedSecret);
+		//128 bit AES key and IV
+		byte[] aesKey = new byte[16];
+		byte[] aesIV = new byte[16];
+		System.arraycopy(hashedSharedSecret, 0, aesKey, 0, aesKey.length);
+		new SecureRandom().nextBytes(aesIV);
+
+		SecretKey key = new SecretKeySpec(aesKey, "AES");
+		Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
+		cipher.init(Cipher.ENCRYPT_MODE, key, new IvParameterSpec(aesIV));
+		
+		byte[] magicBytes = new byte[ENV.BROADCAST_CHAT_MAGIC_BYTES_LEN];
+		Arrays.fill(magicBytes, ENV.BROADCAST_CHAT_MAGIC_BYTES);
+		byte[] senderAddressBytes = Base64.getUrlDecoder().decode(myPublicAddress);
+		
+		byte[] data = stringToDispatch.getBytes(StandardCharsets.UTF_8);
+		byte[] datalenBytes = ByteBuffer.allocate(Integer.BYTES).putInt(data.length).array();
+		
+		
+		byte[] plainTextMessage = new byte[aesIV.length + magicBytes.length + senderAddressBytes.length + datalenBytes.length + data.length];
+		int tillNow = 0;
+		System.arraycopy(aesIV, 0, plainTextMessage, tillNow, aesIV.length);
+		tillNow += aesIV.length;
+		System.arraycopy(magicBytes, 0, plainTextMessage, tillNow, magicBytes.length);
+		tillNow += magicBytes.length;
+		System.arraycopy(senderAddressBytes, 0, plainTextMessage, tillNow, senderAddressBytes.length);
+		tillNow += senderAddressBytes.length;
+		System.arraycopy(datalenBytes, 0, plainTextMessage, tillNow, datalenBytes.length);
+		tillNow += datalenBytes.length;
+		System.arraycopy(data, 0, plainTextMessage, tillNow, data.length);
+	
+		byte[] encData = cipher.doFinal(plainTextMessage);
+		
+		return encData;
 	}
 
 	/**

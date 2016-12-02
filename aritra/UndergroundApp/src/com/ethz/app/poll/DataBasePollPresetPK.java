@@ -31,6 +31,7 @@ import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.text.DefaultCaret;
 
 import com.ethz.app.AppMain;
+import com.ethz.app.ProgressCellRender_1;
 import com.ethz.app.dbUtils.ChromeCacheTransfer;
 import com.ethz.app.dbUtils.FirefoxCacheExtract;
 import com.ethz.app.env.ENV;
@@ -144,6 +145,8 @@ public class DataBasePollPresetPK extends JFrame {
 					progressLabel.setText(new String(new char[]{ENV.PROGRESS_SYMB[progress++]}));
 					//System.out.println(DataBasePoll.databaseFileLocation);
 					textArea.append("\n".concat(t.messaage.toString()));
+					
+					//ProgressCellRender_1.progressBarAutoUpdate(AppMain.table);
 				} 
 				catch(NullPointerException ex)
 				{
