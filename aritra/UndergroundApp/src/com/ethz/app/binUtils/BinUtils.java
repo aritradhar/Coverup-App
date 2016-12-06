@@ -25,9 +25,11 @@ import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Base64;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -373,8 +375,7 @@ public class BinUtils {
 			
 		if(res == false)
 			throw new RuntimeException(ENV.EXCEPTION_CHAT_SIGNATURE_ERROR);
-		
-		
+			
 		byte[] sharedSecret = Curve25519.getInstance(Curve25519.BEST).calculateAgreement(senderPublicKey, BinUtils.myPrivateKey);
 		
 		md.reset();
@@ -401,12 +402,75 @@ public class BinUtils {
 				Base64.getUrlEncoder().encodeToString(hashedToVerify)};
 	}
 	
-	public static void processBroadcastChatMessages(JSONArray jArray)
+	public static List<String[]> processBroadcastChatMessages(JSONArray jArray) throws NoSuchAlgorithmException
 	{
+		List<String[]> toRet = new ArrayList<>();
+		
 		for (Object object : jArray) {
 			byte[] chat = Base64.getDecoder().decode(object.toString());
+			byte[] iv = new byte[16];
+			//offset by the IV and the curve25519 signature bytes
+			byte[] encryptedPayload = new byte[chat.length - 16 - 64];
+			System.arraycopy(chat, 0, iv, 0, 16);
+			System.arraycopy(chat, 16, encryptedPayload, 0, encryptedPayload.length);
+			byte[] signature = new byte[64];
+			System.arraycopy(chat, 16 +  encryptedPayload.length, signature, 0, 64);
 			
+			MessageDigest md = MessageDigest.getInstance("SHA-256");
+			byte[] hashedToVerify = md.digest(Arrays.copyOf(chat, chat.length - 16 - 64));
+			
+			//get all pks for shared secret
+			for(byte[] senderPublicKey : BinUtils.addresskeyMap.values())
+			{
+				byte[] sharedSecret = Curve25519.getInstance(Curve25519.BEST).calculateAgreement(senderPublicKey, BinUtils.myPrivateKey);
+				md.reset();
+				byte[] hashedSharedSecret = md.digest(sharedSecret);
+				byte[] aesKey = new byte[hashedSharedSecret.length / 2];
+				System.arraycopy(hashedSharedSecret, 0, aesKey, 0, aesKey.length);
+				
+				SecretKey key = new SecretKeySpec(aesKey, "AES");
+				Cipher cipher;
+				try {
+					cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
+					cipher.init(Cipher.DECRYPT_MODE, key, new IvParameterSpec(iv));
+					
+					byte[] decryptedChatPayload = cipher.doFinal(encryptedPayload);
+					byte[] extractedMagicBytes = new byte[ENV.BROADCAST_CHAT_MAGIC_BYTES_LEN];
+					System.arraycopy(decryptedChatPayload, 0, extractedMagicBytes, 0, extractedMagicBytes.length);
+					byte[] idealChatMagicBytes = new byte[ENV.BROADCAST_CHAT_MAGIC_BYTES_LEN];;
+					Arrays.fill(idealChatMagicBytes, ENV.BROADCAST_CHAT_MAGIC_BYTES);
+					
+					if(!Arrays.equals(extractedMagicBytes, idealChatMagicBytes))
+						continue;
+					
+					if(!Curve25519.getInstance(Curve25519.BEST).verifySignature(senderPublicKey, hashedToVerify, signature))
+						continue;
+					
+					//TADA
+					byte[] senderPublicAddress = new byte[ENV.CHAT_PUBLIC_ADDRESS_LEN];
+					int tillNow = extractedMagicBytes.length;
+					System.arraycopy(decryptedChatPayload, tillNow, senderPublicAddress, 0, senderPublicAddress.length);
+					tillNow += senderPublicAddress.length;
+					byte[] dataLenBytes = new byte[Integer.BYTES];
+					System.arraycopy(decryptedChatPayload, tillNow, dataLenBytes, 0, dataLenBytes.length);
+					tillNow += dataLenBytes.length;
+					int dataLen = ByteBuffer.wrap(dataLenBytes).getInt();
+					byte[] decryptedChat = new byte[dataLen];
+					System.arraycopy(decryptedChatPayload, tillNow, decryptedChat, 0, dataLen);
+					tillNow += decryptedChat.length;
+					
+					String sernderAddressStr = Base64.getUrlEncoder().encodeToString(senderPublicKey);
+					
+					toRet.add(new String[]{sernderAddressStr, new String(decryptedChat, StandardCharsets.UTF_8), 
+							Base64.getUrlEncoder().encodeToString(hashedToVerify)});
+					
+					
+				} catch (NoSuchPaddingException | InvalidKeyException | InvalidAlgorithmParameterException | IllegalBlockSizeException | BadPaddingException e) {
+					continue;
+				}				
+			}			
 		}
+		return toRet;
 	}
 	
 	
