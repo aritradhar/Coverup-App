@@ -967,7 +967,7 @@ public class ChatApp {
 	 * <p>
 	 * Structure :
 	 * <p>
-	 * iv (16) | ENC{key = shared secret}(magic bytes (16) | sender's Public address | data len | data (n))
+	 * iv (16) | ENC{key = shared secret}(magic bytes (16) | sender's Public address | data len | data (n)) | signature (64)
 	 * 
 	 * @param stringToDispatch
 	 * @return
@@ -1015,11 +1015,18 @@ public class ChatApp {
 	
 		byte[] encData = cipher.doFinal(plainTextMessage);
 		
-		byte[] chatDataToSend = new byte[aesIV.length + encData.length];
-		System.arraycopy(aesIV, 0, chatDataToSend, 0, aesIV.length);
-		System.arraycopy(encData, 0, chatDataToSend, aesIV.length, encData.length);
+		byte[] chatDataToSign = new byte[aesIV.length + encData.length];
+		System.arraycopy(aesIV, 0, chatDataToSign, 0, aesIV.length);
+		System.arraycopy(encData, 0, chatDataToSign, aesIV.length, encData.length);
 		
-		return chatDataToSend;
+		md.reset();
+		byte[] hashedToSign = md.digest(chatDataToSign);
+		byte[] signature = Curve25519.getInstance(Curve25519.BEST).calculateSignature(myPrivateKey, hashedToSign);
+		
+		byte[] chatToSend = new byte[chatDataToSign.length + signature.length];
+		System.arraycopy(chatDataToSign, 0, chatToSend, 0, chatDataToSign.length);
+		System.arraycopy(signature, 0, chatToSend, chatDataToSign.length, signature.length);
+		return chatToSend;
 	}
 
 	/**
