@@ -40,6 +40,7 @@ import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 import javax.swing.JOptionPane;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.whispersystems.curve25519.Curve25519;
 import org.whispersystems.curve25519.Curve25519KeyPair;
@@ -221,7 +222,7 @@ public class BinUtils {
 		
 		byte[] signature = new byte[64];
 		System.arraycopy(dropletBytes, tillNow, signature, 0, signature.length);
-		
+		tillNow += signature.length;
 		
 		byte[] dropletByte = new byte[seedLenBytes.length + seedBytes.length + num_chunksBytes.length + dataLenBytes.length + data.length];
 
@@ -243,7 +244,6 @@ public class BinUtils {
 		String signatureBase64 = null;;
 		try 
 		{
-
 			MessageDigest md = MessageDigest.getInstance("SHA-256");
 			byte[] hashDataToSign = md.digest(dataToSign);
 			boolean verifiyResult =  Curve25519.getInstance("best").verifySignature(serverPublicKey, hashDataToSign, signature);
@@ -259,11 +259,28 @@ public class BinUtils {
 			throw new RuntimeException("SHA-256 provider missing");
 		}
 		
+		
+		byte[] numChatByte = new byte[Integer.BYTES];
+		System.arraycopy(dropletByte, tillNow, numChatByte, 0, numChatByte.length);
+		tillNow += numChatByte.length;
+		int numChat = ByteBuffer.wrap(numChatByte).getInt();
+		int chatLen = ENV.FIXED_CHAT_LEN * numChat;
+		byte[] megaCharBlob = new byte[chatLen];
+		System.arraycopy(dropletByte, tillNow, megaCharBlob, 0, megaCharBlob.length);
+		
+		
 		jObject.put("url", url);
 		jObject.put("f_id", f_id);
 		jObject.put("droplet", dropletJson.toString());
 		jObject.put("signature", signatureBase64);	
-		
+		JSONArray jArray = new JSONArray();
+		for(int i = 0; i < numChat; i++)
+		{
+			byte[] singleChat = new byte[ENV.FIXED_CHAT_LEN];
+			System.arraycopy(megaCharBlob, i * ENV.FIXED_CHAT_LEN, singleChat, 0, ENV.FIXED_CHAT_LEN);
+			jArray.put(Base64.getEncoder().encodeToString(singleChat));
+		}
+		jObject.put("message", jArray);
 		
 		//System.out.println(dropletJson.toString(2));
 		return jObject.toString(2);
@@ -382,6 +399,14 @@ public class BinUtils {
         
 		return new String[]{sernderAddressStr, new String(decryptedChat, StandardCharsets.UTF_8), 
 				Base64.getUrlEncoder().encodeToString(hashedToVerify)};
+	}
+	
+	public static void processBroadcastChatMessages(JSONArray jArray)
+	{
+		for (Object object : jArray) {
+			byte[] chat = Base64.getDecoder().decode(object.toString());
+			
+		}
 	}
 	
 	

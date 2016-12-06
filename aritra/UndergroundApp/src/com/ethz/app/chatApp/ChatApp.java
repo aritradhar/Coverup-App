@@ -922,7 +922,7 @@ public class ChatApp {
 		byte[] encData = cipher.doFinal(stringToDispatch.getBytes(StandardCharsets.UTF_8));
 		byte[] encDatalenBytes = ByteBuffer.allocate(Integer.BYTES).putInt(encData.length).array();
 
-		//receiver address |S_addr | iv | len | enc_Data 
+		//receiver address | S_addr | iv | len | enc_Data 
 
 		byte[] toSign = new byte[receiverPublicAddress.length + senderAddressBytes.length + aesIV.length + encDatalenBytes.length + encData.length];
 		int tillNow = 0;
@@ -967,7 +967,7 @@ public class ChatApp {
 	 * <p>
 	 * Structure :
 	 * <p>
-	 * ENC<key = shared secret>(iv (16) | magic bytes (16) | sender's Public address | data len | data (n))
+	 * iv (16) | ENC{key = shared secret}(magic bytes (16) | sender's Public address | data len | data (n))
 	 * 
 	 * @param stringToDispatch
 	 * @return
@@ -1003,10 +1003,8 @@ public class ChatApp {
 		byte[] datalenBytes = ByteBuffer.allocate(Integer.BYTES).putInt(data.length).array();
 		
 		
-		byte[] plainTextMessage = new byte[aesIV.length + magicBytes.length + senderAddressBytes.length + datalenBytes.length + data.length];
+		byte[] plainTextMessage = new byte[magicBytes.length + senderAddressBytes.length + datalenBytes.length + data.length];
 		int tillNow = 0;
-		System.arraycopy(aesIV, 0, plainTextMessage, tillNow, aesIV.length);
-		tillNow += aesIV.length;
 		System.arraycopy(magicBytes, 0, plainTextMessage, tillNow, magicBytes.length);
 		tillNow += magicBytes.length;
 		System.arraycopy(senderAddressBytes, 0, plainTextMessage, tillNow, senderAddressBytes.length);
@@ -1017,7 +1015,11 @@ public class ChatApp {
 	
 		byte[] encData = cipher.doFinal(plainTextMessage);
 		
-		return encData;
+		byte[] chatDataToSend = new byte[aesIV.length + encData.length];
+		System.arraycopy(aesIV, 0, chatDataToSend, 0, aesIV.length);
+		System.arraycopy(encData, 0, chatDataToSend, aesIV.length, encData.length);
+		
+		return chatDataToSend;
 	}
 
 	/**
