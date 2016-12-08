@@ -186,7 +186,7 @@ public class ChatApp {
 							chatChatPane.setText(oldChats);
 							currentRemoteAddressInFocus = oldChatLogBox.getSelectedItem().toString();
 							dispatchStr = new StringBuffer("");
-							label.setText("0/" + ENV.FIXED_CHAT_LEN);
+							label.setText("0/" + ENV.FIXED_CHAT_TYPE_LEN);
 						}
 					}
 					else
@@ -200,7 +200,7 @@ public class ChatApp {
 							chatChatPane.setText(oldChats);
 							currentRemoteAddressInFocus = oldChatLogBox.getSelectedItem().toString();
 							dispatchStr = new StringBuffer("");
-							label.setText("0/" + ENV.FIXED_CHAT_LEN);
+							label.setText("0/" + ENV.FIXED_CHAT_TYPE_LEN);
 
 						}
 					}
@@ -349,7 +349,7 @@ public class ChatApp {
 
 								currentRemoteAddressInFocus =  txtRemotePublicKey.getText();
 								dispatchStr = new StringBuffer("");
-								label.setText("0/" + ENV.FIXED_CHAT_LEN);
+								label.setText("0/" + ENV.FIXED_CHAT_TYPE_LEN);
 
 							}
 						}
@@ -365,7 +365,7 @@ public class ChatApp {
 							makeNewChatDir(txtRemotePublicKey.getText());
 							currentRemoteAddressInFocus = txtRemotePublicKey.getText();
 							dispatchStr = new StringBuffer("");
-							label.setText("0/" + ENV.FIXED_CHAT_LEN);
+							label.setText("0/" + ENV.FIXED_CHAT_TYPE_LEN);
 
 						}
 					}
@@ -425,8 +425,8 @@ public class ChatApp {
 
 			@Override
 			public void removeUpdate(DocumentEvent arg0) {
-				label.setText((chatText.getText().length() + dispatchStr.length()) + "/" + ENV.FIXED_CHAT_LEN);	
-				if((chatText.getText().length() + dispatchStr.length()) > ENV.FIXED_CHAT_LEN)
+				label.setText((chatText.getText().length() + dispatchStr.length()) + "/" + ENV.FIXED_CHAT_TYPE_LEN);	
+				if((chatText.getText().length() + dispatchStr.length()) > ENV.FIXED_CHAT_TYPE_LEN)
 				{
 					allowDispatch = false;
 					btnSend.setEnabled(false);
@@ -440,8 +440,8 @@ public class ChatApp {
 
 			@Override
 			public void insertUpdate(DocumentEvent arg0) {
-				label.setText((chatText.getText().length() + dispatchStr.length()) + "/" + ENV.FIXED_CHAT_LEN);		
-				if((chatText.getText().length() + dispatchStr.length()) > ENV.FIXED_CHAT_LEN)
+				label.setText((chatText.getText().length() + dispatchStr.length()) + "/" + ENV.FIXED_CHAT_TYPE_LEN);		
+				if((chatText.getText().length() + dispatchStr.length()) > ENV.FIXED_CHAT_TYPE_LEN)
 				{
 					allowDispatch = false;
 					btnSend.setEnabled(false);
@@ -455,8 +455,8 @@ public class ChatApp {
 
 			@Override
 			public void changedUpdate(DocumentEvent arg0) {		
-				label.setText((chatText.getText().length() + dispatchStr.length()) + "/" + ENV.FIXED_CHAT_LEN);	
-				if((chatText.getText().length() + dispatchStr.length()) >= ENV.FIXED_CHAT_LEN)
+				label.setText((chatText.getText().length() + dispatchStr.length()) + "/" + ENV.FIXED_CHAT_TYPE_LEN);	
+				if((chatText.getText().length() + dispatchStr.length()) >= ENV.FIXED_CHAT_TYPE_LEN)
 				{
 					allowDispatch = false;
 					btnSend.setEnabled(false);
@@ -583,7 +583,7 @@ public class ChatApp {
 							e1.printStackTrace();
 						}
 						dispatchStr = new StringBuffer("");
-						label.setText("0/" + ENV.FIXED_CHAT_LEN);
+						label.setText("0/" + ENV.FIXED_CHAT_TYPE_LEN);
 					}
 					else
 					{
@@ -609,6 +609,7 @@ public class ChatApp {
 					try {
 						//broadcast chat
 						dispatch = dispatchChat(dispatchStr.toString(), true);
+						
 					} catch (IOException | NoSuchAlgorithmException | InvalidKeyException | NoSuchPaddingException 
 							| InvalidAlgorithmParameterException | IllegalBlockSizeException | BadPaddingException e1) {
 						e1.printStackTrace();
@@ -622,7 +623,7 @@ public class ChatApp {
 							e1.printStackTrace();
 						}
 						dispatchStr = new StringBuffer("");
-						label.setText("0/" + ENV.FIXED_CHAT_LEN);
+						label.setText("0/" + ENV.FIXED_CHAT_TYPE_LEN);
 					}
 					else
 					{
@@ -636,9 +637,9 @@ public class ChatApp {
 			}
 		});
 		panel_1.add(btnBroadcast);
-		this.label = new JLabel("0/" + ENV.FIXED_CHAT_LEN);
+		this.label = new JLabel("0/" + ENV.FIXED_CHAT_TYPE_LEN);
 		panel_1.add(label);
-		label.setText("0/" + ENV.FIXED_CHAT_LEN);
+		label.setText("0/" + ENV.FIXED_CHAT_TYPE_LEN);
 	}
 
 
@@ -779,7 +780,7 @@ public class ChatApp {
 						if(e.getMessage().equals(ENV.EXCEPTION_BROWSER_EXTENSION_MISSING))
 						{
 							JOptionPane.showMessageDialog(frame, ENV.EXCEPTION_BROWSER_EXTENSION_MISSING, 
-									ENV.EXCEPTION_BROWSER_EXTENSION_MISSING, JOptionPane.ERROR_MESSAGE);	
+									"Error", JOptionPane.ERROR_MESSAGE);	
 						}
 						fwEncbin.close();
 						return false;
@@ -826,7 +827,7 @@ public class ChatApp {
 			} catch (Exception e1) {
 
 				if(e1.getMessage().equals(ENV.EXCEPTION_BROWSER_EXTENSION_MISSING))
-					JOptionPane.showMessageDialog(frame, ENV.EXCEPTION_BROWSER_EXTENSION_MISSING, ENV.EXCEPTION_BROWSER_EXTENSION_MISSING, JOptionPane.ERROR_MESSAGE);
+					JOptionPane.showMessageDialog(frame, ENV.EXCEPTION_BROWSER_EXTENSION_MISSING, "Error", JOptionPane.ERROR_MESSAGE);
 				
 				else
 					JOptionPane.showMessageDialog(frame, "Some other exception we have no idea about :P", "Error", JOptionPane.ERROR_MESSAGE);
@@ -878,10 +879,10 @@ public class ChatApp {
 	}
 
 	/**
-	 * Make encrypted chat
+	 * Make encrypted chat packet
 	 * @param stringToDispatch
 	 * @param broadCast true if the chat is broadcast
-	 * @return
+	 * @return Encrypted chat packet in byte array
 	 * @throws NoSuchAlgorithmException
 	 * @throws NoSuchPaddingException
 	 * @throws IllegalBlockSizeException
@@ -968,7 +969,8 @@ public class ChatApp {
 	 * Structure :
 	 * <p>
 	 * iv (16) | ENC{key = shared secret}(magic bytes (16) | sender's Public address | data len | data (n)) | signature (64)
-	 * 
+	 * <p>
+	 * Signature is calculated over entire payload which is: (iv | encrypted chat data)
 	 * @param stringToDispatch
 	 * @return
 	 * @throws NoSuchAlgorithmException 
@@ -1000,6 +1002,21 @@ public class ChatApp {
 		byte[] senderAddressBytes = Base64.getUrlDecoder().decode(myPublicAddress);
 		
 		byte[] data = stringToDispatch.getBytes(StandardCharsets.UTF_8);
+		
+		// the data is to be padded to make sure the encrypted packet reached to the size of ENV.FIXED_ENC_CHAT_PACK_LEN
+		int dataLenBeforePadding = data.length;
+		int paddingLength = ENV.FIXED_ENC_CHAT_PACK_LEN - dataLenBeforePadding - (magicBytes.length + senderAddressBytes.length + Integer.BYTES);		
+		if(paddingLength > 0)
+		{
+			byte[] pad = new byte[paddingLength];
+			Arrays.fill(pad, (byte) 0x20); //adding spaces after the message will not change the textual meaning.
+			byte[] tempData = new byte[dataLenBeforePadding + paddingLength];
+			System.arraycopy(data, 0, tempData, 0, data.length);
+			System.arraycopy(pad, 0, tempData, data.length, paddingLength);
+			data = new byte[tempData.length];
+			System.arraycopy(tempData, 0, data, 0, tempData.length);
+		}
+		
 		byte[] datalenBytes = ByteBuffer.allocate(Integer.BYTES).putInt(data.length).array();
 		
 		
@@ -1012,7 +1029,8 @@ public class ChatApp {
 		System.arraycopy(datalenBytes, 0, plainTextMessage, tillNow, datalenBytes.length);
 		tillNow += datalenBytes.length;
 		System.arraycopy(data, 0, plainTextMessage, tillNow, data.length);
-	
+		
+		
 		byte[] encData = cipher.doFinal(plainTextMessage);
 		
 		byte[] chatDataToSign = new byte[aesIV.length + encData.length];
@@ -1026,6 +1044,19 @@ public class ChatApp {
 		byte[] chatToSend = new byte[chatDataToSign.length + signature.length];
 		System.arraycopy(chatDataToSign, 0, chatToSend, 0, chatDataToSign.length);
 		System.arraycopy(signature, 0, chatToSend, chatDataToSign.length, signature.length);
+		
+		//test
+		try
+		{
+			FileWriter fs = new FileWriter("chatbroadcast.txt");
+			fs.write(Base64.getEncoder().encodeToString(chatToSend));
+			fs.close();
+		}
+		catch(Exception ex)
+		{
+			ex.printStackTrace();
+		}
+		//end test
 		return chatToSend;
 	}
 
