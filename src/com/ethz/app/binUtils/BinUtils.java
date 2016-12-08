@@ -261,29 +261,36 @@ public class BinUtils {
 			throw new RuntimeException("SHA-256 provider missing");
 		}
 		
-		
-		byte[] numChatByte = new byte[Integer.BYTES];
-		System.arraycopy(dropletByte, tillNow, numChatByte, 0, numChatByte.length);
-		tillNow += numChatByte.length;
-		int numChat = ByteBuffer.wrap(numChatByte).getInt();
-		int chatLen = ENV.FIXED_CHAT_LEN * numChat;
-		byte[] megaCharBlob = new byte[chatLen];
-		System.arraycopy(dropletByte, tillNow, megaCharBlob, 0, megaCharBlob.length);
-		
-		
 		jObject.put("url", url);
 		jObject.put("f_id", f_id);
 		jObject.put("droplet", dropletJson.toString());
-		jObject.put("signature", signatureBase64);	
-		JSONArray jArray = new JSONArray();
-		for(int i = 0; i < numChat; i++)
-		{
-			byte[] singleChat = new byte[ENV.FIXED_CHAT_LEN];
-			System.arraycopy(megaCharBlob, i * ENV.FIXED_CHAT_LEN, singleChat, 0, ENV.FIXED_CHAT_LEN);
-			jArray.put(Base64.getEncoder().encodeToString(singleChat));
-		}
-		jObject.put("message", jArray);
+		jObject.put("signature", signatureBase64);
 		
+		//this will only work for the new broadcast messaging protocol which also includes messages after the droplet data
+		try
+		{
+			byte[] numChatByte = new byte[Integer.BYTES];
+			System.arraycopy(dropletByte, tillNow, numChatByte, 0, numChatByte.length);
+			tillNow += numChatByte.length;
+			int numChat = ByteBuffer.wrap(numChatByte).getInt();
+			int chatLen = ENV.FIXED_CHAT_LEN * numChat;
+			byte[] megaCharBlob = new byte[chatLen];
+			System.arraycopy(dropletByte, tillNow, megaCharBlob, 0, megaCharBlob.length);
+
+
+			JSONArray jArray = new JSONArray();
+			for(int i = 0; i < numChat; i++)
+			{
+				byte[] singleChat = new byte[ENV.FIXED_CHAT_LEN];
+				System.arraycopy(megaCharBlob, i * ENV.FIXED_CHAT_LEN, singleChat, 0, ENV.FIXED_CHAT_LEN);
+				jArray.put(Base64.getEncoder().encodeToString(singleChat));
+			}
+			jObject.put("message", jArray);
+		}
+		catch(Exception ex)
+		{
+			messageLog.append("--- Data in old protocol specification ---");
+		}
 		//System.out.println(dropletJson.toString(2));
 		return jObject.toString(2);
 	}
@@ -402,11 +409,19 @@ public class BinUtils {
 				Base64.getUrlEncoder().encodeToString(hashedToVerify)};
 	}
 	
+	/**
+	 * Process all the encrypted chat messages from the broadcast, Most of them would be random
+	 * @param jArray
+	 * @return
+	 * @throws NoSuchAlgorithmException
+	 */
+	
 	public static List<String[]> processBroadcastChatMessages(JSONArray jArray) throws NoSuchAlgorithmException
 	{
 		List<String[]> toRet = new ArrayList<>();
 		
-		for (Object object : jArray) {
+		for (Object object : jArray) 
+		{
 			byte[] chat = Base64.getDecoder().decode(object.toString());
 			byte[] iv = new byte[16];
 			//offset by the IV and the curve25519 signature bytes
@@ -417,7 +432,7 @@ public class BinUtils {
 			System.arraycopy(chat, 16 +  encryptedPayload.length, signature, 0, 64);
 			
 			MessageDigest md = MessageDigest.getInstance("SHA-256");
-			byte[] hashedToVerify = md.digest(Arrays.copyOf(chat, chat.length - 16 - 64));
+			byte[] hashedToVerify = md.digest(Arrays.copyOf(chat, chat.length - 64));
 			
 			//get all pks for shared secret
 			for(byte[] senderPublicKey : BinUtils.addresskeyMap.values())
@@ -429,8 +444,9 @@ public class BinUtils {
 				System.arraycopy(hashedSharedSecret, 0, aesKey, 0, aesKey.length);
 				
 				SecretKey key = new SecretKeySpec(aesKey, "AES");
-				Cipher cipher;
+				Cipher cipher = null;
 				try {
+					
 					cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
 					cipher.init(Cipher.DECRYPT_MODE, key, new IvParameterSpec(iv));
 					
@@ -443,10 +459,13 @@ public class BinUtils {
 					if(!Arrays.equals(extractedMagicBytes, idealChatMagicBytes))
 						continue;
 					
+					//String s1 = Base64.getEncoder().encodeToString(senderPublicKey);
+					//String s2 = Base64.getEncoder().encodeToString(myPublicKey);
+					
 					if(!Curve25519.getInstance(Curve25519.BEST).verifySignature(senderPublicKey, hashedToVerify, signature))
 						continue;
 					
-					//TADA
+					//TADA :)
 					byte[] senderPublicAddress = new byte[ENV.CHAT_PUBLIC_ADDRESS_LEN];
 					int tillNow = extractedMagicBytes.length;
 					System.arraycopy(decryptedChatPayload, tillNow, senderPublicAddress, 0, senderPublicAddress.length);
@@ -461,13 +480,22 @@ public class BinUtils {
 					
 					String sernderAddressStr = Base64.getUrlEncoder().encodeToString(senderPublicKey);
 					
-					toRet.add(new String[]{sernderAddressStr, new String(decryptedChat, StandardCharsets.UTF_8), 
+					//da bum tss
+					toRet.add(new String[]{sernderAddressStr, new String(decryptedChat, StandardCharsets.UTF_8).trim(), 
 							Base64.getUrlEncoder().encodeToString(hashedToVerify)});
 					
+					break;
 					
-				} catch (NoSuchPaddingException | InvalidKeyException | InvalidAlgorithmParameterException | IllegalBlockSizeException | BadPaddingException e) {
+				} 
+				//not TADA :(
+				catch (NoSuchPaddingException | InvalidKeyException | InvalidAlgorithmParameterException | IllegalBlockSizeException | BadPaddingException e) {
+					//e.printStackTrace();
 					continue;
-				}				
+				} catch (Exception e1) {
+					//any other problem
+					e1.printStackTrace();
+					continue;
+				}
 			}			
 		}
 		return toRet;
@@ -560,15 +588,21 @@ public class BinUtils {
 		
 		//byte[] b = Files.readAllBytes(new File("C:\\Users\\Aritra\\workspace_Mars\\UndergroundApp\\APP_DATA\\DROPLET_BIN\\134211151\\5.bin").toPath());
 		//System.out.println(b.length);
+		initializeChatData();
 		
-		
-		BufferedReader br = new BufferedReader(new FileReader("binResp.txt"));
+		BufferedReader br = new BufferedReader(new FileReader("chatbroadcast.txt"));
 		String s = br.readLine();
 		br.close();
 		
-		String j = dropletBinToDropletJson(Base64.getDecoder().decode(s), Base64.getUrlDecoder().decode("90I1INgfeam-0JwxP2Vfgw9eSQGQjz3WxLO1wu1n8Cg="), new StringBuffer());
+		//byte[] decodedChatData = Base64.getDecoder().decode(s);
+		
+		JSONArray jArray = new JSONArray();
+		jArray.put(s);
+		
+		List<String[]> j = processBroadcastChatMessages(jArray);
 		
 		System.out.println(j);
+		
 		
 		//String j = tableBinToTableJson(Base64.getDecoder().decode(s), Base64.getUrlDecoder().decode("90I1INgfeam-0JwxP2Vfgw9eSQGQjz3WxLO1wu1n8Cg="));
 		

@@ -424,88 +424,91 @@ public class RepeatedDatabaseCheck {
 			fwUrl.append(dropletUrl);
 			fwUrl.close();
 		}
+
+
 		//////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		//start of broadcast chat handle
 		//now put the chats to db
-
-		JSONArray messageArray = jObject.getJSONArray("message");
-		List<String[]> messageList = BinUtils.processBroadcastChatMessages(messageArray);
-
-		for(String[] data : messageList)
+		if(jObject.has("message"))
 		{
-			String senderAddress = data[0];
-			String storeData = data[1];
-			String dataSig = data[2];
-			boolean poll = false;
-			if(lastChatHash == null)
-			{
-				lastChatHash = dataSig;
-				poll = true;
-			}
-			else if(!lastChatHash.equals(dataSig))
-				poll = true;
-			else
-				poll = false;
+			JSONArray messageArray = jObject.getJSONArray("message");
+			List<String[]> messageList = BinUtils.processBroadcastChatMessages(messageArray);
 
-			if(poll)
+			for(String[] data : messageList)
 			{
-				Connection c = null;
-				try 
-				{					
-					Class.forName("org.sqlite.JDBC");
-					c = DriverManager.getConnection("jdbc:sqlite:" + ENV.APP_STORAGE_INCOMING_CHAT_DATABASE_FILE);
-				} 
-				catch ( Exception e ) 
+				String senderAddress = data[0];
+				String storeData = data[1];
+				String dataSig = data[2];
+				boolean poll = false;
+				if(lastChatHash == null)
 				{
-					System.err.println( e.getClass().getName() + ": " + e.getMessage() );
-					return;
+					lastChatHash = dataSig;
+					poll = true;
 				}
+				else if(!lastChatHash.equals(dataSig))
+					poll = true;
+				else
+					poll = false;
 
-				Statement stmt;
-				try {
-					stmt = c.createStatement();
-					ResultSet rs = stmt.executeQuery("SELECT COUNT(*) FROM incoming_chat WHERE signature = \'" + dataSig + "\';" );
-					int size = 0;
-
-					while(rs.next())
-						size = rs.getInt(1);
-
-					if(size == 0)
+				if(poll)
+				{
+					Connection c = null;
+					try 
+					{					
+						Class.forName("org.sqlite.JDBC");
+						c = DriverManager.getConnection("jdbc:sqlite:" + ENV.APP_STORAGE_INCOMING_CHAT_DATABASE_FILE);
+					} 
+					catch ( Exception e ) 
 					{
-						try
-						{					
-							// if the chat has ; problem. Encode it to base 64
-							stmt.executeUpdate("INSERT INTO incoming_chat (sender,data,signature) VALUES (\'" 
-									+ senderAddress + "\',\'" + Base64.getMimeEncoder().encodeToString(storeData.getBytes(StandardCharsets.UTF_8))
-									+ "\',\'" + dataSig +"\');" );
-							//stmt.executeUpdate("INSERT INTO incoming_chat (sender,data,signature) VALUES ('bla', 'bla', '5');" );
-							this.messaage.append("\nChat with signature : " + dataSig + " inserted into the database\n-----------------------------------------------");
-
-						}
-						catch(SQLException ex1)
-						{
-							if(ex1.getMessage().contains("UNIQUE constraint failed"))
-								this.messaage.append("\n Chat with signature : " + dataSig + " exists skipped ... \n-----------------------------------------------");
-							else
-								ex1.printStackTrace();
-						}					
+						System.err.println( e.getClass().getName() + ": " + e.getMessage() );
+						return;
 					}
-					else
-						this.messaage.append("\nChat with signature : " + dataSig + " exists skipped ... \n-----------------------------------------------");
 
-					stmt.close();
-					rs.close();
-					c.close();
-					return;
+					Statement stmt;
+					try {
+						stmt = c.createStatement();
+						ResultSet rs = stmt.executeQuery("SELECT COUNT(*) FROM incoming_chat WHERE signature = \'" + dataSig + "\';" );
+						int size = 0;
 
-				} catch (SQLException e) {
-					e.printStackTrace();
-					return;
+						while(rs.next())
+							size = rs.getInt(1);
+
+						if(size == 0)
+						{
+							try
+							{					
+								// if the chat has ; problem. Encode it to base 64
+								stmt.executeUpdate("INSERT INTO incoming_chat (sender,data,signature) VALUES (\'" 
+										+ senderAddress + "\',\'" + Base64.getMimeEncoder().encodeToString(storeData.getBytes(StandardCharsets.UTF_8))
+										+ "\',\'" + dataSig +"\');" );
+								//stmt.executeUpdate("INSERT INTO incoming_chat (sender,data,signature) VALUES ('bla', 'bla', '5');" );
+								this.messaage.append("\nChat with signature : " + dataSig + " inserted into the database\n-----------------------------------------------");
+
+							}
+							catch(SQLException ex1)
+							{
+								if(ex1.getMessage().contains("UNIQUE constraint failed"))
+									this.messaage.append("\n Chat with signature : " + dataSig + " exists skipped ... \n-----------------------------------------------");
+								else
+									ex1.printStackTrace();
+							}					
+						}
+						else
+							this.messaage.append("\nChat with signature : " + dataSig + " exists skipped ... \n-----------------------------------------------");
+
+						stmt.close();
+						rs.close();
+						c.close();
+						return;
+
+					} catch (SQLException e) {
+						e.printStackTrace();
+						return;
+					}
 				}
+
 			}
-
 		}
-
 		//end of broadcast chat
 		////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		count %= 4;
@@ -624,7 +627,14 @@ public class RepeatedDatabaseCheck {
 			}
 			catch(JSONException ex)
 			{
-				this.doDataBaseCheckBin(row[0]);
+				try {
+					this.doDataBaseCheckBin(row[0]);
+				} catch(Exception ex1) {
+					continue;
+				}
+			}
+			catch(Exception ex1){
+				continue;
 			}
 
 		}
