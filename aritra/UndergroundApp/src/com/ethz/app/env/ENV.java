@@ -97,7 +97,7 @@ public class ENV {
 	
 		
 	public static final int FIXED_CHAT_LEN = 512;
-	public static final int FIXED_ENC_CHAT_PACK_LEN = FIXED_CHAT_LEN - 64 - 16; //64 for signature and 16 for IV (pad the plain text to make it this size)
+	public static final int FIXED_ENC_CHAT_PACK_LEN = FIXED_CHAT_LEN - 64 - 16 -16; //64 for signature and 16 for IV (pad the plain text to make it this size), last 16 is for the AES padding
 	public static final int FIXED_CHAT_TYPE_LEN = FIXED_ENC_CHAT_PACK_LEN - CHAT_PUBLIC_ADDRESS_LEN - BROADCAST_CHAT_MAGIC_BYTES_LEN - 4 - 4; //last 4 is to make it divisible by 16
 	
 	

@@ -82,7 +82,7 @@ import java.awt.event.WindowEvent;
 import javax.swing.JLabel;
 import javax.swing.JList;
 
-/**
+/** 
  * @author Aritra
  *
  */
@@ -90,7 +90,7 @@ public class ChatApp {
 
 	public JFrame frame;
 	private JTextField chatText;
-	private StringBuffer dispatchStr;
+	private StringBuffer dispatchStr; 
 	private JTextField txtRemotePublicKey;
 	private JTextPane chatChatPane;
 	private JComboBox<String> oldChatLogBox;
@@ -891,7 +891,9 @@ public class ChatApp {
 	 * @throws InvalidAlgorithmParameterException
 	 * @throws IOException 
 	 */
-	public byte[] genEncChatPacket(String stringToDispatch, boolean broadCast) throws NoSuchAlgorithmException, NoSuchPaddingException, IllegalBlockSizeException, BadPaddingException, InvalidKeyException, InvalidAlgorithmParameterException, IOException 
+	public byte[] genEncChatPacket(String stringToDispatch, boolean broadCast) throws 
+	NoSuchAlgorithmException, NoSuchPaddingException, IllegalBlockSizeException, BadPaddingException, 
+	InvalidKeyException, InvalidAlgorithmParameterException, IOException 
 	{
 		if(broadCast)
 		{
@@ -980,7 +982,9 @@ public class ChatApp {
 	 * @throws BadPaddingException 
 	 * @throws IllegalBlockSizeException 
 	 */
-	public byte[] genEncChatPacketForBroadcast(String stringToDispatch) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, InvalidAlgorithmParameterException, IllegalBlockSizeException, BadPaddingException 
+	public byte[] genEncChatPacketForBroadcast(String stringToDispatch) throws 
+	NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, InvalidAlgorithmParameterException, 
+	IllegalBlockSizeException, BadPaddingException 
 	{
 		byte[] receiverPublicKey = this.addresskeyMap.get(currentRemoteAddressInFocus);
 			
@@ -1056,6 +1060,7 @@ public class ChatApp {
 		{
 			ex.printStackTrace();
 		}
+		System.out.println(Base64.getEncoder().encodeToString(chatToSend));
 		//end test
 		return chatToSend;
 	}
@@ -1114,8 +1119,9 @@ class MyComboBoxRenderer extends JLabel implements ListCellRenderer<Object>
 	/* (non-Javadoc)
 	 * @see javax.swing.ListCellRenderer#getListCellRendererComponent(javax.swing.JList, java.lang.Object, int, boolean, boolean)
 	 */
+	@SuppressWarnings("rawtypes")
 	@Override
-	public Component getListCellRendererComponent(@SuppressWarnings("rawtypes") JList list, Object value,
+	public Component getListCellRendererComponent(JList list, Object value,
 			int index, boolean isSelected, boolean hasFocus)
 	{
 		if (index == -1 && value == null) setText(_title);
