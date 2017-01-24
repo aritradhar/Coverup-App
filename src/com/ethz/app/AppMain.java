@@ -148,7 +148,7 @@ public class AppMain {
 	 */
 	//@SuppressWarnings("static-access")
 	public AppMain() throws NoSuchAlgorithmException, SQLException {	
-
+		
 		initiateBrowserSelection();
 		
 		if(AppMain.selectedPrimaryBrowser.equals(ENV.BROWSER_CHROME))

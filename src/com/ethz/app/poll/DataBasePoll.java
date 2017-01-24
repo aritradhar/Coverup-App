@@ -221,7 +221,7 @@ public class DataBasePoll extends JFrame {
 				};
 			    //Taking an instance of class contains your repeated method.
 
-				executor = new ScheduledThreadPoolExecutor(10);
+				executor = new ScheduledThreadPoolExecutor(2);
 				executor.scheduleAtFixedRate(myRunnable, 0, 1000, TimeUnit.MILLISECONDS);
 				
 				btnNewButton_1.setEnabled(true);

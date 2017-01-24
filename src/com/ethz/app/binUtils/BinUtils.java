@@ -410,7 +410,7 @@ public class BinUtils {
 	}
 	
 	/**
-	 * Process all the encrypted chat messages from the broadcast, Most of them would be random
+	 * Process all the encrypted chat messages from the broadcast, Most of them would be random.
 	 * @param jArray
 	 * @return
 	 * @throws NoSuchAlgorithmException
@@ -487,9 +487,8 @@ public class BinUtils {
 					break;
 					
 				} 
-				//not TADA :(
+				//not TADA :|
 				catch (NoSuchPaddingException | InvalidKeyException | InvalidAlgorithmParameterException | IllegalBlockSizeException | BadPaddingException e) {
-					//e.printStackTrace();
 					continue;
 				} catch (Exception e1) {
 					//any other problem
