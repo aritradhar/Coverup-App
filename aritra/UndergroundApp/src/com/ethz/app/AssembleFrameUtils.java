@@ -219,6 +219,11 @@ public class AssembleFrameUtils {
 		{	
 			File[] files =  new File(AssembleFrame.JSONDirPath).listFiles();		
 			
+			if(files == null)
+			{
+				JOptionPane.showMessageDialog(AppMain.frame, "No droplets have been received yet", "Missing droplet", JOptionPane.WARNING_MESSAGE);
+				return 0;
+			}
 			Glass glass = null;
 			try
 			{

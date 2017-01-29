@@ -126,7 +126,7 @@ public class AppMain {
 	
 	private static void initiateBrowserSelection()
 	{
-		final JComboBox<String> combo = new JComboBox<>(new String[]{ENV.BROWSER_CHROME, ENV.BROWSER_FIREFOX});
+		final JComboBox<String> combo = new JComboBox<>(new String[]{ENV.BROWSER_FIREFOX, ENV.BROWSER_CHROME});
 
 		String[] options = { "Select", "Exit"};
 
