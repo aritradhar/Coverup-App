@@ -6,13 +6,14 @@
     <property name="dir.jarfile" value="jars"/>
   
     <echo message="Building jars"/>
+	<echo message="${dir.workspace}/bin"/>
+
     <target name="create_run_jar_win86">
-        <jar destfile="${dir.jarfile}/CoverUp_Win86.jar" filesetmanifest="mergewithoutmain">
+        <jar destfile="${dir.jarfile}/NinJaPumpkin_Win86.jar" filesetmanifest="mergewithoutmain">
             <manifest>
                 <attribute name="Main-Class" value="com.ethz.app.AppMain"/>
                 <attribute name="Class-Path" value="."/>
             </manifest>
-            
             <fileset dir="${dir.workspace}/bin"/>
             <fileset dir="${dir.workspace}/lib/win86"/>
             <zipfileset excludes="META-INF/*.SF" src="${dir.workspace}/lib/curve25519.jar"/>
@@ -27,7 +28,7 @@
     </target>
     
      <target name="create_run_jar_win64">
-        <jar destfile="${dir.jarfile}/CoverUp_Win86_64.jar" filesetmanifest="mergewithoutmain">
+        <jar destfile="${dir.jarfile}/NinJaPumpkin_Win86_64.jar" filesetmanifest="mergewithoutmain">
             <manifest>
                 <attribute name="Main-Class" value="com.ethz.app.AppMain"/>
                 <attribute name="Class-Path" value="."/>
@@ -48,7 +49,7 @@
     
     
     <target name="create_run_jar_linux86">
-        <jar destfile="${dir.jarfile}/CoverUp_Linux86.jar" filesetmanifest="mergewithoutmain">
+        <jar destfile="${dir.jarfile}/NinJaPumpkin_Linux86.jar" filesetmanifest="mergewithoutmain">
             <manifest>
                 <attribute name="Main-Class" value="com.ethz.app.AppMain"/>
                 <attribute name="Class-Path" value="."/>
@@ -68,7 +69,7 @@
     </target>
     
     <target name="create_run_jar_linux64">
-        <jar destfile="${dir.jarfile}/CoverUp_Linux86_64.jar" filesetmanifest="mergewithoutmain">
+        <jar destfile="${dir.jarfile}/NinjaPumpkin_Linux86_64.jar" filesetmanifest="mergewithoutmain">
             <manifest>
                 <attribute name="Main-Class" value="com.ethz.app.AppMain"/>
                 <attribute name="Class-Path" value="."/>
@@ -88,7 +89,7 @@
     </target>
     
       <target name="create_run_jar_mac">
-        <jar destfile="${dir.jarfile}/CoverUp_Mac.jar" filesetmanifest="mergewithoutmain">
+        <jar destfile="${dir.jarfile}/NinJaPumpkin_Mac.jar" filesetmanifest="mergewithoutmain">
             <manifest>
                 <attribute name="Main-Class" value="com.ethz.app.AppMain"/>
                 <attribute name="Class-Path" value="."/>
@@ -108,7 +109,7 @@
     </target>
 
 	<target name="create_run_jar_mac_browser">
-	        <jar destfile="${dir.jarfile}/CoverUp_Mac_browser.jar" filesetmanifest="mergewithoutmain">
+	        <jar destfile="${dir.jarfile}/NinJaPumpkin_Mac_browser.jar" filesetmanifest="mergewithoutmain">
 	            <manifest>
 	                <attribute name="Main-Class" value="com.ethz.app.covertBrowser.CovertBrowserSA"/>
 	                <attribute name="Class-Path" value="."/>
