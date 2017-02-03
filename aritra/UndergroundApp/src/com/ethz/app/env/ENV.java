@@ -44,6 +44,8 @@ public class ENV {
 		if(!file.exists())
 			file.mkdir();
 	}
+	
+	public static boolean AUTO_PILOT = false;
 
 	public static final String APP_STORAGE_BROWSER_COMM_DROPLET_LOC = "DROPLET";
 	public static final String APP_STORAGE_BROWSER_COMM_DROPLET_BIN_LOC = "DROPLET_BIN";

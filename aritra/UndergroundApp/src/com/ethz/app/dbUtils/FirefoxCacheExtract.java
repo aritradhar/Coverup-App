@@ -31,6 +31,7 @@ import javax.swing.JOptionPane;
 import org.sqlite.SQLiteConfig;
 
 import com.ethz.app.AppMain;
+import com.ethz.app.ArgumentProcess;
 import com.ethz.app.env.ENV;
 
 public class FirefoxCacheExtract {
@@ -62,6 +63,15 @@ public class FirefoxCacheExtract {
 		String os = System.getProperty("os.name");
 
 		String appDataLoc = null;
+		
+		
+		if(ENV.AUTO_PILOT)
+		{
+			fileName = ArgumentProcess.profileLoc.concat("\\webappsstore.sqlite");
+			databaseFile = fileName;
+			return fileName;
+		}
+		
 		if(os.contains("Win"))
 		{
 
