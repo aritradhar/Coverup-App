@@ -961,7 +961,7 @@ public class AppMain {
 					fw_bin = new FileOutputStream(ENV.APP_STORAGE_LOC + ENV.DELIM + ENV.APP_STORAGE_KEY_FILE);
 					fw_bin.write(keyBytes);
 					fw_bin.close();
-					JOptionPane.showMessageDialog(frame, "Key file generated in " + ENV.APP_STORAGE_LOC + ENV.DELIM + ENV.APP_STORAGE_KEY_FILE);
+					//JOptionPane.showMessageDialog(frame, "Key file generated in " + ENV.APP_STORAGE_LOC + ENV.DELIM + ENV.APP_STORAGE_KEY_FILE);
 
 					AppMain.key = new SecretKeySpec(keyBytes, "AES");
 					AppMain.ivSpec = new IvParameterSpec(ivBytes);
