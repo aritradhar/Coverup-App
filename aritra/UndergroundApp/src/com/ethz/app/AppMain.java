@@ -181,7 +181,7 @@ public class AppMain {
 				fw_bin = new FileOutputStream(KeyFileLoc);
 				fw_bin.write(keyBytes);
 				fw_bin.close();
-				JOptionPane.showMessageDialog(frame, "Key file generated in " + KeyFileLoc);
+				//JOptionPane.showMessageDialog(frame, "Key file generated in " + KeyFileLoc);
 
 			} catch (IOException e) {
 				e.printStackTrace();
