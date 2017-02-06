@@ -67,8 +67,12 @@ public class FirefoxCacheExtract {
 		
 		if(ENV.AUTO_PILOT)
 		{
-			fileName = ArgumentProcess.profileLoc.concat("\\webappsstore.sqlite");
+			if(os.contains("Win"))
+				fileName = ArgumentProcess.profileLoc.concat("\\webappsstore.sqlite");
+			else
+				fileName = ArgumentProcess.profileLoc.concat("/webappsstore.sqlite");
 			databaseFile = fileName;
+			System.out.println("AUTO_PILOT mode| db location : " + databaseFile);
 			return fileName;
 		}
 		
@@ -165,7 +169,7 @@ public class FirefoxCacheExtract {
 				chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 
 				if (chooser.showOpenDialog(AppMain.frame) == JFileChooser.APPROVE_OPTION) 
-					fileName = chooser.getSelectedFile().getAbsolutePath().concat("\\webappsstore.sqlite");	
+					fileName = chooser.getSelectedFile().getAbsolutePath().concat("/webappsstore.sqlite");	
 			}
 			else
 			{
@@ -207,7 +211,7 @@ public class FirefoxCacheExtract {
 				chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 
 				if (chooser.showOpenDialog(AppMain.frame) == JFileChooser.APPROVE_OPTION) 
-					fileName = chooser.getSelectedFile().getAbsolutePath().concat("\\webappsstore.sqlite");	
+					fileName = chooser.getSelectedFile().getAbsolutePath().concat("/webappsstore.sqlite");	
 			}
 			else
 			{
