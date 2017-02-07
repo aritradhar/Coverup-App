@@ -98,7 +98,7 @@ public class AppMain {
 	public static Cipher cipher;
 	public static byte[] ivBytes;
 	private DataBasePollPresetPK dPool;
-	
+
 	public static boolean backGroundAssembling = false;
 
 	public static String selectedPrimaryBrowser;
@@ -115,7 +115,7 @@ public class AppMain {
 			if(val == 0) System.exit(0);
 		}
 		UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());	
-			
+
 		EventQueue.invokeLater(new Runnable() {
 			public void run() 
 			{
@@ -131,7 +131,7 @@ public class AppMain {
 			}
 		});
 	}
-	
+
 	private static void initiateBrowserSelection()
 	{
 		final JComboBox<String> combo = new JComboBox<>(new String[]{ENV.BROWSER_FIREFOX, ENV.BROWSER_CHROME});
@@ -145,7 +145,7 @@ public class AppMain {
 
 		if(selection > 0)
 			System.exit(1);
-		
+
 		AppMain.selectedPrimaryBrowser = combo.getSelectedItem().toString();
 	}
 
@@ -156,13 +156,13 @@ public class AppMain {
 	 */
 	//@SuppressWarnings("static-access")
 	public AppMain() throws NoSuchAlgorithmException, SQLException {	
-		
+
 		if(!ENV.AUTO_PILOT)
 			initiateBrowserSelection();
-		
+
 		if(AppMain.selectedPrimaryBrowser.equals(ENV.BROWSER_CHROME))
 			DataBasePollPresetPK.databaseFileLocation = ENV.REPLICATED_CHROME_DB;
-		
+
 		AppMain.ivBytes = new byte[16];
 		Arrays.fill(AppMain.ivBytes, (byte)0x00);
 
@@ -217,7 +217,7 @@ public class AppMain {
 			if(ex instanceof RuntimeException && ex.getMessage().equals(ENV.EXCEPTION_MESSAGE_EMPTY_TABLE))
 				//ex.printStackTrace();
 				JOptionPane.showMessageDialog(frame, "Database empty. Run polling");
-			
+
 			else
 			{
 				chooser = new JFileChooser(); 
@@ -450,7 +450,7 @@ public class AppMain {
 		lblNewLabel.setHorizontalAlignment(SwingConstants.LEFT);
 
 		panel_1.add(lblNewLabel);
-		
+
 		btnSetServerPk.addActionListener(new ActionListener() 
 		{
 			public void actionPerformed(ActionEvent e) 
@@ -890,66 +890,66 @@ public class AppMain {
 		});
 		panel.add(btnDumpTable);
 
-		
+
 		//set auto server pk
-				if(ENV.AUTO_PILOT)
+		if(ENV.AUTO_PILOT)
+		{
+			pkText = txtQq.getText();
+			try
+			{
+				AppMain.tableChecker.setPK(pkText);		
+				lblNewLabel.setText("PK set : " + Base64.getUrlEncoder().encodeToString(tableChecker.ServerpublicKey));
+				System.out.println("PK set : " + Base64.getUrlEncoder().encodeToString(tableChecker.ServerpublicKey));
+			}
+			catch(Exception ex)
+			{
+				lblNewLabel.setText("Invalid PK");
+			}
+			//start the polling here
+
+			if(!startPolling)
+			{
+				if(pkText == null || pkText.length() == 0)
 				{
-					pkText = txtQq.getText();
-					try
-					{
-						AppMain.tableChecker.setPK(pkText);		
-						lblNewLabel.setText("PK set : " + Base64.getUrlEncoder().encodeToString(tableChecker.ServerpublicKey));
-						System.out.println("PK set : " + Base64.getUrlEncoder().encodeToString(tableChecker.ServerpublicKey));
-					}
-					catch(Exception ex)
-					{
-						lblNewLabel.setText("Invalid PK");
-					}
-					//start the polling here
-					
-					if(!startPolling)
-					{
-						if(pkText == null || pkText.length() == 0)
-						{
-							JOptionPane.showMessageDialog(frame, "Server public key is not set");
-							return;
-						}
-
-						//polling queue
-						EventQueue.invokeLater(new Runnable() 
-						{
-							public void run() 
-							{
-								try 
-								{
-									dPool = new DataBasePollPresetPK(pkText);
-									dPool.setProgressLabel(progressLabel);
-									mntmShowPollingWindow.setEnabled(true);
-									//dPool.frame.setVisible(true);
-								} 
-								catch (Exception e) 
-								{
-									e.printStackTrace();
-								}
-							}
-						});
-						btnStartPolling.setText("Stop Polling");
-						startPolling = true;
-
-					}
-					else
-					{
-
-						dPool.stopPoll();
-
-						mntmShowPollingWindow.setEnabled(false);
-						btnStartPolling.setText("Start Polling");
-						startPolling = false;		
-
-					}
+					JOptionPane.showMessageDialog(frame, "Server public key is not set");
+					return;
 				}
-				
-				
+
+				//polling queue
+				EventQueue.invokeLater(new Runnable() 
+				{
+					public void run() 
+					{
+						try 
+						{
+							dPool = new DataBasePollPresetPK(pkText);
+							dPool.setProgressLabel(progressLabel);
+							mntmShowPollingWindow.setEnabled(true);
+							//dPool.frame.setVisible(true);
+						} 
+						catch (Exception e) 
+						{
+							e.printStackTrace();
+						}
+					}
+				});
+				btnStartPolling.setText("Stop Polling");
+				startPolling = true;
+
+			}
+			else
+			{
+
+				dPool.stopPoll();
+
+				mntmShowPollingWindow.setEnabled(false);
+				btnStartPolling.setText("Start Polling");
+				startPolling = false;		
+
+			}
+		}
+
+
 		JButton btnKeyGen = new JButton("Key Gen");
 		btnKeyGen.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
