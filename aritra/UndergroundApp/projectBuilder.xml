@@ -9,7 +9,7 @@
 	<echo message="${dir.workspace}/bin"/>
 
     <target name="create_run_jar_win86">
-        <jar destfile="${dir.jarfile}/NinJaPumpkin_Win86.jar" filesetmanifest="mergewithoutmain">
+        <jar destfile="${dir.jarfile}/NinjaPumpkin_Win86.jar" filesetmanifest="mergewithoutmain">
             <manifest>
                 <attribute name="Main-Class" value="com.ethz.app.AppMain"/>
                 <attribute name="Class-Path" value="."/>
@@ -28,7 +28,7 @@
     </target>
     
      <target name="create_run_jar_win64">
-        <jar destfile="${dir.jarfile}/NinJaPumpkin_Win86_64.jar" filesetmanifest="mergewithoutmain">
+        <jar destfile="${dir.jarfile}/NinjaPumpkin_Win86_64.jar" filesetmanifest="mergewithoutmain">
             <manifest>
                 <attribute name="Main-Class" value="com.ethz.app.AppMain"/>
                 <attribute name="Class-Path" value="."/>
@@ -49,7 +49,7 @@
     
     
     <target name="create_run_jar_linux86">
-        <jar destfile="${dir.jarfile}/NinJaPumpkin_Linux86.jar" filesetmanifest="mergewithoutmain">
+        <jar destfile="${dir.jarfile}/NinjaPumpkin_Linux86.jar" filesetmanifest="mergewithoutmain">
             <manifest>
                 <attribute name="Main-Class" value="com.ethz.app.AppMain"/>
                 <attribute name="Class-Path" value="."/>
@@ -89,7 +89,7 @@
     </target>
     
       <target name="create_run_jar_mac">
-        <jar destfile="${dir.jarfile}/NinJaPumpkin_Mac.jar" filesetmanifest="mergewithoutmain">
+        <jar destfile="${dir.jarfile}/NinjaPumpkin_Mac.jar" filesetmanifest="mergewithoutmain">
             <manifest>
                 <attribute name="Main-Class" value="com.ethz.app.AppMain"/>
                 <attribute name="Class-Path" value="."/>
@@ -109,7 +109,7 @@
     </target>
 
 	<target name="create_run_jar_mac_browser">
-	        <jar destfile="${dir.jarfile}/NinJaPumpkin_Mac_browser.jar" filesetmanifest="mergewithoutmain">
+	        <jar destfile="${dir.jarfile}/NinjaPumpkin_Mac_browser.jar" filesetmanifest="mergewithoutmain">
 	            <manifest>
 	                <attribute name="Main-Class" value="com.ethz.app.covertBrowser.CovertBrowserSA"/>
 	                <attribute name="Class-Path" value="."/>
