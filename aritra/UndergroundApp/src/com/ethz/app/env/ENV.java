@@ -241,7 +241,8 @@ public class ENV {
 	public static final boolean AON_SUPPORT = true;
 
 	public static final boolean EXPERIMENTAL = false;
-
+	//native messaging port
+	public static final int NATIVE_MESSAGE_PORT = 43457;
 
 	public static final boolean COMPRESSION_SUPPORT = false;
 
@@ -252,4 +253,13 @@ public class ENV {
 			+ "\nthe bitterness of men who fear the way of human progress. \nThe hate of men will pass,"
 			+ " and dictators die, and the power they took from the people \n will return to the people.\nAnd so long as men die, liberty will never perish. .....\n"
 			+ "- Charlie Chaplin (The Great Dictator)";
+	
+	public static boolean isAdmin() {
+	    String groups[] = (new com.sun.security.auth.module.NTSystem()).getGroupIDs();
+	    for (String group : groups) {
+	        if (group.equals("S-1-5-32-544"))
+	            return true;
+	    }
+	    return false;
+	}
 }
