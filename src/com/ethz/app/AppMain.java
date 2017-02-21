@@ -370,6 +370,24 @@ public class AppMain {
 			}
 		});
 		mnCoolStuff.add(mntmMessenger);
+		
+		JMenuItem mntmFeedViewer = new JMenuItem("Feed Viewer");
+		mntmFeedViewer.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				
+				EventQueue.invokeLater(new Runnable() {
+					public void run() {
+						try {
+							FeedViewer window = new FeedViewer();
+							window.frame.setVisible(true);
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
+					}
+				});
+			}
+		});
+		mnCoolStuff.add(mntmFeedViewer);
 
 		//TODO this is still blocking
 		mntmCovertBrowsing.addActionListener(new ActionListener() {

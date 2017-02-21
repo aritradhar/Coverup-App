@@ -64,6 +64,8 @@ public class ENV {
 	public static final String APP_STORAGE_SLICE_ID_FILES_LOC = "SLICE_ID";
 	public static final String APP_STORAGE_SLICE_ID_FILE = "slice_id.bin";
 	public static final String APP_STORAGE_SLICE_FILE_FORMAT = ".slice";
+	
+	public static final String APP_STORATE_DROPLET_STORE_LOCATION = "DROPLET";
 	//chat stuff
 	public static final String APP_STORAGE_CHAT_LOC = "Chat";
 	public static final String APP_STORAGE_CHAT_DISPATCH_LOC = "Dispatch";

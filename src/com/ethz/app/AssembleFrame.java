@@ -149,11 +149,11 @@ public class AssembleFrame {
 		
 		frame.getContentPane().add(scrollPane, BorderLayout.CENTER);
 
-		JEditorPane textArea = new JEditorPane(new HTMLEditorKit().getContentType(), "");
-		Font font = UIManager.getFont("Label.font");
-        String bodyRule = "body { font-family: " + font.getFamily() + "; " +
-                "font-size: " + 16 + "pt; }";
-        ((HTMLDocument) textArea.getDocument()).getStyleSheet().addRule(bodyRule);
+		JEditorPane textArea = new JEditorPane();
+		//Font font = UIManager.getFont("Label.font");
+        //String bodyRule = "body { font-family: " + font.getFamily() + "; " +
+        //       "font-size: " + 16 + "pt; }";
+        //((HTMLDocument) textArea.getDocument()).getStyleSheet().addRule(bodyRule);
         
         
 		textArea.setForeground(Color.BLACK);

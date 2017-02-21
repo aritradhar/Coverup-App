@@ -28,7 +28,8 @@ import com.ethz.app.env.ENV;
 
 /**
  * @author Aritra
- *
+ * Transfers Chrome's cache data base files in a local sqllite file located in APP_DATA. 
+ * The local database file has identical schema structure with that of the firefox's cache file.
  */
 public class ChromeCacheTransfer {
 
