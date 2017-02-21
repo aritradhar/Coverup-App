@@ -19,10 +19,12 @@ import java.awt.EventQueue;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
@@ -59,6 +61,7 @@ import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.table.DefaultTableModel;
 
 import org.eclipse.swt.widgets.Display;
@@ -103,7 +106,8 @@ public class AppMain {
 
 	public static String selectedPrimaryBrowser;
 	public static boolean set = false;
-
+	public Process p;
+	
 	public static void main(String[] args) throws ClassNotFoundException, InstantiationException, IllegalAccessException, UnsupportedLookAndFeelException {
 
 		//argument format
@@ -346,6 +350,86 @@ public class AppMain {
 		});
 		mnSettings.add(menuBackgroundAssembling);	
 
+		JMenuItem mntmNativeMessagingSetup = new JMenuItem("Native Messaging Setup (Windows only)");
+		mntmNativeMessagingSetup.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if(!ENV.isAdmin())
+					JOptionPane.showMessageDialog(frame, "Not administrator. Run with administrator", "Not administrator", JOptionPane.ERROR_MESSAGE);				 
+
+				JFileChooser choose = new JFileChooser();
+				choose.setDialogTitle("Choose native_comm.json file");
+				choose.addChoosableFileFilter(new FileNameExtensionFilter("json files", "json"));
+				choose.showDialog(frame, "Open file");
+				String jsonFilePath = null;
+				try {
+					jsonFilePath = choose.getSelectedFile().getCanonicalPath();
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+				try {
+					p = Runtime.getRuntime().exec("REG ADD \"HKEY_CURRENT_USER\\SOFTWARE\\Mozilla\\NativeMessagingHosts\\native_comm\" "
+							+ "/ve /d \""+ jsonFilePath + "\" /F");
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+
+				new Thread(new Runnable() {
+					public void run() {
+						BufferedReader input = new BufferedReader(new InputStreamReader(p.getInputStream()));
+						String line = null; 
+
+						try {
+							while ((line = input.readLine()) != null)
+								System.out.println(line);
+						} catch (IOException e) {
+							e.printStackTrace();
+						}
+					}
+				}).start();
+
+				try {
+					p.waitFor();
+				} catch (InterruptedException e2) {
+					// TODO Auto-generated catch block
+					e2.printStackTrace();
+				}
+
+				try {
+					p = Runtime.getRuntime().exec("REG ADD \"HKEY_LOCAL_MACHINE\\SOFTWARE\\Mozilla\\NativeMessagingHosts\\native_comm\" "
+							+ "/ve /d \""+ jsonFilePath + "\" /F");
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+
+				new Thread(new Runnable() {
+					public void run() {
+						BufferedReader input = new BufferedReader(new InputStreamReader(p.getInputStream()));
+						String line = null; 
+
+						try {
+							while ((line = input.readLine()) != null)
+								System.out.println(line);
+						} catch (IOException e) {
+							e.printStackTrace();
+						}
+					}
+				}).start();
+
+				try {
+					p.waitFor();
+				} catch (InterruptedException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+
+
+			}
+		});
+		mnSettings.add(mntmNativeMessagingSetup);
+
 		JMenu mnCoolStuff = new JMenu("Cool Stuff");
 		menuBar.add(mnCoolStuff);
 
@@ -370,11 +454,11 @@ public class AppMain {
 			}
 		});
 		mnCoolStuff.add(mntmMessenger);
-		
+
 		JMenuItem mntmFeedViewer = new JMenuItem("Feed Viewer");
 		mntmFeedViewer.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				
+
 				EventQueue.invokeLater(new Runnable() {
 					public void run() {
 						try {

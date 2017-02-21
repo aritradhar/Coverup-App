@@ -44,12 +44,17 @@ public class TCPClient {
 	    return new String(hexChars);
 	}
 	
+	/**
+	 * Sends data as byte array
+	 * @param data data to be send in byte stream format
+	 * @throws Exception
+	 */
 	public static void connectToBrowser(byte[] data) throws Exception
 	{
 		Socket clientSocket = null;
 		try
 		{		
-			clientSocket = new Socket("localhost", 12345);
+			clientSocket = new Socket("localhost", ENV.NATIVE_MESSAGE_PORT);
 			clientSocket.setSoTimeout(5000);
 		}
 		catch(Exception ex)
