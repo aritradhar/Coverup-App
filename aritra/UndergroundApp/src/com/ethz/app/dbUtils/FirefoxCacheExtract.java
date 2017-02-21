@@ -203,8 +203,10 @@ public class FirefoxCacheExtract {
 		//mac
 		else
 		{
+			System.out.println("Ok! you are using Mac. What else can go wrong now!");
 			if(AppMain.selectedPrimaryBrowser.equals(ENV.BROWSER_FIREFOX))
 			{
+				appDataLoc = System.getenv("HOME") + "/Library/Application Support/Firefox/Profiles/";
 				JFileChooser chooser = new JFileChooser(); 
 				chooser.setCurrentDirectory(new java.io.File(appDataLoc));
 				chooser.setDialogTitle("<MAC> Choose Firefox profile dir");
