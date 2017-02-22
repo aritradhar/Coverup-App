@@ -142,7 +142,7 @@ public class NativeMessageSetUp {
 		}
 	}
 
-	public static void setUpLinux(JFrame frame, String jsonFilePath)
+	public static void setUpLinux(JFrame frame, String jsonFilePath) throws IOException
 	{
 		File file = new File(System.getenv("HOME") + "/.mozilla/native-messaging-hosts");
 		if(!file.exists())
@@ -151,6 +151,20 @@ public class NativeMessageSetUp {
 					JOptionPane.ERROR_MESSAGE);
 			return;
 		}
+		
+		FileWriter fw = new FileWriter(jsonFilePath);
+		JSONObject jObject = new JSONObject();
+		jObject.put("name", "native_comm");
+		jObject.put("description", "Chrome Native Messaging API Example Host");
+		jObject.put("path", jsonFilePath.replaceAll("native_manifest.json", "native_ext.py"));
+		jObject.put("type", "stdio");
+		JSONArray jArray = new JSONArray();
+		jArray.put("SecureExtension@example.com");
+		jObject.put("allowed_extensions", jArray);
+		fw.write(jObject.toString(2));
+		fw.flush();
+		fw.close();
+		
 		try
 		{
 			Files.copy(new File(jsonFilePath).toPath(), file.toPath(), StandardCopyOption.REPLACE_EXISTING);
@@ -163,7 +177,7 @@ public class NativeMessageSetUp {
 		}
 	}
 
-	public static void setUpMac(JFrame frame, String jsonFilePath)
+	public static void setUpMac(JFrame frame, String jsonFilePath) throws IOException
 	{
 		File file = new File("/Library/Application Support/Mozilla/NativeMessagingHosts");
 		if(!file.exists())
@@ -172,6 +186,20 @@ public class NativeMessageSetUp {
 					JOptionPane.ERROR_MESSAGE);
 			return;
 		}
+		
+		FileWriter fw = new FileWriter(jsonFilePath);
+		JSONObject jObject = new JSONObject();
+		jObject.put("name", "native_comm");
+		jObject.put("description", "Chrome Native Messaging API Example Host");
+		jObject.put("path", jsonFilePath.replaceAll("native_manifest.json", "native_ext.py"));
+		jObject.put("type", "stdio");
+		JSONArray jArray = new JSONArray();
+		jArray.put("SecureExtension@example.com");
+		jObject.put("allowed_extensions", jArray);
+		fw.write(jObject.toString(2));
+		fw.flush();
+		fw.close();
+		
 		try
 		{
 			Files.copy(new File(jsonFilePath).toPath(), file.toPath(), StandardCopyOption.REPLACE_EXISTING);
