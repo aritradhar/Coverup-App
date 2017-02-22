@@ -14,6 +14,7 @@ package com.ethz.app;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.file.Files;
@@ -24,7 +25,12 @@ import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 import com.ethz.app.env.ENV;
+
+import javafx.stage.FileChooser;
 
 /**
  * @author Aritra
@@ -33,38 +39,42 @@ import com.ethz.app.env.ENV;
 public class NativeMessageSetUp {
 
 
-	public static void setUp(JFrame frame)
+	public static void setUp(JFrame frame) throws IOException
 	{
-		JFileChooser choose = new JFileChooser();
-		choose.setDialogTitle("Choose native_comm.json file");
+		JFileChooser choose = new JFileChooser(".");
+		choose.setDialogTitle("Choose native_manifest.json file");
 		choose.addChoosableFileFilter(new FileNameExtensionFilter("json files", "json"));
-		choose.showDialog(frame, "Open file");
+		int res = choose.showDialog(frame, "Open file");
 		String jsonFilePath = null;
+
+		if(res == JFileChooser.CANCEL_OPTION)
+			return;
+
 		try {
 			jsonFilePath = choose.getSelectedFile().getCanonicalPath();
 		} catch (IOException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
-		
-		
+
+
 		if(System.getProperty("os.name").startsWith("Windows"))
 			setUpWindows(frame, jsonFilePath);
-		
+
 		else if(System.getProperty("os.name").startsWith("Linux"))
 			setUpLinux(frame, jsonFilePath);
-		
+
 		else
 			setUpMac(frame, jsonFilePath);
-		
+
 	}
 
-	public static void setUpWindows(JFrame frame, String jsonFilePath)
+	public static void setUpWindows(JFrame frame, String jsonFilePath) throws IOException
 	{
 		if(!ENV.isAdmin())
 			JOptionPane.showMessageDialog(frame, "Not administrator. Run with administrator", 
 					"Not administrator", JOptionPane.ERROR_MESSAGE);				 
-		
+
 		Process p = null;
 		try 
 		{
@@ -81,7 +91,7 @@ public class NativeMessageSetUp {
 		BufferedReader input = new BufferedReader(new InputStreamReader(p.getInputStream()));
 		String line = null; 
 		StringBuffer stb = new StringBuffer();
-		
+
 		try 
 		{
 			while ((line = input.readLine()) != null)
@@ -94,7 +104,6 @@ public class NativeMessageSetUp {
 			return;
 		}
 
-
 		try 
 		{
 			p.waitFor();
@@ -104,7 +113,33 @@ public class NativeMessageSetUp {
 					"Execution result", JOptionPane.ERROR_MESSAGE);
 		}
 
-		JOptionPane.showMessageDialog(frame, stb.toString(), "Execution result", JOptionPane.INFORMATION_MESSAGE);
+		FileWriter fw = new FileWriter(jsonFilePath);
+		JSONObject jObject = new JSONObject();
+		jObject.put("name", "native_comm");
+		jObject.put("description", "Chrome Native Messaging API Example Host");
+		jObject.put("path", jsonFilePath.replaceAll("native_manifest.json", "native_ext.bat"));
+		jObject.put("type", "stdio");
+		JSONArray jArray = new JSONArray();
+		jArray.put("SecureExtension@example.com");
+		jObject.put("allowed_extensions", jArray);
+
+		fw.write(jObject.toString(2));
+		fw.flush();
+		fw.close();
+
+		JFileChooser choose = new JFileChooser(".");
+		choose.setDialogTitle("Locate python.exe file (python27)");
+		int res = choose.showDialog(frame, "Open file");
+		if(res == JFileChooser.APPROVE_OPTION)
+		{
+			File pythonPath = choose.getSelectedFile();
+			fw = new FileWriter(jsonFilePath.replaceAll("native_manifest.json", "native_ext.bat"));
+			fw.append("@echo off\n");
+			fw.append("\"" + pythonPath.getCanonicalPath() + "\" \"" + jsonFilePath.replaceAll("native_manifest.json", "native_ext.py") + "\"");
+			fw.flush();
+			fw.close();
+			JOptionPane.showMessageDialog(frame, stb.toString(), "Execution result", JOptionPane.INFORMATION_MESSAGE);
+		}
 	}
 
 	public static void setUpLinux(JFrame frame, String jsonFilePath)
@@ -127,7 +162,7 @@ public class NativeMessageSetUp {
 					"Execution result", JOptionPane.ERROR_MESSAGE);
 		}
 	}
-	
+
 	public static void setUpMac(JFrame frame, String jsonFilePath)
 	{
 		File file = new File("/Library/Application Support/Mozilla/NativeMessagingHosts");
