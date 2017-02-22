@@ -106,8 +106,7 @@ public class AppMain {
 
 	public static String selectedPrimaryBrowser;
 	public static boolean set = false;
-	public Process p;
-	
+
 	public static void main(String[] args) throws ClassNotFoundException, InstantiationException, IllegalAccessException, UnsupportedLookAndFeelException {
 
 		//argument format
@@ -353,79 +352,7 @@ public class AppMain {
 		JMenuItem mntmNativeMessagingSetup = new JMenuItem("Native Messaging Setup (Windows only)");
 		mntmNativeMessagingSetup.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				if(!ENV.isAdmin())
-					JOptionPane.showMessageDialog(frame, "Not administrator. Run with administrator", "Not administrator", JOptionPane.ERROR_MESSAGE);				 
-
-				JFileChooser choose = new JFileChooser();
-				choose.setDialogTitle("Choose native_comm.json file");
-				choose.addChoosableFileFilter(new FileNameExtensionFilter("json files", "json"));
-				choose.showDialog(frame, "Open file");
-				String jsonFilePath = null;
-				try {
-					jsonFilePath = choose.getSelectedFile().getCanonicalPath();
-				} catch (IOException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				}
-				try {
-					p = Runtime.getRuntime().exec("REG ADD \"HKEY_CURRENT_USER\\SOFTWARE\\Mozilla\\NativeMessagingHosts\\native_comm\" "
-							+ "/ve /d \""+ jsonFilePath + "\" /F");
-				} catch (IOException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				}
-
-				new Thread(new Runnable() {
-					public void run() {
-						BufferedReader input = new BufferedReader(new InputStreamReader(p.getInputStream()));
-						String line = null; 
-
-						try {
-							while ((line = input.readLine()) != null)
-								System.out.println(line);
-						} catch (IOException e) {
-							e.printStackTrace();
-						}
-					}
-				}).start();
-
-				try {
-					p.waitFor();
-				} catch (InterruptedException e2) {
-					// TODO Auto-generated catch block
-					e2.printStackTrace();
-				}
-
-				try {
-					p = Runtime.getRuntime().exec("REG ADD \"HKEY_LOCAL_MACHINE\\SOFTWARE\\Mozilla\\NativeMessagingHosts\\native_comm\" "
-							+ "/ve /d \""+ jsonFilePath + "\" /F");
-				} catch (IOException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				}
-
-				new Thread(new Runnable() {
-					public void run() {
-						BufferedReader input = new BufferedReader(new InputStreamReader(p.getInputStream()));
-						String line = null; 
-
-						try {
-							while ((line = input.readLine()) != null)
-								System.out.println(line);
-						} catch (IOException e) {
-							e.printStackTrace();
-						}
-					}
-				}).start();
-
-				try {
-					p.waitFor();
-				} catch (InterruptedException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				}
-
-
+				NativeMessageSetUp.setUp(frame);
 			}
 		});
 		mnSettings.add(mntmNativeMessagingSetup);
