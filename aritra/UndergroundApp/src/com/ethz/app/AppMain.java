@@ -349,10 +349,15 @@ public class AppMain {
 		});
 		mnSettings.add(menuBackgroundAssembling);	
 
-		JMenuItem mntmNativeMessagingSetup = new JMenuItem("Native Messaging Setup (Windows only)");
+		JMenuItem mntmNativeMessagingSetup = new JMenuItem("Native Messaging Setup");
 		mntmNativeMessagingSetup.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				NativeMessageSetUp.setUp(frame);
+				try {
+					NativeMessageSetUp.setUp(frame);
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
 			}
 		});
 		mnSettings.add(mntmNativeMessagingSetup);

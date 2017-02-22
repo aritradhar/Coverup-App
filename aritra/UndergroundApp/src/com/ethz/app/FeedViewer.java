@@ -92,7 +92,7 @@ public class FeedViewer {
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
 		this.selectedDir = ENV.APP_STORAGE_LOC;
-
+		
 		newNode = getFountainInfo();
 
 		tree = new JTree(newNode);
@@ -103,7 +103,8 @@ public class FeedViewer {
 				JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		scrollPane.setPreferredSize(new Dimension(frame.getWidth() / 2, frame.getHeight() - 10));
 		frame.getContentPane().add(scrollPane, BorderLayout.WEST);	
-
+		
+		
 		JButton btnBrowse = new JButton("Browse");
 		btnBrowse.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -171,6 +172,11 @@ public class FeedViewer {
 				}
 			}
 		});	
+		
+		ComponentResizer cr = new ComponentResizer();
+		cr.setSnapSize(new Dimension(10, 10));
+		cr.registerComponent(scrollPane, scrollPane1);
+		
 	}
 
 	private MutableTreeNode getFountainInfo() throws IOException
