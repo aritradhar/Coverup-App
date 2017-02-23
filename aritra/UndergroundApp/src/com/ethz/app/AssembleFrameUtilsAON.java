@@ -102,7 +102,7 @@ public class AssembleFrameUtilsAON {
 							JOptionPane.showMessageDialog(frame, "Decoding success\nDroplet utilized : " + counter + ", Total Droplets : " + files.length);
 							
 							//textArea.setText(Base64.getUrlEncoder().encodeToString(decodedData));
-							textArea.setText(new String(decodedData));
+							textArea.setText(new String(decodedData).trim());
 							progressBar.setValue(100);						
 							
 							AssembleFrame.glassDone = true;
@@ -190,7 +190,7 @@ public class AssembleFrameUtilsAON {
 						}
 					}
 					
-					textArea.setText(stb.toString());
+					textArea.setText(stb.toString().trim());
 					if(flag)
 						progressBar.setValue((100 * completed)/(s_size * partialChunks.length));
 					else

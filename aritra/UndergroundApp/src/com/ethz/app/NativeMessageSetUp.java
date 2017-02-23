@@ -146,28 +146,22 @@ public class NativeMessageSetUp {
 	{
 		File file = new File(System.getenv("HOME") + "/.mozilla/native-messaging-hosts");
 		if(!file.exists())
-		{
-			JOptionPane.showMessageDialog(frame, "Firefox installation directory not found", "Firefox directory missing",
-					JOptionPane.ERROR_MESSAGE);
-			return;
-		}
-		
-		FileWriter fw = new FileWriter(jsonFilePath);
-		JSONObject jObject = new JSONObject();
-		jObject.put("name", "native_comm");
-		jObject.put("description", "Chrome Native Messaging API Example Host");
-		jObject.put("path", jsonFilePath.replaceAll("native_manifest.json", "native_ext.py"));
-		jObject.put("type", "stdio");
-		JSONArray jArray = new JSONArray();
-		jArray.put("SecureExtension@example.com");
-		jObject.put("allowed_extensions", jArray);
-		fw.write(jObject.toString(2));
-		fw.flush();
-		fw.close();
-		
+			file.mkdir();
+			
 		try
 		{
-			Files.copy(new File(jsonFilePath).toPath(), file.toPath(), StandardCopyOption.REPLACE_EXISTING);
+			FileWriter fw = new FileWriter(System.getenv("HOME") + "/.mozilla/native-messaging-hosts/native_manifest.json");
+			JSONObject jObject = new JSONObject();
+			jObject.put("name", "native_comm");
+			jObject.put("description", "Chrome Native Messaging API Example Host");
+			jObject.put("path", jsonFilePath.replaceAll("native_manifest.json", "native_ext.py"));
+			jObject.put("type", "stdio");
+			JSONArray jArray = new JSONArray();
+			jArray.put("SecureExtension@example.com");
+			jObject.put("allowed_extensions", jArray);
+			fw.write(jObject.toString(2));
+			fw.flush();
+			fw.close();
 			JOptionPane.showMessageDialog(frame, "Operation executed successfully", "Execution result", JOptionPane.INFORMATION_MESSAGE);
 		}
 		catch(IOException ex)
@@ -176,33 +170,27 @@ public class NativeMessageSetUp {
 					"Execution result", JOptionPane.ERROR_MESSAGE);
 		}
 	}
-
+ 
 	public static void setUpMac(JFrame frame, String jsonFilePath) throws IOException
 	{
 		File file = new File("/Library/Application Support/Mozilla/NativeMessagingHosts");
 		if(!file.exists())
-		{
-			JOptionPane.showMessageDialog(frame, "Firefox installation directory not found", "Firefox directory missing", 
-					JOptionPane.ERROR_MESSAGE);
-			return;
-		}
-		
-		FileWriter fw = new FileWriter(jsonFilePath);
-		JSONObject jObject = new JSONObject();
-		jObject.put("name", "native_comm");
-		jObject.put("description", "Chrome Native Messaging API Example Host");
-		jObject.put("path", jsonFilePath.replaceAll("native_manifest.json", "native_ext.py"));
-		jObject.put("type", "stdio");
-		JSONArray jArray = new JSONArray();
-		jArray.put("SecureExtension@example.com");
-		jObject.put("allowed_extensions", jArray);
-		fw.write(jObject.toString(2));
-		fw.flush();
-		fw.close();
+			file.mkdir();		
 		
 		try
 		{
-			Files.copy(new File(jsonFilePath).toPath(), file.toPath(), StandardCopyOption.REPLACE_EXISTING);
+			FileWriter fw = new FileWriter(System.getenv("HOME") + "/.mozilla/native-messaging-hosts/native_manifest.json");
+			JSONObject jObject = new JSONObject();
+			jObject.put("name", "native_comm");
+			jObject.put("description", "Chrome Native Messaging API Example Host");
+			jObject.put("path", jsonFilePath.replaceAll("native_manifest.json", "native_ext.py"));
+			jObject.put("type", "stdio");
+			JSONArray jArray = new JSONArray();
+			jArray.put("SecureExtension@example.com");
+			jObject.put("allowed_extensions", jArray);
+			fw.write(jObject.toString(2));
+			fw.flush();
+			fw.close();
 			JOptionPane.showMessageDialog(frame, "Operation executed successfully", "Execution result", 
 					JOptionPane.INFORMATION_MESSAGE);
 		}
