@@ -42,7 +42,7 @@ public class NativeMessageSetUp {
 	public static void setUp(JFrame frame) throws IOException
 	{
 		JFileChooser choose = new JFileChooser(".");
-		choose.setDialogTitle("Choose native_manifest.json file");
+		choose.setDialogTitle("Choose native_comm.json file");
 		choose.addChoosableFileFilter(new FileNameExtensionFilter("json files", "json"));
 		int res = choose.showDialog(frame, "Open file");
 		String jsonFilePath = null;
@@ -117,7 +117,7 @@ public class NativeMessageSetUp {
 		JSONObject jObject = new JSONObject();
 		jObject.put("name", "native_comm");
 		jObject.put("description", "Chrome Native Messaging API Example Host");
-		jObject.put("path", jsonFilePath.replaceAll("native_manifest.json", "native_ext.bat"));
+		jObject.put("path", jsonFilePath.replaceAll("native_comm.json", "native_ext.bat"));
 		jObject.put("type", "stdio");
 		JSONArray jArray = new JSONArray();
 		jArray.put("SecureExtension@example.com");
@@ -133,9 +133,9 @@ public class NativeMessageSetUp {
 		if(res == JFileChooser.APPROVE_OPTION)
 		{
 			File pythonPath = choose.getSelectedFile();
-			fw = new FileWriter(jsonFilePath.replaceAll("native_manifest.json", "native_ext.bat"));
+			fw = new FileWriter(jsonFilePath.replaceAll("native_comm.json", "native_ext.bat"));
 			fw.append("@echo off\n");
-			fw.append("\"" + pythonPath.getCanonicalPath() + "\" \"" + jsonFilePath.replaceAll("native_manifest.json", "native_ext.py") + "\"");
+			fw.append("\"" + pythonPath.getCanonicalPath() + "\" \"" + jsonFilePath.replaceAll("native_comm.json", "native_ext.py") + "\"");
 			fw.flush();
 			fw.close();
 			JOptionPane.showMessageDialog(frame, stb.toString(), "Execution result", JOptionPane.INFORMATION_MESSAGE);
@@ -150,11 +150,11 @@ public class NativeMessageSetUp {
 			
 		try
 		{
-			FileWriter fw = new FileWriter(System.getenv("HOME") + "/.mozilla/native-messaging-hosts/native_manifest.json");
+			FileWriter fw = new FileWriter(System.getenv("HOME") + "/.mozilla/native-messaging-hosts/native_comm.json");
 			JSONObject jObject = new JSONObject();
 			jObject.put("name", "native_comm");
 			jObject.put("description", "Chrome Native Messaging API Example Host");
-			jObject.put("path", jsonFilePath.replaceAll("native_manifest.json", "native_ext.py"));
+			jObject.put("path", jsonFilePath.replaceAll("native_comm.json", "native_ext.py"));
 			jObject.put("type", "stdio");
 			JSONArray jArray = new JSONArray();
 			jArray.put("SecureExtension@example.com");
@@ -179,11 +179,11 @@ public class NativeMessageSetUp {
 		
 		try
 		{
-			FileWriter fw = new FileWriter(System.getenv("HOME") + "/.mozilla/native-messaging-hosts/native_manifest.json");
+			FileWriter fw = new FileWriter(System.getenv("HOME") + "/.mozilla/native-messaging-hosts/native_comm.json");
 			JSONObject jObject = new JSONObject();
 			jObject.put("name", "native_comm");
 			jObject.put("description", "Chrome Native Messaging API Example Host");
-			jObject.put("path", jsonFilePath.replaceAll("native_manifest.json", "native_ext.py"));
+			jObject.put("path", jsonFilePath.replaceAll("native_comm.json", "native_ext.py"));
 			jObject.put("type", "stdio");
 			JSONArray jArray = new JSONArray();
 			jArray.put("SecureExtension@example.com");
