@@ -310,7 +310,7 @@ public class ChatApp {
 				
 				
 				//JOptionPane.showMessageDialog(frame, Base64.getEncoder().encodeToString(myPublicKey));
-				JOptionPane.showInputDialog("Your Public key", Base64.getEncoder().encodeToString(myPublicKey));
+				JOptionPane.showInputDialog("Your Public key", Base64.getUrlEncoder().encodeToString(myPublicKey));
 			}
 		});
 		panel_2.add(btnMyPk);
@@ -319,55 +319,18 @@ public class ChatApp {
 
 				if(txtRemotePublicKey.getText() != null && txtRemotePublicKey.getText().length() > 0)
 				{
-					if(exists(txtRemotePublicKey.getText()))
-						JOptionPane.showMessageDialog(frame, "Entered address already exists");			
-
-					else
-					{
-
-						if(currentRemoteAddressInFocus == null)
-							currentRemoteAddressInFocus = txtRemotePublicKey.getText();
-
-
-						else if(dispatchStr.length() > 0)
-						{
-							int i = JOptionPane.showConfirmDialog(frame, "dispatch String is not empty. Ok will not dispatche it. But will appear in logs");	
-							if(i == 0)
-							{
-								if(!btnSend.isEnabled())
-									btnSend.setEnabled(true);
-
-								if(!chatText.isEnabled())
-									chatText.setEnabled(true);
-
-								//save the not dispatched marker to the log file
-								try {
-									saveChatToFile(currentRemoteAddressInFocus, "--------Not Dispatched --------\n", true);
-								} catch (IOException e1) {
-									e1.printStackTrace();
-								}
-
-								currentRemoteAddressInFocus =  txtRemotePublicKey.getText();
-								dispatchStr = new StringBuffer("");
-								label.setText("0/" + ENV.FIXED_CHAT_TYPE_LEN);
-
-							}
-						}
-						else
-						{
-							if(!btnSend.isEnabled())
-								btnSend.setEnabled(true);
-
-
-							if(!chatText.isEnabled())
-								chatText.setEnabled(true);
-
-							makeNewChatDir(txtRemotePublicKey.getText());
-							currentRemoteAddressInFocus = txtRemotePublicKey.getText();
-							dispatchStr = new StringBuffer("");
-							label.setText("0/" + ENV.FIXED_CHAT_TYPE_LEN);
-
-						}
+					try {
+						FileWriter fw = new FileWriter(ENV.APP_STORAGE_PUBLIC_KEY_LIST, true);
+						fw.append("\n");
+						fw.append(txtRemotePublicKey.getText());
+						fw.flush();
+						fw.close();
+						
+						JOptionPane.showMessageDialog(frame, "PK added");
+					} catch (IOException e1) {
+						// TODO Auto-generated catch block
+						JOptionPane.showMessageDialog(frame, "NOPE");
+						e1.printStackTrace();
 					}
 				}
 			}

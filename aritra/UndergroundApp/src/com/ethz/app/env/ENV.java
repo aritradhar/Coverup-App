@@ -249,6 +249,8 @@ public class ENV {
 
 	public static final char[] PROGRESS_SYMB = {'-', '\\', '|', '/'};
 
+	//if false then broadcast mode
+	public static final boolean CHAT_MODE_RELAY = true;
 
 	public static final String ABOUT_MESSAGE = "To those who can hear me, I say - do not despair. \n The misery that is now upon us is but the passing of greed - "
 			+ "\nthe bitterness of men who fear the way of human progress. \nThe hate of men will pass,"
