@@ -166,7 +166,11 @@ public class RepeatedDatabaseCheck {
 			}
 			else if(ex.getMessage().equalsIgnoreCase(ENV.EXCEPTION_MESSAGE_GARBAGE_PACKET))
 			{
-				this.messaage.append("Data not according to spec: garbage");
+				FileWriter fw = new FileWriter("garbage.txt");
+				fw.append(Base64.getEncoder().encodeToString(receivedBin));
+				fw.flush();
+				fw.close();
+				this.messaage.append("Data not according to spec: garbage, garbage dumped");
 				return;
 			}
 			else if(ex.getMessage().equalsIgnoreCase(ENV.EXCEPTION_INTR_MESSAGE_MAGIC_BYTES))

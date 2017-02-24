@@ -142,7 +142,7 @@ public class ChatApp {
 		this.addresskeyMap = new HashMap<>();
 		this.oldChatLogBox = new JComboBox<>();
 
-		this.btnSend = new JButton("Send");
+		this.btnSend = new JButton("Add a new line");
 		this.btnSend.setEnabled(false);
 		this.chatChatPane = new JTextPane();
 		this.chatText = new JTextField();	
@@ -322,7 +322,8 @@ public class ChatApp {
 					try {
 						FileWriter fw = new FileWriter(ENV.APP_STORAGE_PUBLIC_KEY_LIST, true);
 						fw.append("\n");
-						fw.append(txtRemotePublicKey.getText());
+						//remove any extra space if there is any
+						fw.append(txtRemotePublicKey.getText().trim());
 						fw.flush();
 						fw.close();
 						
@@ -707,7 +708,7 @@ public class ChatApp {
 
 		if(chatDispatchLocFile.exists())
 		{
-			int op = JOptionPane.showConfirmDialog(frame, "Earlier dispach is not removed, Overwrite?. OK - overwrite, Rest - no");
+			int op = JOptionPane.showConfirmDialog(frame, "Earlier message might not get dispatched due to some error, Overwrite?. OK - overwrite, Rest - no");
 
 			//overwrite
 			if(op == 0)
@@ -735,7 +736,12 @@ public class ChatApp {
 						chatChatPane.setText(chatChatPane.getText() + "-------- Dispatch Overwritten --------\n");
 						saveChatToFile(currentRemoteAddressInFocus, "-------- Dispatch Overwritten --------\n", true);
 
-						dispatchStr = new StringBuffer("");			
+						dispatchStr = new StringBuffer("");	
+						
+						File encChatDispatchLocFile = new File(encChatDispatchLoc);
+						if(encChatDispatchLocFile.exists())
+							encChatDispatchLocFile.delete();
+						
 						return true;
 
 					} catch (Exception e) {
@@ -1048,7 +1054,8 @@ public class ChatApp {
 		{
 			if(str.length() == 0)
 				continue;
-
+			//in case there are some extra spaces added
+			str = str.trim();
 			byte[] pk = Base64.getUrlDecoder().decode(str);
 			/*MessageDigest md = MessageDigest.getInstance("SHA-256");
 			byte[] hashedPk = md.digest(pk);
