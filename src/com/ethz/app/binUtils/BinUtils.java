@@ -524,7 +524,8 @@ public class BinUtils {
 		{
 			if(str.length() == 0)
 				continue;
-				
+			//in case there are some extra spaces
+			str = str.trim();
 			byte[] pk = Base64.getUrlDecoder().decode(str);
 			MessageDigest md = MessageDigest.getInstance("SHA-256");
 			byte[] hashedPk = md.digest(pk);
@@ -588,6 +589,11 @@ public class BinUtils {
 		
 		//byte[] b = Files.readAllBytes(new File("C:\\Users\\Aritra\\workspace_Mars\\UndergroundApp\\APP_DATA\\DROPLET_BIN\\134211151\\5.bin").toPath());
 		//System.out.println(b.length);
+		
+		String s1 = new String(Files.readAllBytes(new File("garbage.txt").toPath()));
+		byte[] b1 = Base64.getUrlDecoder().decode(s1);
+		System.out.println(new String(b1));
+		
 		initializeChatData();
 		
 		byte[] AppMainkeyBytes = new byte[16];
@@ -605,9 +611,13 @@ public class BinUtils {
 			e.printStackTrace();
 		}
 		
+		
 		byte[] b = Files.readAllBytes(new File("C:\\Users\\Aritra\\workspace_Mars_new\\UndergroundServer\\server_work_space\\bla.txt").toPath());
+		b = Files.readAllBytes(new File("garbage.txt").toPath());
 		String s = new String(b);
 		dropletBinToDropletJson(Base64.getDecoder().decode(s), Base64.getUrlDecoder().decode("90I1INgfeam-0JwxP2Vfgw9eSQGQjz3WxLO1wu1n8Cg="), new StringBuffer());
+		
+		
 		/*BufferedReader br = new BufferedReader(new FileReader("chatbroadcast.txt"));
 		String s = br.readLine();
 		br.close();

@@ -247,7 +247,7 @@ public class AppMain {
 			BinUtils.initializeChatData();
 		} catch (Exception e) {
 
-			JOptionPane.showMessageDialog(frame, "Error initializing chat data structures. Whatever!");
+			JOptionPane.showMessageDialog(frame, "Error initializing chat data structures. Whatever! \n" + e.getMessage());
 			e.printStackTrace();
 		}
 
@@ -289,7 +289,7 @@ public class AppMain {
 				if (chooser.showOpenDialog(frame) == JFileChooser.APPROVE_OPTION) 
 				{ 		
 					modifiedCacheLocation = chooser.getSelectedFile().getAbsolutePath();
-				}
+				}   
 			}
 		});
 		mnSettings.add(mntmCacheLocation);
