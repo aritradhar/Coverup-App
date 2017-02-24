@@ -177,7 +177,7 @@ public class AppMain {
 		if(!keyFile.exists())
 		{
 			keyBytes = new byte[ENV.AES_KEY_SIZE];
-			new SecureRandom().nextBytes(keyBytes);
+			Arrays.fill(keyBytes, (byte) 0x00);
 			FileOutputStream fw_bin = null;
 			try 
 			{
@@ -989,7 +989,7 @@ public class AppMain {
 			public void actionPerformed(ActionEvent arg0) {
 
 				byte[] keyBytes = new byte[ENV.AES_KEY_SIZE];
-				new SecureRandom().nextBytes(keyBytes);
+				Arrays.fill(keyBytes, (byte) 0x00);
 				FileOutputStream fw_bin = null;
 				try {
 					fw_bin = new FileOutputStream(ENV.APP_STORAGE_LOC + ENV.DELIM + ENV.APP_STORAGE_KEY_FILE);

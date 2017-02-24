@@ -40,6 +40,7 @@ import javax.crypto.NoSuchPaddingException;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
+import javax.print.DocFlavor.STRING;
 import javax.swing.JOptionPane;
 
 import org.json.JSONArray;
@@ -589,7 +590,25 @@ public class BinUtils {
 		//System.out.println(b.length);
 		initializeChatData();
 		
-		BufferedReader br = new BufferedReader(new FileReader("chatbroadcast.txt"));
+		byte[] AppMainkeyBytes = new byte[16];
+		byte[] ivBytes = new byte[16];
+		Arrays.fill(AppMainkeyBytes, (byte) 0x00);
+		Arrays.fill(ivBytes, (byte) 0x00);
+		
+		AppMain.key = new SecretKeySpec(AppMainkeyBytes, "AES");
+		AppMain.ivSpec = new IvParameterSpec(ivBytes);
+		try {
+			AppMain.cipher = Cipher.getInstance("AES/CTR/NoPadding");
+			AppMain.cipher.init(Cipher.DECRYPT_MODE, AppMain.key, AppMain.ivSpec);
+		} catch (NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException | InvalidAlgorithmParameterException e) 
+		{
+			e.printStackTrace();
+		}
+		
+		byte[] b = Files.readAllBytes(new File("C:\\Users\\Aritra\\workspace_Mars_new\\UndergroundServer\\server_work_space\\bla.txt").toPath());
+		String s = new String(b);
+		dropletBinToDropletJson(Base64.getDecoder().decode(s), Base64.getUrlDecoder().decode("90I1INgfeam-0JwxP2Vfgw9eSQGQjz3WxLO1wu1n8Cg="), new StringBuffer());
+		/*BufferedReader br = new BufferedReader(new FileReader("chatbroadcast.txt"));
 		String s = br.readLine();
 		br.close();
 		
@@ -601,7 +620,7 @@ public class BinUtils {
 		List<String[]> j = processBroadcastChatMessages(jArray);
 		
 		System.out.println(j);
-		
+		*/
 		
 		//String j = tableBinToTableJson(Base64.getDecoder().decode(s), Base64.getUrlDecoder().decode("90I1INgfeam-0JwxP2Vfgw9eSQGQjz3WxLO1wu1n8Cg="));
 		

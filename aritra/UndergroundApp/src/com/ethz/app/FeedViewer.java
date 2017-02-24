@@ -89,7 +89,7 @@ public class FeedViewer {
 		frame = new JFrame();
 		frame.setTitle("¯\\_(ツ)_/¯");
 		frame.setBounds(100, 100, 911, 919);
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
 		this.selectedDir = ENV.APP_STORAGE_LOC;
 		
