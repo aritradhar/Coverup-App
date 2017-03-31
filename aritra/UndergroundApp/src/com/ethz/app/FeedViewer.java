@@ -17,6 +17,7 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.Font;
+import java.awt.Insets;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -173,9 +174,12 @@ public class FeedViewer {
 			}
 		});	
 		
+		
 		ComponentResizer cr = new ComponentResizer();
 		cr.setSnapSize(new Dimension(10, 10));
+		cr.setDragInsets(new Insets(5, 5, 5, 5));
 		cr.registerComponent(scrollPane, scrollPane1);
+		
 		
 	}
 

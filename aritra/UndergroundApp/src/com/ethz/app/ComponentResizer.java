@@ -1,21 +1,7 @@
-//*************************************************************************************
-//*********************************************************************************** *
-//author Aritra Dhar 																* *
-//PhD Researcher																  	* *
-//ETH Zurich													   				    * *
-//Zurich, Switzerland															    * *
-//--------------------------------------------------------------------------------- * * 
-///////////////////////////////////////////////// 									* *
-//This program is meant to do world domination... 									* *
-///////////////////////////////////////////////// 									* *
-//*********************************************************************************** *
-//*************************************************************************************
+
 package com.ethz.app;
 
-/**
- * @author Aritra
- *
- */
+
 import java.awt.*;
 import java.awt.event.*;
 import java.util.*;
@@ -226,7 +212,7 @@ public class ComponentResizer extends MouseAdapter
 	 *  the component is changed. The border will snap to the size once
 	 *  dragging has passed the halfway mark.
 	 *
-	 *  @param snapSize Dimension object allows you to separately spcify a
+	 *  @param snapSize Dimension object allows you to separately specify a
 	 *                  horizontal and vertical snap size.
 	 */
 	public void setSnapSize(Dimension snapSize)
@@ -244,6 +230,8 @@ public class ComponentResizer extends MouseAdapter
 		int minimumWidth = drag.left + drag.right;
 		int minimumHeight = drag.top + drag.bottom;
 
+		System.out.println(minimumHeight);
+		System.out.println(minimumWidth);
 		if (minimum.width  < minimumWidth
 		||  minimum.height < minimumHeight)
 		{
