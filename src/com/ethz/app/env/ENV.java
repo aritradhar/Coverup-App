@@ -265,4 +265,10 @@ public class ENV {
 	    }
 	    return false;
 	}
+	
+	//cryptographic params
+	public static final String CRYPTO_HASH_ALGORITHM = "SHA-256";
+	public static final String CRYPTO_SYMMETRIC_ALGORITHM = "AES";
+	public static final int CRYPTO_SYMMETRIC_KEY_SIZE = 128;
+	public static final String CRYPTO_SYMMETRIC_MODE_OF_OPERATION = "AES/CTR/PKCS5Padding";
 }

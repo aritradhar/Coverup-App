@@ -81,9 +81,9 @@ public class IncomingChatPoll {
 				
 				System.out.println(lastEnteredMessage.length());
 				System.out.println(messageToInsert.length());
-				if(lastEnteredMessage.equals(messageToInsert))
-					
+				if(lastEnteredMessage.equals(messageToInsert))					
 					System.out.println("Duplicate message dectected");
+				
 				else
 				{
 					FileWriter fw = new FileWriter(saveLocStr + ENV.DELIM + ENV.APP_STORAGE_CHAT_REPO_FILE, true);

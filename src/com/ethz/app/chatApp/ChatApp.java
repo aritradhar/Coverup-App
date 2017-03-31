@@ -155,11 +155,20 @@ public class ChatApp {
 			@Override
 			public void run() {
 				IncomingChatPoll.pollChat();
+				
+				//auto refresh the chat textbox
+				try {
+					chatChatPane.setText(LoadChat(currentRemoteAddressInFocus));
+					System.out.println(LoadChat(currentRemoteAddressInFocus));
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
 			}
 		};
 		executor = new ScheduledThreadPoolExecutor(2);
 		executor.scheduleAtFixedRate(myRunnable, 250, ENV.CHAT_POLLING_RATE, TimeUnit.MILLISECONDS);
 
+		
 
 		oldChatLogBox.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -619,7 +628,12 @@ public class ChatApp {
 		return filesStr;
 	}
 
-
+	/**
+	 * Load chat after selecting specific address
+	 * @param address
+	 * @return
+	 * @throws IOException
+	 */
 	private String LoadChat(String address) throws IOException
 	{
 		String oldChatLoc = ENV.APP_STORAGE_LOC + ENV.DELIM + ENV.APP_STORAGE_CHAT_LOC + 
