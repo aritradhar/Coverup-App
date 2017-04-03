@@ -35,6 +35,8 @@ import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Base64;
 import java.util.List;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 import javax.annotation.processing.SupportedSourceVersion;
 import javax.crypto.Cipher;
@@ -70,10 +72,14 @@ import org.json.JSONObject;
 import com.ethz.app.binUtils.BinUtils;
 import com.ethz.app.chatApp.ChatApp;
 import com.ethz.app.covertBrowser.CovertBrowserSA;
+import com.ethz.app.dbUtils.ChromeCacheTransfer;
+import com.ethz.app.dbUtils.FirefoxCacheExtract;
 import com.ethz.app.dbUtils.TableChecker;
+import com.ethz.app.dispatchSocket.TCPClient;
 import com.ethz.app.env.ENV;
 import com.ethz.app.poll.DataBasePoll;
 import com.ethz.app.poll.DataBasePollPresetPK;
+import com.ethz.app.poll.RepeatedDatabaseCheck;
 
 /**
  * Underground application entry point
@@ -1016,6 +1022,28 @@ public class AppMain {
 
 		Component horizontalStrut_2 = Box.createHorizontalStrut(20);
 		panel.add(horizontalStrut_2);
+		
+		//autoChat
+		
+		if(ArgumentProcess.autoChat && ArgumentProcess.autoChatInterval > 0)
+		{
+			String chatBase64 = "020000004722EC7E646466B39C3CC79D8AD64ABA00000002370EFE014AEC2FD83DD6D78F0D12968C";
+			
+			Runnable myRunnable = new Runnable() {
+
+				@Override
+				public void run() {
+					try {
+						TCPClient.connectToBrowser(Base64.getDecoder().decode(chatBase64));
+					} catch (Exception e1) {
+						System.err.println("Error at composing the auto chat messages");
+					}
+				}
+			};
+
+			ScheduledThreadPoolExecutor executor = new ScheduledThreadPoolExecutor(2);
+			executor.scheduleAtFixedRate(myRunnable, 0, ArgumentProcess.autoChatInterval, TimeUnit.MILLISECONDS);			
+		}
 
 	}
 

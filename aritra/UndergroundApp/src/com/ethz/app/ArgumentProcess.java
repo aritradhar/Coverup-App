@@ -23,6 +23,8 @@ public class ArgumentProcess {
 
 	
 	public static String profileLoc;
+	public static boolean autoChat = false;
+	public static int autoChatInterval = 0;
 	/**
 	 * 
 	 * @param args Arguments from main command arguments
@@ -34,7 +36,7 @@ public class ArgumentProcess {
 		{
 			System.out.println("argument format \n"
 					+ "help or \n"
-					+ "firefox <pathToProfile> <pollingrate>");
+					+ "<firefox/chrome> <pathToProfile> <pollingrate> [polling rate of auto chat dispatch interval]");
 			
 			return 0;
 		}
@@ -54,6 +56,12 @@ public class ArgumentProcess {
 			
 			profileLoc = args[1];
 			DataBasePollPresetPK.pollingRate = Integer.parseInt(args[2]);
+			
+			if(args.length == 4)
+			{
+				autoChat = true;
+				autoChatInterval = Integer.parseInt(args[3]);
+			}
 		}
 		
 		return 1;
