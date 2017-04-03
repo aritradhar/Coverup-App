@@ -67,12 +67,28 @@ public class FirefoxCacheExtract {
 		
 		if(ENV.AUTO_PILOT)
 		{
-			if(os.contains("Win"))
-				fileName = ArgumentProcess.profileLoc.concat("\\webappsstore.sqlite");
+			if(AppMain.selectedPrimaryBrowser.equals(ENV.BROWSER_FIREFOX))
+			{
+				if(os.contains("Win"))
+					fileName = ArgumentProcess.profileLoc.concat("\\webappsstore.sqlite");
+				else
+					fileName = ArgumentProcess.profileLoc.concat("/webappsstore.sqlite");
+				databaseFile = fileName;
+				System.out.println("AUTO_PILOT mode| db location : " + databaseFile);
+			}
 			else
-				fileName = ArgumentProcess.profileLoc.concat("/webappsstore.sqlite");
-			databaseFile = fileName;
-			System.out.println("AUTO_PILOT mode| db location : " + databaseFile);
+			{
+				appDataLoc = ArgumentProcess.profileLoc;
+				
+				try {
+					FirefoxCacheExtract.chromeDatabaseFiles = this.chromeLocalStorageDetection(appDataLoc);
+				} catch (ClassNotFoundException | IOException | SQLException e) {
+					e.printStackTrace();
+				}
+				APP_DATA_LOC_CHROME = appDataLoc;
+				fileName = ENV.REPLICATED_CHROME_DB;
+				databaseFile = fileName;
+			}
 			return fileName;
 		}
 		
