@@ -185,7 +185,7 @@ public class AppMain {
 
 		if(AppMain.selectedPrimaryBrowser.equals(ENV.BROWSER_CHROME))
 			DataBasePollPresetPK.databaseFileLocation = ENV.REPLICATED_CHROME_DB;
-		
+
 		/*if(AppMain.selectedPrimaryBrowser.equals(ENV.BROWSER_NATIVE_MESSAGE) && !ENV.EXPERIMENTAL_NATIVE_MESSAGE)
 		{
 			DataBasePollPresetPK.databaseFileLocation = ENV.REPLICATED_NATIVE_MESSGAE_DB;
@@ -193,7 +193,7 @@ public class AppMain {
 			Thread nativeListenerThread = new Thread(new NativeMessageListenerService());
 			nativeListenerThread.start();
 		}*/
-		
+
 		//TODO experimental, start the message lister service here
 		if(ENV.EXPERIMENTAL_NATIVE_MESSAGE)
 		{
@@ -201,7 +201,7 @@ public class AppMain {
 			Thread t = new Thread(new NativeMessageListenerService());
 			t.start();
 		}
-		
+
 		//print argument here
 		System.out.println("============================");
 		System.out.println("Autopilot : " + ENV.AUTO_PILOT);
@@ -209,7 +209,7 @@ public class AppMain {
 		System.out.println("Native message : " + ArgumentProcess.chrome_native);
 		System.out.println("Autochat : " + ArgumentProcess.autoChat);
 		System.out.println("============================");
-		
+
 		AppMain.ivBytes = new byte[16];
 		Arrays.fill(AppMain.ivBytes, (byte)0x00);
 
@@ -262,7 +262,7 @@ public class AppMain {
 		catch(Exception ex)
 		{
 			if(ex instanceof RuntimeException && (ex.getMessage() == null || 
-												  ex.getMessage().equals(ENV.EXCEPTION_MESSAGE_EMPTY_TABLE)))
+					ex.getMessage().equals(ENV.EXCEPTION_MESSAGE_EMPTY_TABLE)))
 				//ex.printStackTrace();
 				//JOptionPane.showMessageDialog(frame, "Database empty. Run polling");
 				System.err.println("Database empty. Run polling");
@@ -1025,16 +1025,17 @@ public class AppMain {
 					startPolling = true;
 
 				}
-			}
-			else
-			{
 
-				dPool.stopPoll();
+				else
+				{
+					if(dPool != null)
+						dPool.stopPoll();
 
-				mntmShowPollingWindow.setEnabled(false);
-				btnStartPolling.setText("Start Polling");
-				startPolling = false;		
+					mntmShowPollingWindow.setEnabled(false);
+					btnStartPolling.setText("Start Polling");
+					startPolling = false;		
 
+				}
 			}
 		}
 
@@ -1071,17 +1072,17 @@ public class AppMain {
 
 		Component horizontalStrut_2 = Box.createHorizontalStrut(20);
 		panel.add(horizontalStrut_2);
-		
+
 		//autoChat
-		
+
 		if(ArgumentProcess.autoChat && ArgumentProcess.autoChatInterval > 0)
 		{
-			
+
 			System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
 			System.out.println("     Autochat started");
 			System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
 			String chatBase64 = "020000004722EC7E646466B39C3CC79D8AD64ABA00000002370EFE014AEC2FD83DD6D78F0D12968C";
-			
+
 			Runnable myRunnable = new Runnable() {
 
 				@Override
