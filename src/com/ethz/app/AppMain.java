@@ -185,18 +185,20 @@ public class AppMain {
 		if(AppMain.selectedPrimaryBrowser.equals(ENV.BROWSER_CHROME))
 			DataBasePollPresetPK.databaseFileLocation = ENV.REPLICATED_CHROME_DB;
 		
-		if(AppMain.selectedPrimaryBrowser.equals(ENV.BROWSER_NATIVE_MESSAGE))
+		if(AppMain.selectedPrimaryBrowser.equals(ENV.BROWSER_NATIVE_MESSAGE) && ENV.EXPERIMENTAL_NATIVE_MESSAGE)
 		{
 			DataBasePollPresetPK.databaseFileLocation = ENV.REPLICATED_NATIVE_MESSGAE_DB;
 			//start the server here to receive the TCP connection from the native messaging python application
+			Thread nativeListenerThread = new Thread(new NativeMessageListenerService());
+			nativeListenerThread.start();
 		}
 		
 		//TODO experimental, start the message lister service here
-		Thread t = new Thread(new NativeMessageListenerService());
-		t.start();
-		//NativeMessageListenerService nativeMessgaeListener = new NativeMessageListenerService();
-		//nativeMessgaeListener.run();
-		
+		if(!ENV.EXPERIMENTAL_NATIVE_MESSAGE)
+		{
+			Thread t = new Thread(new NativeMessageListenerService());
+			t.start();
+		}
 		
 		AppMain.ivBytes = new byte[16];
 		Arrays.fill(AppMain.ivBytes, (byte)0x00);
@@ -251,7 +253,8 @@ public class AppMain {
 		{
 			if(ex instanceof RuntimeException && ex.getMessage().equals(ENV.EXCEPTION_MESSAGE_EMPTY_TABLE))
 				//ex.printStackTrace();
-				JOptionPane.showMessageDialog(frame, "Database empty. Run polling");
+				//JOptionPane.showMessageDialog(frame, "Database empty. Run polling");
+				System.err.println("Database empty. Run polling");
 
 			else
 			{
@@ -979,36 +982,38 @@ public class AppMain {
 				lblNewLabel.setText("Invalid PK");
 			}
 			//start the polling here
-
-			if(!startPolling)
+			if(!ArgumentProcess.chrome_native)
 			{
-				if(pkText == null || pkText.length() == 0)
+				if(!startPolling)
 				{
-					JOptionPane.showMessageDialog(frame, "Server public key is not set");
-					return;
-				}
-
-				//polling queue
-				EventQueue.invokeLater(new Runnable() 
-				{
-					public void run() 
+					if(pkText == null || pkText.length() == 0)
 					{
-						try 
-						{
-							dPool = new DataBasePollPresetPK(pkText);
-							dPool.setProgressLabel(progressLabel);
-							mntmShowPollingWindow.setEnabled(true);
-							//dPool.frame.setVisible(true);
-						} 
-						catch (Exception e) 
-						{
-							e.printStackTrace();
-						}
+						JOptionPane.showMessageDialog(frame, "Server public key is not set");
+						return;
 					}
-				});
-				btnStartPolling.setText("Stop Polling");
-				startPolling = true;
 
+					//polling queue
+					EventQueue.invokeLater(new Runnable() 
+					{
+						public void run() 
+						{
+							try 
+							{
+								dPool = new DataBasePollPresetPK(pkText);
+								dPool.setProgressLabel(progressLabel);
+								mntmShowPollingWindow.setEnabled(true);
+								//dPool.frame.setVisible(true);
+							} 
+							catch (Exception e) 
+							{
+								e.printStackTrace();
+							}
+						}
+					});
+					btnStartPolling.setText("Stop Polling");
+					startPolling = true;
+
+				}
 			}
 			else
 			{

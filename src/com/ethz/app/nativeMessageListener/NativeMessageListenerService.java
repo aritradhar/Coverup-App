@@ -38,7 +38,7 @@ public class NativeMessageListenerService extends Thread {
 			serverSocket = new ServerSocket(ENV.NATIVE_MESSAGE_LISTER_SERVER_PORT);
 		} 
 		catch (IOException e) {
-			System.err.println("---- error at creating message listener service----\n");
+			System.err.println("---- error at creating message listener service ----\n");
 			e.printStackTrace();
 			return;
 		}
@@ -60,6 +60,8 @@ public class NativeMessageListenerService extends Thread {
 				String key = jObject.getString("key");
 				System.err.println(">> Listener service : Received key: " +  key + " | Received data len : " + clientSentence.length());
 				
+				NativeMessageDataHandler dataHandler = new NativeMessageDataHandler(jObject);
+				dataHandler.insertToDB();
 			}
 			catch(JSONException jsonEx)
 			{

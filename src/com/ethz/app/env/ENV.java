@@ -294,4 +294,8 @@ public class ENV {
 	public static final String CRYPTO_SYMMETRIC_ALGORITHM = "AES";
 	public static final int CRYPTO_SYMMETRIC_KEY_SIZE = 128;
 	public static final String CRYPTO_SYMMETRIC_MODE_OF_OPERATION = "AES/CTR/PKCS5Padding";
+	
+	
+	//native message experiment
+	public static final boolean EXPERIMENTAL_NATIVE_MESSAGE = true;
 }
