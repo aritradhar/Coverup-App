@@ -261,7 +261,8 @@ public class AppMain {
 		}
 		catch(Exception ex)
 		{
-			if(ex instanceof RuntimeException && ex.getMessage().equals(ENV.EXCEPTION_MESSAGE_EMPTY_TABLE))
+			if(ex instanceof RuntimeException && (ex.getMessage() == null || 
+												  ex.getMessage().equals(ENV.EXCEPTION_MESSAGE_EMPTY_TABLE)))
 				//ex.printStackTrace();
 				//JOptionPane.showMessageDialog(frame, "Database empty. Run polling");
 				System.err.println("Database empty. Run polling");
