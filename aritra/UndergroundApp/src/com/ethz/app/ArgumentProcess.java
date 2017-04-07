@@ -25,6 +25,8 @@ public class ArgumentProcess {
 	public static String profileLoc;
 	public static boolean autoChat = false;
 	public static int autoChatInterval = 0;
+	
+	public static boolean chrome_native = false;
 	/**
 	 * 
 	 * @param args Arguments from main command arguments
@@ -36,7 +38,7 @@ public class ArgumentProcess {
 		{
 			System.out.println("argument format \n"
 					+ "help or \n"
-					+ "<firefox/chrome> <pathToProfile> <pollingrate> [polling rate of auto chat dispatch interval]");
+					+ "<firefox/chrome/chrome-native> <pathToProfile> <pollingrate> [polling rate of auto chat dispatch interval]");
 			
 			return 0;
 		}
@@ -48,6 +50,11 @@ public class ArgumentProcess {
 				AppMain.selectedPrimaryBrowser = ENV.BROWSER_FIREFOX;
 			else if(args[0].equalsIgnoreCase("chrome"))
 				AppMain.selectedPrimaryBrowser = ENV.BROWSER_CHROME;
+			else if(args[0].equalsIgnoreCase("chrome-native"))
+			{
+				AppMain.selectedPrimaryBrowser = ENV.BROWSER_CHROME;
+				chrome_native = true;
+			}
 			else
 			{
 				System.err.println("Wrong browser argument");
