@@ -75,16 +75,23 @@ public class ENV {
 
 	public static final String APP_STORAGE_CHAT_DISPATCH_FILE = "CHAT.bin";
 	public static final String APP_STORAGE_ENC_CHAT_DISPATCH_FILE = "CHAT_ENC.bin";
+	
 
 	public static final String APP_STORAGE_INCOMING_CHAT_DATABASE_FILE = APP_STORAGE_LOC + DELIM
 			+ APP_STORAGE_CHAT_LOC + DELIM 
 			+ "INCOMING_CHAT.db";
 
 	public static final String REPLICATED_CHROME_DB = APP_STORAGE_LOC + DELIM + "webappsstore.sqlite";
+	
+	//native message
+	public static final String APP_STORAGE_NATIVE_MESSAGE_LOC = "NATIVE_MASSAGE";
+	public static final String REPLICATED_NATIVE_MESSGAE_DB = APP_STORAGE_LOC + DELIM + APP_STORAGE_NATIVE_MESSAGE_LOC + DELIM + "webappsstore.sqlite";
+	
 
 	public static final String BROWSER_FIREFOX = "BROWSER_FIREFOX";
 	public static final String BROWSER_CHROME = "BROWSER_CHROME";
-
+	public static final String BROWSER_NATIVE_MESSAGE = "BROWSER_NATIVE_MESSAGE";
+	public static final int NATIVE_MESSAGE_LISTER_SERVER_PORT = 56789;
 	//magic bytes
 	public static final byte INTR_MAGIC_BYTE = (byte)0x06;
 	public static final int INTR_MAGIC_BYTES_LEN = 8;
@@ -147,14 +154,30 @@ public class ENV {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			}
+		
+		File nativeMessageDir = new File(APP_STORAGE_LOC + DELIM + APP_STORAGE_NATIVE_MESSAGE_LOC);
+		if(!nativeMessageDir.exists())
+			nativeMessageDir.mkdir();
 
-		//Initialization
-		//db execution
+		//Initialization of database files
+		//replicated Chrome database file initialization
 		if(!new File(REPLICATED_CHROME_DB).exists())
 		{
 			try {
 				Class.forName("org.sqlite.JDBC");
 				Connection c = DriverManager.getConnection("jdbc:sqlite:" + REPLICATED_CHROME_DB);
+				c.createStatement().executeUpdate("CREATE TABLE webappsstore2 (originAttributes TEXT, originKey TEXT, scope TEXT, key TEXT, value TEXT)");
+				c.close();
+			} catch (SQLException | ClassNotFoundException e) {
+				e.printStackTrace();
+			}
+		}
+		//native message replicated database file initialization
+		if(!new File(REPLICATED_NATIVE_MESSGAE_DB).exists())
+		{
+			try {
+				Class.forName("org.sqlite.JDBC");
+				Connection c = DriverManager.getConnection("jdbc:sqlite:" + REPLICATED_NATIVE_MESSGAE_DB);
 				c.createStatement().executeUpdate("CREATE TABLE webappsstore2 (originAttributes TEXT, originKey TEXT, scope TEXT, key TEXT, value TEXT)");
 				c.close();
 			} catch (SQLException | ClassNotFoundException e) {

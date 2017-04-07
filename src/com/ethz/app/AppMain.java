@@ -19,6 +19,8 @@ import java.awt.EventQueue;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -77,9 +79,11 @@ import com.ethz.app.dbUtils.FirefoxCacheExtract;
 import com.ethz.app.dbUtils.TableChecker;
 import com.ethz.app.dispatchSocket.TCPClient;
 import com.ethz.app.env.ENV;
+import com.ethz.app.nativeMessageListener.NativeMessageListenerService;
 import com.ethz.app.poll.DataBasePoll;
 import com.ethz.app.poll.DataBasePollPresetPK;
 import com.ethz.app.poll.RepeatedDatabaseCheck;
+import com.sun.javafx.property.adapter.PropertyDescriptor.Listener;
 
 /**
  * Underground application entry point
@@ -113,6 +117,15 @@ public class AppMain {
 	public static String selectedPrimaryBrowser;
 	public static boolean set = false;
 
+	/**
+	 * Application entry point
+	 * SAmple command line argument : "chrome "C:\Users\Aritra\AppData\Local\Google\Chrome\User Data\Default\Local Storage" 500 900"
+	 * @param args
+	 * @throws ClassNotFoundException
+	 * @throws InstantiationException
+	 * @throws IllegalAccessException
+	 * @throws UnsupportedLookAndFeelException
+	 */
 	public static void main(String[] args) throws ClassNotFoundException, InstantiationException, IllegalAccessException, UnsupportedLookAndFeelException {
 
 		//argument format
@@ -143,7 +156,7 @@ public class AppMain {
 
 	private static void initiateBrowserSelection()
 	{
-		final JComboBox<String> combo = new JComboBox<>(new String[]{ENV.BROWSER_FIREFOX, ENV.BROWSER_CHROME});
+		final JComboBox<String> combo = new JComboBox<>(new String[]{ENV.BROWSER_FIREFOX, ENV.BROWSER_CHROME, ENV.BROWSER_NATIVE_MESSAGE});
 
 		String[] options = { "Select", "Exit"};
 
@@ -171,7 +184,20 @@ public class AppMain {
 
 		if(AppMain.selectedPrimaryBrowser.equals(ENV.BROWSER_CHROME))
 			DataBasePollPresetPK.databaseFileLocation = ENV.REPLICATED_CHROME_DB;
-
+		
+		if(AppMain.selectedPrimaryBrowser.equals(ENV.BROWSER_NATIVE_MESSAGE))
+		{
+			DataBasePollPresetPK.databaseFileLocation = ENV.REPLICATED_NATIVE_MESSGAE_DB;
+			//start the server here to receive the TCP connection from the native messaging python application
+		}
+		
+		//TODO experimental, start the message lister service here
+		Thread t = new Thread(new NativeMessageListenerService());
+		t.start();
+		//NativeMessageListenerService nativeMessgaeListener = new NativeMessageListenerService();
+		//nativeMessgaeListener.run();
+		
+		
 		AppMain.ivBytes = new byte[16];
 		Arrays.fill(AppMain.ivBytes, (byte)0x00);
 
@@ -274,6 +300,13 @@ public class AppMain {
 		frame.setIconImage(frameIcon.getImage());
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
+		frame.addWindowListener(new WindowAdapter()
+		{
+		    public void windowClosing(WindowEvent e)
+		    {
+		    	System.out.println("-----Closing even from the main window received-----");
+		    }
+		});		
 		//menu bar
 		JMenuBar menuBar = new JMenuBar();
 		frame.setJMenuBar(menuBar);
