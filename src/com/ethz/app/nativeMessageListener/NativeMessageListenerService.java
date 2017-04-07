@@ -33,7 +33,7 @@ public class NativeMessageListenerService extends Thread {
 	
 	@Override
 	public void run(){
-		String clientSentence;
+		String clientSentence = null;
 		try {
 			serverSocket = new ServerSocket(ENV.NATIVE_MESSAGE_LISTER_SERVER_PORT);
 		} 
@@ -59,7 +59,7 @@ public class NativeMessageListenerService extends Thread {
 				JSONObject jObject = new JSONObject(clientSentence);
 				String key = jObject.getString("key");
 				System.err.println(">> Listener service : Received key: " +  key + " | Received data len : " + clientSentence.length());
-				System.out.println(">> Listener service : " + clientSentence);
+				//System.out.println(">> Listener service : " + clientSentence);
 				
 				NativeMessageDataHandler dataHandler = new NativeMessageDataHandler(jObject);
 				dataHandler.insertToDB();
@@ -67,6 +67,7 @@ public class NativeMessageListenerService extends Thread {
 			catch(JSONException jsonEx)
 			{
 				System.err.println(">> Listener service : Malformed json object; parse error");
+				System.out.println(">> Listener service : " + clientSentence);
 			}
 			catch(Exception ex)
 			{
