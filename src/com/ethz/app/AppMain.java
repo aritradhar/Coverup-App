@@ -300,13 +300,13 @@ public class AppMain {
 		frame.setIconImage(frameIcon.getImage());
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-		frame.addWindowListener(new WindowAdapter()
+		/*frame.addWindowListener(new WindowAdapter()
 		{
 		    public void windowClosing(WindowEvent e)
 		    {
-		    	System.out.println("-----Closing even from the main window received-----");
+		    	System.out.println("Closed");
 		    }
-		});		
+		});*/		
 		//menu bar
 		JMenuBar menuBar = new JMenuBar();
 		frame.setJMenuBar(menuBar);

@@ -18,6 +18,9 @@ import java.io.InputStreamReader;
 import java.net.ServerSocket;
 import java.net.Socket;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import com.ethz.app.env.ENV;
 
 /**
@@ -35,7 +38,8 @@ public class NativeMessageListenerService extends Thread {
 			serverSocket = new ServerSocket(ENV.NATIVE_MESSAGE_LISTER_SERVER_PORT);
 		} 
 		catch (IOException e) {
-			System.err.println("---- error at creating message listener service");
+			System.err.println("---- error at creating message listener service----\n");
+			e.printStackTrace();
 			return;
 		}
 
@@ -52,7 +56,14 @@ public class NativeMessageListenerService extends Thread {
 				BufferedReader messageFromClient =
 						new BufferedReader(new InputStreamReader(connectionSocket.getInputStream()));
 				clientSentence = messageFromClient.readLine();
-				System.err.println(">> Listener service : Received: " + clientSentence);	
+				JSONObject jObject = new JSONObject(clientSentence);
+				String key = jObject.getString("key");
+				System.err.println(">> Listener service : Received key: " +  key + " | Received data len : " + clientSentence.length());
+				
+			}
+			catch(JSONException jsonEx)
+			{
+				System.err.println(">> Listener service : Malformed json object; parse error");
 			}
 			catch(Exception ex)
 			{
