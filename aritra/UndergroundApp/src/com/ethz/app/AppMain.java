@@ -186,13 +186,13 @@ public class AppMain {
 		if(AppMain.selectedPrimaryBrowser.equals(ENV.BROWSER_CHROME))
 			DataBasePollPresetPK.databaseFileLocation = ENV.REPLICATED_CHROME_DB;
 		
-		if(AppMain.selectedPrimaryBrowser.equals(ENV.BROWSER_NATIVE_MESSAGE) && !ENV.EXPERIMENTAL_NATIVE_MESSAGE)
+		/*if(AppMain.selectedPrimaryBrowser.equals(ENV.BROWSER_NATIVE_MESSAGE) && !ENV.EXPERIMENTAL_NATIVE_MESSAGE)
 		{
 			DataBasePollPresetPK.databaseFileLocation = ENV.REPLICATED_NATIVE_MESSGAE_DB;
 			//start the server here to receive the TCP connection from the native messaging python application
 			Thread nativeListenerThread = new Thread(new NativeMessageListenerService());
 			nativeListenerThread.start();
-		}
+		}*/
 		
 		//TODO experimental, start the message lister service here
 		if(ENV.EXPERIMENTAL_NATIVE_MESSAGE)
@@ -202,6 +202,13 @@ public class AppMain {
 			t.start();
 		}
 		
+		//print argument here
+		System.out.println("============================");
+		System.out.println("Autopilot : " + ENV.AUTO_PILOT);
+		System.out.println("Primary browser : " + AppMain.selectedPrimaryBrowser);
+		System.out.println("Native message : " + ArgumentProcess.chrome_native);
+		System.out.println("Autochat : " + ArgumentProcess.autoChat);
+		System.out.println("============================");
 		
 		AppMain.ivBytes = new byte[16];
 		Arrays.fill(AppMain.ivBytes, (byte)0x00);
@@ -1068,6 +1075,10 @@ public class AppMain {
 		
 		if(ArgumentProcess.autoChat && ArgumentProcess.autoChatInterval > 0)
 		{
+			
+			System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
+			System.out.println("     Autochat started");
+			System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
 			String chatBase64 = "020000004722EC7E646466B39C3CC79D8AD64ABA00000002370EFE014AEC2FD83DD6D78F0D12968C";
 			
 			Runnable myRunnable = new Runnable() {
@@ -1076,6 +1087,7 @@ public class AppMain {
 				public void run() {
 					try {
 						TCPClient.connectToBrowser(Base64.getDecoder().decode(chatBase64));
+						System.out.println(">> autochat dispatched");
 					} catch (Exception e1) {
 						System.err.println("Error at composing the auto chat messages");
 					}
