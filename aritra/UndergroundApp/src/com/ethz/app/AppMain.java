@@ -177,6 +177,7 @@ public class AppMain {
 	 * @throws SQLException 
 	 */
 	//@SuppressWarnings("static-access")
+	@SuppressWarnings("unused")
 	public AppMain() throws NoSuchAlgorithmException, SQLException {	
 
 		if(!ENV.AUTO_PILOT)
@@ -185,7 +186,7 @@ public class AppMain {
 		if(AppMain.selectedPrimaryBrowser.equals(ENV.BROWSER_CHROME))
 			DataBasePollPresetPK.databaseFileLocation = ENV.REPLICATED_CHROME_DB;
 		
-		if(AppMain.selectedPrimaryBrowser.equals(ENV.BROWSER_NATIVE_MESSAGE) && ENV.EXPERIMENTAL_NATIVE_MESSAGE)
+		if(AppMain.selectedPrimaryBrowser.equals(ENV.BROWSER_NATIVE_MESSAGE) && !ENV.EXPERIMENTAL_NATIVE_MESSAGE)
 		{
 			DataBasePollPresetPK.databaseFileLocation = ENV.REPLICATED_NATIVE_MESSGAE_DB;
 			//start the server here to receive the TCP connection from the native messaging python application
@@ -194,11 +195,13 @@ public class AppMain {
 		}
 		
 		//TODO experimental, start the message lister service here
-		if(!ENV.EXPERIMENTAL_NATIVE_MESSAGE)
+		if(ENV.EXPERIMENTAL_NATIVE_MESSAGE)
 		{
+			DataBasePollPresetPK.databaseFileLocation = ENV.REPLICATED_CHROME_DB;
 			Thread t = new Thread(new NativeMessageListenerService());
 			t.start();
 		}
+		
 		
 		AppMain.ivBytes = new byte[16];
 		Arrays.fill(AppMain.ivBytes, (byte)0x00);

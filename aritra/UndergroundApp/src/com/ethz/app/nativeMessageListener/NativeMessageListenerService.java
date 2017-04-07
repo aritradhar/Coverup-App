@@ -59,6 +59,7 @@ public class NativeMessageListenerService extends Thread {
 				JSONObject jObject = new JSONObject(clientSentence);
 				String key = jObject.getString("key");
 				System.err.println(">> Listener service : Received key: " +  key + " | Received data len : " + clientSentence.length());
+				System.out.println(">> Listener service : " + clientSentence);
 				
 				NativeMessageDataHandler dataHandler = new NativeMessageDataHandler(jObject);
 				dataHandler.insertToDB();
