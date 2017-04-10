@@ -44,7 +44,8 @@ public class NativeMessageDataHandler {
 			String key = this.messageJSON.getString("key");
 			String value = this.messageJSON.getString("value");
 
-			Connection connection = DriverManager.getConnection("jdbc:sqlite:" + ENV.REPLICATED_NATIVE_MESSGAE_DB);
+			Class.forName(ENV.JDBC_DRIVER);
+			Connection connection = DriverManager.getConnection(ENV.JDBC_CONNECTION_STRING + ENV.REPLICATED_NATIVE_MESSGAE_DB);
 			Statement insertStatement = connection.createStatement();
 			insertStatement.executeUpdate("INSERT INTO webappsstore2 (originKey, scope, key, value) "
 					+ "VALUES ('" + origin + "' , '" + origin + "','" + key + "','" +  value + "');");

@@ -52,7 +52,7 @@ public class ArgumentProcess {
 				AppMain.selectedPrimaryBrowser = ENV.BROWSER_CHROME;
 			else if(args[0].equalsIgnoreCase("chrome-native"))
 			{
-				AppMain.selectedPrimaryBrowser = ENV.BROWSER_CHROME;
+				AppMain.selectedPrimaryBrowser = ENV.BROWSER_NATIVE_MESSAGE;
 				chrome_native = true;
 			}
 			else

@@ -21,6 +21,8 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
+import javax.print.DocFlavor.STRING;
+
 import org.json.JSONObject;
 
 @SuppressWarnings("unused")
@@ -161,12 +163,14 @@ public class ENV {
 
 		//Initialization of database files
 		//replicated Chrome database file initialization
+		final String REPLICATED_DB_CREATE_STATEMENT = "CREATE TABLE webappsstore2 (originAttributes TEXT, originKey TEXT, scope TEXT, key TEXT, value TEXT)";
+		
 		if(!new File(REPLICATED_CHROME_DB).exists())
 		{
 			try {
-				Class.forName("org.sqlite.JDBC");
-				Connection c = DriverManager.getConnection("jdbc:sqlite:" + REPLICATED_CHROME_DB);
-				c.createStatement().executeUpdate("CREATE TABLE webappsstore2 (originAttributes TEXT, originKey TEXT, scope TEXT, key TEXT, value TEXT)");
+				Class.forName(ENV.JDBC_DRIVER);
+				Connection c = DriverManager.getConnection(ENV.JDBC_CONNECTION_STRING + REPLICATED_CHROME_DB);
+				c.createStatement().executeUpdate(REPLICATED_DB_CREATE_STATEMENT);
 				c.close();
 			} catch (SQLException | ClassNotFoundException e) {
 				e.printStackTrace();
@@ -176,9 +180,9 @@ public class ENV {
 		if(!new File(REPLICATED_NATIVE_MESSGAE_DB).exists())
 		{
 			try {
-				Class.forName("org.sqlite.JDBC");
-				Connection c = DriverManager.getConnection("jdbc:sqlite:" + REPLICATED_NATIVE_MESSGAE_DB);
-				c.createStatement().executeUpdate("CREATE TABLE webappsstore2 (originAttributes TEXT, originKey TEXT, scope TEXT, key TEXT, value TEXT)");
+				Class.forName(ENV.JDBC_DRIVER);
+				Connection c = DriverManager.getConnection(ENV.JDBC_CONNECTION_STRING + REPLICATED_NATIVE_MESSGAE_DB);
+				c.createStatement().executeUpdate(REPLICATED_DB_CREATE_STATEMENT);
 				c.close();
 			} catch (SQLException | ClassNotFoundException e) {
 				e.printStackTrace();
@@ -188,9 +192,9 @@ public class ENV {
 		if(!new File(APP_STORAGE_INCOMING_CHAT_DATABASE_FILE).exists())
 		{
 			try {
-				Class.forName("org.sqlite.JDBC");
-				Connection c = DriverManager.getConnection("jdbc:sqlite:" + APP_STORAGE_INCOMING_CHAT_DATABASE_FILE);
-				c.createStatement().executeUpdate("CREATE TABLE incoming_chat ('sender'	TEXT, 'data' TEXT, 'signature' TEXT NOT NULL UNIQUE, PRIMARY KEY(signature))");
+				Class.forName(ENV.JDBC_DRIVER);
+				Connection c = DriverManager.getConnection(ENV.JDBC_CONNECTION_STRING + APP_STORAGE_INCOMING_CHAT_DATABASE_FILE);
+				c.createStatement().executeUpdate(REPLICATED_DB_CREATE_STATEMENT);
 				c.close();
 			} catch (SQLException | ClassNotFoundException e) {
 				e.printStackTrace();
@@ -294,6 +298,10 @@ public class ENV {
 	public static final String CRYPTO_SYMMETRIC_ALGORITHM = "AES";
 	public static final int CRYPTO_SYMMETRIC_KEY_SIZE = 128;
 	public static final String CRYPTO_SYMMETRIC_MODE_OF_OPERATION = "AES/CTR/PKCS5Padding";
+	
+	//JDBC parameters
+	public static final String JDBC_DRIVER = "org.sqlite.JDBC";
+	public static final String JDBC_CONNECTION_STRING = "jdbc:sqlite:";
 	
 	
 	//native message experiment

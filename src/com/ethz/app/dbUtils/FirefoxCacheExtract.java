@@ -282,8 +282,8 @@ public class FirefoxCacheExtract {
 			SQLiteConfig config = new SQLiteConfig();
 			config.setReadOnly(true); 
 
-			Class.forName("org.sqlite.JDBC");
-			c = DriverManager.getConnection("jdbc:sqlite:" + databaseFile, config.toProperties());
+			Class.forName(ENV.JDBC_DRIVER);
+			c = DriverManager.getConnection(ENV.JDBC_CONNECTION_STRING + databaseFile, config.toProperties());
 		} 
 		catch ( Exception e ) 
 		{
@@ -312,7 +312,7 @@ public class FirefoxCacheExtract {
 			SQLiteConfig config = new SQLiteConfig();
 			config.setReadOnly(true); 
 			Class.forName("org.sqlite.JDBC");
-			c = DriverManager.getConnection("jdbc:sqlite:" + databaseFile, config.toProperties());
+			c = DriverManager.getConnection(ENV.JDBC_CONNECTION_STRING + databaseFile, config.toProperties());
 		} 
 		catch ( Exception e ) 
 		{
@@ -352,7 +352,7 @@ public class FirefoxCacheExtract {
 			SQLiteConfig config = new SQLiteConfig();
 			config.setReadOnly(true); 
 
-			Class.forName("org.sqlite.JDBC");
+			Class.forName(ENV.JDBC_DRIVER);
 			c = DriverManager.getConnection("jdbc:sqlite:" + databaseFile, config.toProperties());
 		} 
 		catch ( Exception e ) 
@@ -422,7 +422,7 @@ public class FirefoxCacheExtract {
 		{
 			SQLiteConfig config = new SQLiteConfig();
 			config.setReadOnly(true); 
-			Class.forName("org.sqlite.JDBC");
+			Class.forName(ENV.JDBC_DRIVER);
 			c = DriverManager.getConnection("jdbc:sqlite:" + databaseFile, config.toProperties());
 		} 
 		catch ( Exception e ) 
@@ -461,7 +461,7 @@ public class FirefoxCacheExtract {
 			SQLiteConfig config = new SQLiteConfig();
 			config.setReadOnly(true); 
 
-			Class.forName("org.sqlite.JDBC");
+			Class.forName(ENV.JDBC_DRIVER);
 			c = DriverManager.getConnection("jdbc:sqlite:" + databaseFile, config.toProperties());
 		} 
 		catch ( Exception e ) 
@@ -505,7 +505,7 @@ public class FirefoxCacheExtract {
 			if(file.getCanonicalPath().contains("localstorage-journal") || file.toString().contains("__0.localstorage"))
 				continue;		
 
-			Class.forName("org.sqlite.JDBC");
+			Class.forName(ENV.JDBC_DRIVER);
 			Connection c = DriverManager.getConnection("jdbc:sqlite:" + file.getCanonicalPath(), config.toProperties());
 
 			Statement stmt = c.createStatement();

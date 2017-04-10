@@ -19,20 +19,15 @@ import java.awt.EventQueue;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.security.SecureRandom;
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Base64;
@@ -40,7 +35,6 @@ import java.util.List;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
-import javax.annotation.processing.SupportedSourceVersion;
 import javax.crypto.Cipher;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.IvParameterSpec;
@@ -65,25 +59,19 @@ import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
-import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.table.DefaultTableModel;
 
-import org.eclipse.swt.widgets.Display;
 import org.json.JSONObject;
 
 import com.ethz.app.binUtils.BinUtils;
 import com.ethz.app.chatApp.ChatApp;
 import com.ethz.app.covertBrowser.CovertBrowserSA;
-import com.ethz.app.dbUtils.ChromeCacheTransfer;
-import com.ethz.app.dbUtils.FirefoxCacheExtract;
 import com.ethz.app.dbUtils.TableChecker;
 import com.ethz.app.dispatchSocket.TCPClient;
+import com.ethz.app.env.ASCIIart;
 import com.ethz.app.env.ENV;
 import com.ethz.app.nativeMessageListener.NativeMessageListenerService;
-import com.ethz.app.poll.DataBasePoll;
 import com.ethz.app.poll.DataBasePollPresetPK;
-import com.ethz.app.poll.RepeatedDatabaseCheck;
-import com.sun.javafx.property.adapter.PropertyDescriptor.Listener;
 
 /**
  * Underground application entry point
@@ -186,16 +174,16 @@ public class AppMain {
 		if(AppMain.selectedPrimaryBrowser.equals(ENV.BROWSER_CHROME))
 			DataBasePollPresetPK.databaseFileLocation = ENV.REPLICATED_CHROME_DB;
 
-		/*if(AppMain.selectedPrimaryBrowser.equals(ENV.BROWSER_NATIVE_MESSAGE) && !ENV.EXPERIMENTAL_NATIVE_MESSAGE)
+		if(AppMain.selectedPrimaryBrowser.equals(ENV.BROWSER_NATIVE_MESSAGE) && !ENV.EXPERIMENTAL_NATIVE_MESSAGE)
 		{
 			DataBasePollPresetPK.databaseFileLocation = ENV.REPLICATED_NATIVE_MESSGAE_DB;
 			//start the server here to receive the TCP connection from the native messaging python application
 			Thread nativeListenerThread = new Thread(new NativeMessageListenerService());
 			nativeListenerThread.start();
-		}*/
+		}
 
 		//TODO experimental, start the message lister service here
-		if(ENV.EXPERIMENTAL_NATIVE_MESSAGE)
+		if(AppMain.selectedPrimaryBrowser.equals(ENV.BROWSER_NATIVE_MESSAGE))
 		{
 			DataBasePollPresetPK.databaseFileLocation = ENV.REPLICATED_CHROME_DB;
 			Thread t = new Thread(new NativeMessageListenerService());
@@ -203,6 +191,7 @@ public class AppMain {
 		}
 
 		//print argument here
+		//System.out.println(ASCIIart.ascii);
 		System.out.println("============================");
 		System.out.println("Autopilot : " + ENV.AUTO_PILOT);
 		System.out.println("Primary browser : " + AppMain.selectedPrimaryBrowser);
