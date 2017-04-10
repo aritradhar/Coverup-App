@@ -30,7 +30,7 @@ public class ChatUtils {
 	public static String publicKeyToAddress(String publicKeyStr) throws NoSuchAlgorithmException
 	{
 		byte[] pk = Base64.getUrlDecoder().decode(publicKeyStr);
-		MessageDigest md = MessageDigest.getInstance("SHA-256");
+		MessageDigest md = MessageDigest.getInstance(ENV.CRYPTO_HASH_ALGORITHM);
 		byte[] hashedPk = md.digest(pk);
 		byte[] publicAddressBytes = Arrays.copyOf(hashedPk, ENV.CHAT_PUBLIC_ADDRESS_LEN);
 		
