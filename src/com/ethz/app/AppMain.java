@@ -60,6 +60,7 @@ import javax.swing.SwingConstants;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.table.DefaultTableModel;
+import javax.xml.bind.DatatypeConverter;
 
 import org.json.JSONObject;
 
@@ -167,7 +168,7 @@ public class AppMain {
 	//@SuppressWarnings("static-access")
 	@SuppressWarnings("unused")
 	public AppMain() throws NoSuchAlgorithmException, SQLException {	
-
+		
 		if(!ENV.AUTO_PILOT)
 			initiateBrowserSelection();
 
@@ -1070,14 +1071,16 @@ public class AppMain {
 			System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
 			System.out.println("     Autochat started");
 			System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
-			String chatBase64 = "020000004722EC7E646466B39C3CC79D8AD64ABA00000002370EFE014AEC2FD83DD6D78F0D12968C";
-
+			//String chatBase64 = "020000004722EC7E646466B39C3CC79D8AD64ABA00000002370EFE014AEC2FD83DD6D78F0D12968C";
+			
+			byte[] toSend = DatatypeConverter.parseHexBinary("020000004722EC7E646466B39C3CC79D8AD64ABA00000002370EFE014AEC2FD83DD6D78F0D12968C");
+			
 			Runnable myRunnable = new Runnable() {
 
 				@Override
 				public void run() {
 					try {
-						TCPClient.connectToBrowser(Base64.getDecoder().decode(chatBase64));
+						TCPClient.connectToBrowser(toSend);
 						System.out.println(">> autochat dispatched");
 					} catch (Exception e1) {
 						System.err.println("Error at composing the auto chat messages");

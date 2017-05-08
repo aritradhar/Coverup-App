@@ -58,7 +58,8 @@ public class FeedViewer {
 	public static Map<String, String> droplet_id_loc_map = new HashMap<>();
 	public String selectedDir;
 
-	public static void main(String[] args) throws ClassNotFoundException, InstantiationException, IllegalAccessException, UnsupportedLookAndFeelException {
+	public static void main(String[] args) throws ClassNotFoundException, InstantiationException, IllegalAccessException, UnsupportedLookAndFeelException 
+	{
 		UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 
 		EventQueue.invokeLater(new Runnable() {
