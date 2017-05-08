@@ -1074,13 +1074,13 @@ public class AppMain {
 			//String chatBase64 = "020000004722EC7E646466B39C3CC79D8AD64ABA00000002370EFE014AEC2FD83DD6D78F0D12968C";
 			
 			byte[] toSend = DatatypeConverter.parseHexBinary("020000004722EC7E646466B39C3CC79D8AD64ABA00000002370EFE014AEC2FD83DD6D78F0D12968C");
-			
+			String chatBase64 = Base64.getEncoder().encodeToString(toSend);
 			Runnable myRunnable = new Runnable() {
 
 				@Override
 				public void run() {
 					try {
-						TCPClient.connectToBrowser(toSend);
+						TCPClient.connectToBrowser(chatBase64);
 						System.out.println(">> autochat dispatched");
 					} catch (Exception e1) {
 						System.err.println("Error at composing the auto chat messages");
