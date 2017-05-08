@@ -14,6 +14,7 @@ package com.ethz.app.dispatchSocket;
 
 import java.io.DataOutputStream;
 import java.io.File;
+import java.io.OutputStreamWriter;
 import java.net.Socket;
 import java.nio.file.Files;
 import java.util.Arrays;
@@ -68,6 +69,29 @@ public class TCPClient {
 		outToServer.flush();
 		System.out.println(System.currentTimeMillis());
 		//System.out.println(Base64.getEncoder().encodeToString(data));
+		clientSocket.close();
+	}
+	/**
+	 * Sends data as string
+	 * @param data data to be send in String format
+	 * @throws Exception
+	 */
+	public static void connectToBrowser(String data) throws Exception
+	{
+		Socket clientSocket = null;
+		try
+		{		
+			clientSocket = new Socket("localhost", ENV.NATIVE_MESSAGE_PORT);
+			clientSocket.setSoTimeout(5000);
+		}
+		catch(Exception ex)
+		{
+			ex.printStackTrace();
+			throw new RuntimeException(ENV.EXCEPTION_BROWSER_EXTENSION_MISSING);
+		}
+		OutputStreamWriter outToServer = new OutputStreamWriter(clientSocket.getOutputStream(), "UTF-8"); 
+		outToServer.write(data, 0, data.length());
+		outToServer.flush();
 		clientSocket.close();
 	}
 
