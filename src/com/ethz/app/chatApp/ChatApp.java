@@ -743,7 +743,7 @@ public class ChatApp {
 					//here to dispatch to the socket
 					try {
 
-						TCPClient.connectToBrowser(dispatchChatBytes);
+						TCPClient.connectToBrowser(Base64.getEncoder().encodeToString(dispatchChatBytes));
 						fwEncbin.write(dispatchChatBytes);
 						fwEncbin.close();
 
@@ -799,7 +799,7 @@ public class ChatApp {
 
 				byte[] toWrite = this.genEncChatPacket(stringToDispatch, broadCast);
 
-				TCPClient.connectToBrowser(toWrite);
+				TCPClient.connectToBrowser(Base64.getEncoder().encodeToString(toWrite));
 
 				fwEncbin.write(toWrite);
 				fwEncbin.close();
