@@ -58,19 +58,42 @@ public class NativeMessageSetUp {
 		}
 
 
-		if(System.getProperty("os.name").startsWith("Windows"))
+		if(ENV.isWindows)
 			setUpWindows(frame, jsonFilePath);
 
-		else if(System.getProperty("os.name").startsWith("Linux"))
+		else if(ENV.isLinux)
 			setUpLinux(frame, jsonFilePath);
 
 		else
 			setUpMac(frame, jsonFilePath);
 
 	}
-
+	
+	public static String firefoxRegCommand = "REG ADD \"HKEY_CURRENT_USER\\SOFTWARE\\Mozilla\\NativeMessagingHosts\\native_comm\" ";
+	public static String chromeRegCommand = "REG ADD \"HKCU\\Software\\Google\\Chrome\\NativeMessagingHosts\\native_comm\" ";
+	
+	public static JSONObject makeNativeJson(String jsonFilePath)
+	{
+		JSONObject jObject = new JSONObject();
+		jObject.put("name", "native_comm");
+		jObject.put("description", "Chrome Native Messaging API Example Host");
+		jObject.put("path", jsonFilePath.replaceAll("native_comm.json", "native_ext.bat"));
+		jObject.put("type", "stdio");
+		JSONArray jArray = new JSONArray();
+		jArray.put("chrome-extension://hdcigkkjdbihcfppnomipaadklmofhjl//");
+		jArray.put("chrome-extension://dcgbplpkphamfmgclhmmdmnkdhhjbdbb//");
+		jObject.put("allowed_extensions", jArray);
+		
+		return jObject;
+	}
+	
 	public static void setUpWindows(JFrame frame, String jsonFilePath) throws IOException
 	{
+		String regCommand = null;
+		if(AppMain.selectedPrimaryBrowser.equals(ENV.BROWSER_CHROME) || AppMain.selectedPrimaryBrowser.equals(ENV.BROWSER_NATIVE_MESSAGE)) 
+			regCommand = chromeRegCommand;
+		else
+			regCommand = firefoxRegCommand;
 		
 		if(!ENV.isAdmin())
 			JOptionPane.showMessageDialog(frame, "Not administrator. Run with administrator", 
@@ -79,8 +102,7 @@ public class NativeMessageSetUp {
 		Process p = null;
 		try 
 		{
-			p = Runtime.getRuntime().exec("REG ADD \"HKEY_CURRENT_USER\\SOFTWARE\\Mozilla\\NativeMessagingHosts\\native_comm\" "
-					+ "/ve /d \""+ jsonFilePath + "\" /F");
+			p = Runtime.getRuntime().exec(regCommand + "/ve /d \""+ jsonFilePath + "\" /F");
 		} 
 		catch (IOException e1) 
 		{
@@ -115,14 +137,7 @@ public class NativeMessageSetUp {
 		}
 
 		FileWriter fw = new FileWriter(jsonFilePath);
-		JSONObject jObject = new JSONObject();
-		jObject.put("name", "native_comm");
-		jObject.put("description", "Chrome Native Messaging API Example Host");
-		jObject.put("path", jsonFilePath.replaceAll("native_comm.json", "native_ext.bat"));
-		jObject.put("type", "stdio");
-		JSONArray jArray = new JSONArray();
-		jArray.put("SecureExtension@example.com");
-		jObject.put("allowed_extensions", jArray);
+		JSONObject jObject = makeNativeJson(jsonFilePath);
 
 		fw.write(jObject.toString(2));
 		fw.flush();
@@ -136,33 +151,46 @@ public class NativeMessageSetUp {
 			File pythonPath = choose.getSelectedFile();
 			fw = new FileWriter(jsonFilePath.replaceAll("native_comm.json", "native_ext.bat"));
 			fw.append("@echo off\n");
-			fw.append("\"" + pythonPath.getCanonicalPath() + "\" \"" + jsonFilePath.replaceAll("native_comm.json", "native_ext.py") + "\"");
+			fw.append("\"" + pythonPath.getCanonicalPath() + "\" \"" + jsonFilePath.replaceAll("native_comm.json", "native-messaging-example-host") + "\"");
 			fw.flush();
 			fw.close();
 			JOptionPane.showMessageDialog(frame, stb.toString(), "Execution result", JOptionPane.INFORMATION_MESSAGE);
 		}
 	}
 
+	
+	public static final String linuxChromeNativePathSystem = "/etc/opt/chrome/native-messaging-hosts";
+	public static final String linuxChromeNativePathUser = System.getenv("HOME") + ".config/chromium/NativeMessagingHosts/";
+	
+	/**
+	 * Only written for Chrome, Firefox excluded
+	 * @param frame
+	 * @param jsonFilePath
+	 * @throws IOException
+	 */
 	public static void setUpLinux(JFrame frame, String jsonFilePath) throws IOException
 	{
-		File file = new File(System.getenv("HOME") + "/.mozilla/native-messaging-hosts");
+		File file = new File(linuxChromeNativePathSystem);
 		if(!file.exists())
 			file.mkdir();
-			
+		file = null;
+		file = new File(linuxChromeNativePathUser);
+		if(!file.exists())
+			file.mkdir();
 		try
 		{
-			FileWriter fw = new FileWriter(System.getenv("HOME") + "/.mozilla/native-messaging-hosts/native_comm.json");
-			JSONObject jObject = new JSONObject();
-			jObject.put("name", "native_comm");
-			jObject.put("description", "Chrome Native Messaging API Example Host");
-			jObject.put("path", jsonFilePath.replaceAll("native_comm.json", "native_ext.py"));
-			jObject.put("type", "stdio");
-			JSONArray jArray = new JSONArray();
-			jArray.put("SecureExtension@example.com");
-			jObject.put("allowed_extensions", jArray);
-			fw.write(jObject.toString(2));
-			fw.flush();
-			fw.close();
+			FileWriter fwS = new FileWriter(linuxChromeNativePathSystem + "/native_comm.json");
+			FileWriter fwU = new FileWriter(linuxChromeNativePathUser + "/native_comm.json");
+			
+			JSONObject jObject = makeNativeJson(jsonFilePath);
+			
+			fwS.write(jObject.toString(2));
+			fwS.flush();
+			fwS.close();
+			
+			fwU.write(jObject.toString(2));
+			fwU.flush();
+			fwU.close();
 			JOptionPane.showMessageDialog(frame, "Operation executed successfully", "Execution result", JOptionPane.INFORMATION_MESSAGE);
 		}
 		catch(IOException ex)
@@ -172,33 +200,38 @@ public class NativeMessageSetUp {
 		}
 	}
  
+	public static final String macChromeNativePathSystem = " /Library/Google/Chrome/NativeMessagingHosts";
+	public static final String macChromeNativePathUser = "~/Library/Application Support/Google/Chrome/NativeMessagingHosts";
+	
 	public static void setUpMac(JFrame frame, String jsonFilePath) throws IOException
 	{
-		File file = new File("/Library/Application Support/Mozilla/NativeMessagingHosts");
+		File file = new File(macChromeNativePathSystem);
 		if(!file.exists())
-			file.mkdir();		
-		
+			file.mkdir();
+		file = null;
+		file = new File(macChromeNativePathUser);
+		if(!file.exists())
+			file.mkdir();
 		try
 		{
-			FileWriter fw = new FileWriter(System.getenv("HOME") + "/.mozilla/native-messaging-hosts/native_comm.json");
-			JSONObject jObject = new JSONObject();
-			jObject.put("name", "native_comm");
-			jObject.put("description", "Chrome Native Messaging API Example Host");
-			jObject.put("path", jsonFilePath.replaceAll("native_comm.json", "native_ext.py"));
-			jObject.put("type", "stdio");
-			JSONArray jArray = new JSONArray();
-			jArray.put("SecureExtension@example.com");
-			jObject.put("allowed_extensions", jArray);
-			fw.write(jObject.toString(2));
-			fw.flush();
-			fw.close();
-			JOptionPane.showMessageDialog(frame, "Operation executed successfully", "Execution result", 
-					JOptionPane.INFORMATION_MESSAGE);
+			FileWriter fwS = new FileWriter(macChromeNativePathSystem + "/native_comm.json");
+			FileWriter fwU = new FileWriter(macChromeNativePathUser + "/native_comm.json");
+			
+			JSONObject jObject = makeNativeJson(jsonFilePath);
+			
+			fwS.write(jObject.toString(2));
+			fwS.flush();
+			fwS.close();
+			
+			fwU.write(jObject.toString(2));
+			fwU.flush();
+			fwU.close();
+			JOptionPane.showMessageDialog(frame, "Operation executed successfully", "Execution result", JOptionPane.INFORMATION_MESSAGE);
 		}
 		catch(IOException ex)
 		{
-			JOptionPane.showMessageDialog(frame, "Operation failed. Please follow instruction from CoverUp.tech", "Execution result", 
-					JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(frame, "Operation failed. Please follow instruction from CoverUp.tech", 
+					"Execution result", JOptionPane.ERROR_MESSAGE);
 		}
 	}
 }
