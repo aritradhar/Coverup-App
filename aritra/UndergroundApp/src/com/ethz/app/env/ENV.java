@@ -65,7 +65,7 @@ public class ENV {
 			file.mkdir();
 	}
 	
-	
+	public static boolean macSupport = false;
 	public static boolean AUTO_PILOT = false;
 
 	public static final String APP_STORAGE_BROWSER_COMM_DROPLET_LOC = "DROPLET";
@@ -296,11 +296,16 @@ public class ENV {
 
 	//if false then broadcast mode
 	public static final boolean CHAT_MODE_RELAY = true;
-
+	public static String DIAG= "OS : " + System.getProperty("os.name") + " architecture : " + System.getProperty("os.arch") 
+								+ "\nJava : " + System.getProperty("java.vm.vendor") + " " + System.getProperty("java.vm.name") + ", version : "+System.getProperty("java.version");
+	
 	public static final String ABOUT_MESSAGE = "To those who can hear me, I say - do not despair. \n The misery that is now upon us is but the passing of greed - "
 			+ "\nthe bitterness of men who fear the way of human progress. \nThe hate of men will pass,"
 			+ " and dictators die, and the power they took from the people \n will return to the people.\nAnd so long as men die, liberty will never perish. .....\n"
-			+ "- Charlie Chaplin (The Great Dictator)";
+			+ "- Charlie Chaplin (The Great Dictator)"
+			+ "\n\nNinaPumpkin version 0.8b (GC-Native.FF-Feed.BW-Dis)"
+			+ "\n" + DIAG;
+	
 	
 	public static boolean isAdmin() {
 	    String groups[] = (new com.sun.security.auth.module.NTSystem()).getGroupIDs();

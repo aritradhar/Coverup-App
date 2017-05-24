@@ -57,7 +57,6 @@ public class NativeMessageSetUp {
 			e1.printStackTrace();
 		}
 
-
 		if(ENV.isWindows)
 			setUpWindows(frame, jsonFilePath);
 
