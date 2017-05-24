@@ -73,6 +73,7 @@ import com.ethz.app.env.ASCIIart;
 import com.ethz.app.env.ENV;
 import com.ethz.app.nativeMessageListener.NativeMessageListenerService;
 import com.ethz.app.poll.DataBasePollPresetPK;
+import com.sun.xml.internal.messaging.saaj.soap.Envelope;
 
 /**
  * Underground application entry point
@@ -117,6 +118,16 @@ public class AppMain {
 	 */
 	public static void main(String[] args) throws ClassNotFoundException, InstantiationException, IllegalAccessException, UnsupportedLookAndFeelException {
 
+		//mac support disabled for now
+		if(ENV.isMac)
+		{
+			if(!ENV.macSupport)
+			{
+				System.err.println("Current version of NinjaPumpkin is does not support mac!");
+				System.exit(1);
+			}
+		}
+		
 		//argument format
 		//help or
 		//firefox <pathToProfile> <pollingrate>
