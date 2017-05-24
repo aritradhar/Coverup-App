@@ -71,6 +71,7 @@ public class NativeMessageSetUp {
 
 	public static void setUpWindows(JFrame frame, String jsonFilePath) throws IOException
 	{
+		
 		if(!ENV.isAdmin())
 			JOptionPane.showMessageDialog(frame, "Not administrator. Run with administrator", 
 					"Not administrator", JOptionPane.ERROR_MESSAGE);				 

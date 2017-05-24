@@ -69,6 +69,7 @@ public class TCPClient {
 		outToServer.flush();
 		System.out.println(System.currentTimeMillis());
 		//System.out.println(Base64.getEncoder().encodeToString(data));
+		outToServer.close();
 		clientSocket.close();
 	}
 	/**
@@ -92,6 +93,7 @@ public class TCPClient {
 		OutputStreamWriter outToServer = new OutputStreamWriter(clientSocket.getOutputStream(), "UTF-8"); 
 		outToServer.write(data, 0, data.length());
 		outToServer.flush();
+		outToServer.close();
 		clientSocket.close();
 	}
 

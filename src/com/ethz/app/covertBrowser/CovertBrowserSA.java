@@ -79,7 +79,7 @@ public class CovertBrowserSA {
 		}
 		catch(UnsatisfiedLinkError err)
 		{
-			System.err.println("The jar is not meant for : " + System.getProperty("os.name") + " architecture : " + System.getProperty("os.arch"));
+			System.err.println("The jar is not meant for : " + ENV.OPERATING_SYSTEM_NAME + " architecture : " + ENV.OPERATING_SYSTEM_ARCH);
 			System.err.println("-------------------- Stack Trace start -------------------------");
 			err.printStackTrace();
 			System.err.println("-------------------- Stack Trace end -------------------------");
@@ -110,7 +110,7 @@ public class CovertBrowserSA {
 		}
 		catch(UnsatisfiedLinkError err)
 		{
-			System.err.println("The jar is not meant for : " + System.getProperty("os.name") + " architecture : " + System.getProperty("os.arch"));
+			System.err.println("The jar is not meant for : " + ENV.OPERATING_SYSTEM_NAME + " architecture : " + ENV.OPERATING_SYSTEM_ARCH);
 			System.err.println("-------------------- Stack Trace start -------------------------");
 			err.printStackTrace();
 			System.err.println("-------------------- Stack Trace end -------------------------");

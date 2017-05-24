@@ -60,7 +60,7 @@ public class FirefoxCacheExtract {
 
 		String fileName = null;
 
-		String os = System.getProperty("os.name");
+		String os = ENV.OPERATING_SYSTEM_NAME;
 
 		String appDataLoc = null;
 		
@@ -69,7 +69,7 @@ public class FirefoxCacheExtract {
 		{
 			if(AppMain.selectedPrimaryBrowser.equals(ENV.BROWSER_FIREFOX))
 			{
-				if(os.contains("Win"))
+				if(ENV.isWindows)
 					fileName = ArgumentProcess.profileLoc.concat("\\webappsstore.sqlite");
 				else
 					fileName = ArgumentProcess.profileLoc.concat("/webappsstore.sqlite");
@@ -92,7 +92,7 @@ public class FirefoxCacheExtract {
 			return fileName;
 		}
 		
-		if(os.contains("Win"))
+		if(ENV.isWindows)
 		{
 
 			if(AppMain.selectedPrimaryBrowser.equals(ENV.BROWSER_FIREFOX))
@@ -168,7 +168,7 @@ public class FirefoxCacheExtract {
 				return fileName;
 			}
 		}
-		else if(os.contains("Linux"))
+		else if(ENV.isLinux)
 		{
 			if(AppMain.selectedPrimaryBrowser.equals(ENV.BROWSER_FIREFOX))
 			{
@@ -217,7 +217,7 @@ public class FirefoxCacheExtract {
 			}
 		}
 		//mac
-		else
+		else if(ENV.isMac)
 		{
 			System.out.println("Ok! you are using Mac. What else can go wrong now!");
 			if(AppMain.selectedPrimaryBrowser.equals(ENV.BROWSER_FIREFOX))

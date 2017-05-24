@@ -38,6 +38,24 @@ public class ENV {
 		else
 			DELIM = "/";
 	}
+	
+	public static boolean isWindows, isLinux, isMac;
+	static
+	{
+		isWindows = isLinux = isMac = false;
+		String OS = System.getProperty("os.name").toLowerCase();
+		if(OS.contains("windows"))
+			isWindows = true;
+
+		else if(OS.contains("linux"))
+			isLinux = true;
+		else
+			isMac = true;
+			
+	}
+	
+	public static final String OPERATING_SYSTEM_NAME =  System.getProperty("os.name");
+	public static final String OPERATING_SYSTEM_ARCH =  System.getProperty("os.arch");
 
 	public static final String APP_STORAGE_LOC = "APP_DATA";
 	static
