@@ -123,7 +123,7 @@ public class AppMain {
 		{
 			if(!ENV.macSupport)
 			{
-				System.err.println("Current version of NinjaPumpkin is does not support mac!");
+				System.err.println("Current version of NinjaPumpkin does not support mac!");
 				System.exit(1);
 			}
 		}
