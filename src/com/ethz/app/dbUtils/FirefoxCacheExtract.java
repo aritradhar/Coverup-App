@@ -39,7 +39,7 @@ public class FirefoxCacheExtract {
 	public static String databaseFile;
 	public static List<String> chromeDatabaseFiles;
 	public String jsonData;
-	
+
 	public static String APP_DATA_LOC_CHROME;
 
 	public static String changedDBLocation = "";
@@ -63,8 +63,8 @@ public class FirefoxCacheExtract {
 		String os = ENV.OPERATING_SYSTEM_NAME;
 
 		String appDataLoc = null;
-		
-		
+
+
 		if(ENV.AUTO_PILOT)
 		{
 			if(AppMain.selectedPrimaryBrowser.equals(ENV.BROWSER_FIREFOX))
@@ -79,7 +79,7 @@ public class FirefoxCacheExtract {
 			else
 			{
 				appDataLoc = ArgumentProcess.profileLoc;
-				
+
 				try {
 					FirefoxCacheExtract.chromeDatabaseFiles = this.chromeLocalStorageDetection(appDataLoc);
 				} catch (ClassNotFoundException | IOException | SQLException e) {
@@ -91,7 +91,7 @@ public class FirefoxCacheExtract {
 			}
 			return fileName;
 		}
-		
+
 		if(ENV.isWindows)
 		{
 
@@ -143,28 +143,41 @@ public class FirefoxCacheExtract {
 
 			else
 			{
-				appDataLoc = System.getenv("LocalAppData").concat("\\Google\\Chrome\\User Data\\Default\\Local Storage");
-				File chrome = new File(appDataLoc);
-
-				if(!chrome.exists())
+				if(AppMain.selectedPrimaryBrowser.equals(ENV.BROWSER_NATIVE_MESSAGE))
 				{
-					JFileChooser chooser = new JFileChooser(); 
-					chooser.setDialogTitle("Chrome installation not found. Choose Local storage dir");
-					chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-
-					if (chooser.showOpenDialog(AppMain.frame) == JFileChooser.APPROVE_OPTION) 
-						appDataLoc = chooser.getSelectedFile().getAbsolutePath();	
-
-					//throw new RuntimeException("Chrome not installed");
+					appDataLoc = ENV.REPLICATED_NATIVE_MESSGAE_DB;
+					APP_DATA_LOC_CHROME = appDataLoc;
+					fileName = APP_DATA_LOC_CHROME;
+					databaseFile = fileName;
+					
+					System.out.println("Uing native mode db file : " + fileName);
 				}
-				try {
-					FirefoxCacheExtract.chromeDatabaseFiles = this.chromeLocalStorageDetection(appDataLoc);
-				} catch (ClassNotFoundException | IOException | SQLException e) {
-					e.printStackTrace();
+
+				else
+				{
+					appDataLoc = System.getenv("LocalAppData").concat("\\Google\\Chrome\\User Data\\Default\\Local Storage");
+					File chrome = new File(appDataLoc);
+
+					if(!chrome.exists())
+					{
+						JFileChooser chooser = new JFileChooser(); 
+						chooser.setDialogTitle("Chrome installation not found. Choose Local storage dir");
+						chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+
+						if (chooser.showOpenDialog(AppMain.frame) == JFileChooser.APPROVE_OPTION) 
+							appDataLoc = chooser.getSelectedFile().getAbsolutePath();	
+
+						//throw new RuntimeException("Chrome not installed");
+					}
+					try {
+						FirefoxCacheExtract.chromeDatabaseFiles = this.chromeLocalStorageDetection(appDataLoc);
+					} catch (ClassNotFoundException | IOException | SQLException e) {
+						e.printStackTrace();
+					}
+					APP_DATA_LOC_CHROME = appDataLoc;
+					fileName = ENV.REPLICATED_CHROME_DB;
+					databaseFile = fileName;
 				}
-				APP_DATA_LOC_CHROME = appDataLoc;
-				fileName = ENV.REPLICATED_CHROME_DB;
-				databaseFile = fileName;
 				return fileName;
 			}
 		}
@@ -178,8 +191,8 @@ public class FirefoxCacheExtract {
 
 				if(!mozzila.exists())
 					throw new RuntimeException("Firefox not installed");
-				
-		 		JFileChooser chooser = new JFileChooser(); 
+
+				JFileChooser chooser = new JFileChooser(); 
 				chooser.setCurrentDirectory(new java.io.File(appDataLoc));
 				chooser.setDialogTitle("Choose Firefox profile dir");
 				chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
@@ -189,30 +202,41 @@ public class FirefoxCacheExtract {
 			}
 			else
 			{
-				appDataLoc = System.getenv("HOME") + "/.config/google-chrome/Default/Local Storage";
-				File chrome = new File(appDataLoc);
-
-				if(!chrome.exists())
+				if(AppMain.selectedPrimaryBrowser.equals(ENV.BROWSER_NATIVE_MESSAGE))
 				{
-					JFileChooser chooser = new JFileChooser(); 
-					chooser.setDialogTitle("Chrome installation not found. Choose Local storage dir");
-					chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-
-					if (chooser.showOpenDialog(AppMain.frame) == JFileChooser.APPROVE_OPTION) 
-						appDataLoc = chooser.getSelectedFile().getAbsolutePath();	
-
-					//throw new RuntimeException("Chrome not installed");
+					appDataLoc = ENV.REPLICATED_NATIVE_MESSGAE_DB;
+					APP_DATA_LOC_CHROME = appDataLoc;
+					fileName = APP_DATA_LOC_CHROME;
+					databaseFile = fileName;
+					System.out.println("Uing native mode db file : " + fileName);
 				}
+				else
+				{
+					appDataLoc = System.getenv("HOME") + "/.config/google-chrome/Default/Local Storage";
+					File chrome = new File(appDataLoc);
 
-				try {
-					FirefoxCacheExtract.chromeDatabaseFiles = this.chromeLocalStorageDetection(appDataLoc);
-				} catch (ClassNotFoundException | IOException | SQLException e) {
-					e.printStackTrace();
+					if(!chrome.exists())
+					{
+						JFileChooser chooser = new JFileChooser(); 
+						chooser.setDialogTitle("Chrome installation not found. Choose Local storage dir");
+						chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+
+						if (chooser.showOpenDialog(AppMain.frame) == JFileChooser.APPROVE_OPTION) 
+							appDataLoc = chooser.getSelectedFile().getAbsolutePath();	
+
+						//throw new RuntimeException("Chrome not installed");
+					}
+
+					try {
+						FirefoxCacheExtract.chromeDatabaseFiles = this.chromeLocalStorageDetection(appDataLoc);
+					} catch (ClassNotFoundException | IOException | SQLException e) {
+						e.printStackTrace();
+					}
+
+					APP_DATA_LOC_CHROME = appDataLoc;
+					fileName = ENV.REPLICATED_CHROME_DB;
+					databaseFile = fileName;
 				}
-				
-				APP_DATA_LOC_CHROME = appDataLoc;
-				fileName = ENV.REPLICATED_CHROME_DB;
-				databaseFile = fileName;
 				return fileName;
 			}
 		}
@@ -263,7 +287,7 @@ public class FirefoxCacheExtract {
 		databaseFile = fileName;
 		APP_DATA_LOC_CHROME = appDataLoc;
 		fileName = ENV.REPLICATED_CHROME_DB;
-		
+
 		System.out.println("FileName "  + fileName);
 		System.out.println("APP_DATA_LOC_CHROME : " + APP_DATA_LOC_CHROME);
 

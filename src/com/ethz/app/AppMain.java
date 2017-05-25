@@ -197,7 +197,7 @@ public class AppMain {
 		//TODO experimental, start the message lister service here
 		if(AppMain.selectedPrimaryBrowser.equals(ENV.BROWSER_NATIVE_MESSAGE))
 		{
-			DataBasePollPresetPK.databaseFileLocation = ENV.REPLICATED_CHROME_DB;
+			DataBasePollPresetPK.databaseFileLocation = ENV.REPLICATED_NATIVE_MESSGAE_DB;
 			Thread t = new Thread(new NativeMessageListenerService());
 			t.start();
 		}
