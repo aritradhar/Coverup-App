@@ -14,7 +14,8 @@ package com.ethz.app.nativeMessageListener;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
-import java.sql.Statement;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -38,6 +39,7 @@ public class NativeMessageDataHandler {
 
 	public void insertToDB()
 	{
+		PreparedStatement preparedStatement = null;
 		try
 		{
 			String origin = this.messageJSON.getString("origin");
@@ -46,11 +48,32 @@ public class NativeMessageDataHandler {
 
 			Class.forName(ENV.JDBC_DRIVER);
 			Connection connection = DriverManager.getConnection(ENV.JDBC_CONNECTION_STRING + ENV.REPLICATED_NATIVE_MESSGAE_DB);
-			Statement insertStatement = connection.createStatement();
-			insertStatement.executeUpdate("INSERT INTO webappsstore2 (originKey, scope, key, value) "
-					+ "VALUES ('" + origin + "' , '" + origin + "','" + key + "','" +  value + "');");
 
-			insertStatement.close();
+			//check if there exists same key for the same origin
+			preparedStatement = connection.prepareStatement("SELECT COUNT(*) from webappsstore2 where originKey = ? AND key = ?;");
+			preparedStatement.setString(1, origin);
+			preparedStatement.setString(2, key);			
+			ResultSet rs = preparedStatement.executeQuery();
+			int rowCounter = Integer.parseInt(rs.getString(1));
+			
+			//Delete
+			if(rowCounter > 0)
+			{
+				preparedStatement = connection.prepareStatement("delete from webappsstore2 where originKey = ? and key = ?;");
+				preparedStatement.setString(1, origin);
+				preparedStatement.setString(2, key);	
+				preparedStatement.executeUpdate();
+			}
+			
+			//then do normal insert
+			preparedStatement = connection.prepareStatement("INSERT INTO webappsstore2 (originKey, scope, key, value) VALUES (?, ?, ?, ?);");
+
+			preparedStatement.setString(1, origin);
+			preparedStatement.setString(2, origin);
+			preparedStatement.setString(3, key);
+			preparedStatement.setString(4, value);
+			preparedStatement.executeUpdate();
+			
 			connection.close();
 		}
 		catch(JSONException ex)
@@ -60,6 +83,7 @@ public class NativeMessageDataHandler {
 		catch(Exception es)
 		{
 			System.err.println(">> Data handler service : Database write error");
+			es.printStackTrace();
 		}
 	}
 }

@@ -61,8 +61,10 @@ public class NativeMessageListenerService extends Thread {
 				System.err.println(">> Listener service : Received key: " +  key + " | Received data len : " + clientSentence.length());
 				//System.out.println(">> Listener service : " + clientSentence);
 				
+				messageFromClient.close();
 				NativeMessageDataHandler dataHandler = new NativeMessageDataHandler(jObject);
 				dataHandler.insertToDB();
+				
 			}
 			catch(JSONException jsonEx)
 			{
@@ -87,6 +89,7 @@ public class NativeMessageListenerService extends Thread {
 		}
 	}
 	
+	//Test main
 	public static void main(String[] args) throws IOException {
 		NativeMessageListenerService service = new NativeMessageListenerService();
 		service.run();
