@@ -13,7 +13,6 @@
 package com.ethz.app.nativeMessageListener;
 
 import java.io.File;
-import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
