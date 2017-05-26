@@ -17,6 +17,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 
@@ -71,17 +72,22 @@ public class NativeMessageSetUp {
 	public static String firefoxRegCommand = "REG ADD \"HKEY_CURRENT_USER\\SOFTWARE\\Mozilla\\NativeMessagingHosts\\native_comm\" ";
 	public static String chromeRegCommand = "REG ADD \"HKCU\\Software\\Google\\Chrome\\NativeMessagingHosts\\native_comm\" ";
 	
-	public static JSONObject makeNativeJson(String jsonFilePath)
+	public static JSONObject makeNativeJson(String jsonFilePath) throws IOException
 	{
+		String jsonString = new String(Files.readAllBytes(new File(jsonFilePath).toPath()), StandardCharsets.UTF_8);
+		JSONObject jsonRead = new JSONObject(jsonString);
+		
 		JSONObject jObject = new JSONObject();
-		jObject.put("name", "native_comm");
-		jObject.put("description", "Chrome Native Messaging API Example Host");
+		jObject.put("name", jsonRead.getString("name"));
+		jObject.put("description", jsonRead.getString("description"));
 		jObject.put("path", jsonFilePath.replaceAll("native_comm.json", "native_ext.bat"));
-		jObject.put("type", "stdio");
+		jObject.put("type", jsonRead.getString("type"));
+		/*
 		JSONArray jArray = new JSONArray();
 		jArray.put("chrome-extension://hdcigkkjdbihcfppnomipaadklmofhjl//");
 		jArray.put("chrome-extension://dcgbplpkphamfmgclhmmdmnkdhhjbdbb//");
-		jObject.put("allowed_extensions", jArray);
+		*/
+		jObject.put("allowed_extensions", jsonRead.get("allowed_extensions"));
 		
 		return jObject;
 	}

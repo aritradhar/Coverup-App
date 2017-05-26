@@ -150,7 +150,7 @@ public class FirefoxCacheExtract {
 					fileName = APP_DATA_LOC_CHROME;
 					databaseFile = fileName;
 					
-					System.out.println("Uing native mode db file : " + fileName);
+					System.out.println("Using native mode db file : " + fileName);
 				}
 
 				else
@@ -208,7 +208,7 @@ public class FirefoxCacheExtract {
 					APP_DATA_LOC_CHROME = appDataLoc;
 					fileName = APP_DATA_LOC_CHROME;
 					databaseFile = fileName;
-					System.out.println("Uing native mode db file : " + fileName);
+					System.out.println("Using native mode db file : " + fileName);
 				}
 				else
 				{
