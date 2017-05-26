@@ -19,19 +19,15 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.nio.file.StandardCopyOption;
-
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
-import org.json.JSONArray;
 import org.json.JSONObject;
 
 import com.ethz.app.env.ENV;
 
-import javafx.stage.FileChooser;
 
 /**
  * @author Aritra
@@ -42,6 +38,9 @@ public class NativeMessageSetUp {
 
 	public static void setUp(JFrame frame) throws IOException
 	{
+		unpackNativeMessageFiles();
+		String jsonFilePath = ENV.NATIVE_MESSAGE_JSON_FILE;
+		/*
 		JFileChooser choose = new JFileChooser(".");
 		choose.setDialogTitle("Choose native_comm.json file");
 		choose.addChoosableFileFilter(new FileNameExtensionFilter("json files", "json"));
@@ -57,6 +56,7 @@ public class NativeMessageSetUp {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
+		*/
 
 		if(ENV.isWindows)
 			setUpWindows(frame, jsonFilePath);
@@ -141,9 +141,10 @@ public class NativeMessageSetUp {
 					"Execution result", JOptionPane.ERROR_MESSAGE);
 		}
 
-		FileWriter fw = new FileWriter(jsonFilePath);
+		
 		JSONObject jObject = makeNativeJson(jsonFilePath);
 
+		FileWriter fw = new FileWriter(jsonFilePath);
 		fw.write(jObject.toString(2));
 		fw.flush();
 		fw.close();
@@ -239,4 +240,25 @@ public class NativeMessageSetUp {
 					"Execution result", JOptionPane.ERROR_MESSAGE);
 		}
 	}
+	
+	public static void unpackNativeMessageFiles() throws IOException
+	{
+		FileWriter fwPy = new FileWriter(ENV.NATIVE_MESSAGE_PYTHON_FILE);
+		String resPy = NativeMessageSetUp.class.getResource(ENV.NATIVE_RESOURCE_MESSAGE_PYTHON_FILE).getFile();
+		fwPy.write(new String(Files.readAllBytes(new File(resPy).toPath()), StandardCharsets.UTF_8));
+		fwPy.close();
+		
+		FileWriter fwJson = new FileWriter(ENV.NATIVE_MESSAGE_JSON_FILE);
+		String resJson = NativeMessageSetUp.class.getResource(ENV.NATIVE_RESOURCE_MESSAGE_JSON_FILE).getFile();
+		fwJson.append(new String(Files.readAllBytes(new File(resJson).toPath())));
+		fwJson.close();
+		
+	}
+	/*
+	public static void main(String[] args) throws IOException {
+			
+		System.out.println(NativeMessageSetUp.class.getResource(ENV.NATIVE_RESOURCE_MESSAGE_JSON_FILE).getFile());
+		String t = NativeMessageSetUp.class.getResource(ENV.NATIVE_RESOURCE_MESSAGE_JSON_FILE).getFile();
+		System.out.println(new String(Files.readAllBytes(new File(t).toPath())));
+	}*/
 }

@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.concurrent.Delayed;
 
 import javax.print.DocFlavor.STRING;
 
@@ -96,7 +97,18 @@ public class ENV {
 	public static final String APP_STORAGE_CHAT_DISPATCH_FILE = "CHAT.bin";
 	public static final String APP_STORAGE_ENC_CHAT_DISPATCH_FILE = "CHAT_ENC.bin";
 	
+	//native message
+	
+	public static final String NATIVE_RESOURCE_MESSAGE_JSON_FILE = "../../native_comm.json";
+	public static final String NATIVE_RESOURCE_MESSAGE_PYTHON_FILE = "../../native-messaging-example-host";
+	public static final String NATIVE_MESSAGE_LOCATION = APP_STORAGE_LOC + DELIM + "native_messaging";
+	
+	public static final String NATIVE_MESSAGE_JSON_FILE = NATIVE_MESSAGE_LOCATION + DELIM + "native_comm.json";
+	public static final String NATIVE_MESSAGE_PYTHON_FILE = NATIVE_MESSAGE_LOCATION + DELIM + "native-messaging-example-host";
+	public static final String NATIVE_MESSAGE_BAT_FILE = NATIVE_MESSAGE_LOCATION + DELIM + "native_ext.bat";
 
+	//////////////////////////////////////////
+	
 	public static final String APP_STORAGE_INCOMING_CHAT_DATABASE_FILE = APP_STORAGE_LOC + DELIM
 			+ APP_STORAGE_CHAT_LOC + DELIM 
 			+ "INCOMING_CHAT.db";
@@ -165,6 +177,10 @@ public class ENV {
 		File FileChatLog = new File(APP_STORAGE_LOC + DELIM + APP_STORAGE_CHAT_LOC + DELIM + APP_STORAGE_CHAT_LOG_LOC);
 		if(!FileChatLog.exists())
 			FileChatLog.mkdir();
+		
+		File fileNativeDir = new File(NATIVE_MESSAGE_LOCATION);
+		if(!fileNativeDir.exists())
+			fileNativeDir.mkdir();
 
 		File chatFIle = new File(APP_STORAGE_PUBLIC_KEY_LIST);
 		if(chatFIle.exists())
