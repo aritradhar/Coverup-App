@@ -143,6 +143,17 @@ public class RepeatedDatabaseCheck {
 	public static byte[] lastReadFileHash = null;
 	public static volatile int stored_droplet_counter = 0;
 	public static String lastChatHash = null;
+	/**
+	 * This the case where the app inds the data in binary format
+	 * @param jsonData
+	 * @throws IOException
+	 * @throws IllegalBlockSizeException
+	 * @throws BadPaddingException
+	 * @throws NoSuchAlgorithmException
+	 * @throws InvalidKeyException
+	 * @throws NoSuchPaddingException
+	 * @throws InvalidAlgorithmParameterException
+	 */
 	synchronized private void doDataBaseCheckBin(String jsonData) throws IOException, IllegalBlockSizeException, BadPaddingException, NoSuchAlgorithmException, InvalidKeyException, NoSuchPaddingException, InvalidAlgorithmParameterException
 	{
 		//System.err.println("here");

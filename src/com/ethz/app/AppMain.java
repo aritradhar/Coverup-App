@@ -127,7 +127,7 @@ public class AppMain {
 				System.exit(1);
 			}
 		}
-		
+
 		//argument format
 		//help or
 		//firefox <pathToProfile> <pollingrate>
@@ -179,7 +179,8 @@ public class AppMain {
 	//@SuppressWarnings("static-access")
 	@SuppressWarnings("unused")
 	public AppMain() throws NoSuchAlgorithmException, SQLException {	
-		
+
+		ASCIIart.asciiART();
 		if(!ENV.AUTO_PILOT)
 			initiateBrowserSelection();
 
@@ -200,6 +201,8 @@ public class AppMain {
 			DataBasePollPresetPK.databaseFileLocation = ENV.REPLICATED_NATIVE_MESSGAE_DB;
 			Thread t = new Thread(new NativeMessageListenerService());
 			t.start();
+			
+			ArgumentProcess.chrome_native = true;
 		}
 
 		//print argument here
@@ -1083,7 +1086,7 @@ public class AppMain {
 			System.out.println("     Autochat started");
 			System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
 			//String chatBase64 = "020000004722EC7E646466B39C3CC79D8AD64ABA00000002370EFE014AEC2FD83DD6D78F0D12968C";
-			
+
 			byte[] toSend = DatatypeConverter.parseHexBinary("020000004722EC7E646466B39C3CC79D8AD64ABA00000002370EFE014AEC2FD83DD6D78F0D12968C");
 			String chatBase64 = Base64.getEncoder().encodeToString(toSend);
 			Runnable myRunnable = new Runnable() {
