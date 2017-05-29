@@ -14,15 +14,18 @@ package com.ethz.app;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
-import javax.swing.filechooser.FileNameExtensionFilter;
 
 import org.json.JSONObject;
 
@@ -39,7 +42,7 @@ public class NativeMessageSetUp {
 	public static void setUp(JFrame frame) throws IOException
 	{
 		unpackNativeMessageFiles();
-		String jsonFilePath = ENV.NATIVE_MESSAGE_JSON_FILE;
+		String jsonFilePath = new File(ENV.NATIVE_MESSAGE_JSON_FILE).getAbsolutePath();
 		/*
 		JFileChooser choose = new JFileChooser(".");
 		choose.setDialogTitle("Choose native_comm.json file");
@@ -87,7 +90,7 @@ public class NativeMessageSetUp {
 		jArray.put("chrome-extension://hdcigkkjdbihcfppnomipaadklmofhjl//");
 		jArray.put("chrome-extension://dcgbplpkphamfmgclhmmdmnkdhhjbdbb//");
 		*/
-		jObject.put("allowed_extensions", jsonRead.get("allowed_extensions"));
+		jObject.put("allowed_origins", jsonRead.get("allowed_origins"));
 		
 		return jObject;
 	}
@@ -243,15 +246,46 @@ public class NativeMessageSetUp {
 	
 	public static void unpackNativeMessageFiles() throws IOException
 	{
+		/*
 		FileWriter fwPy = new FileWriter(ENV.NATIVE_MESSAGE_PYTHON_FILE);
-		String resPy = NativeMessageSetUp.class.getResource(ENV.NATIVE_RESOURCE_MESSAGE_PYTHON_FILE).getFile();
-		fwPy.write(new String(Files.readAllBytes(new File(resPy).toPath()), StandardCharsets.UTF_8));
+		String resPy = AssembleFrame.class.getResource(ENV.NATIVE_RESOURCE_MESSAGE_PYTHON_FILE).getFile();
+		System.err.println(">>>> " + resPy);
+		File f = new File(AssembleFrame.class.getResource(ENV.NATIVE_RESOURCE_MESSAGE_PYTHON_FILE).getPath());
+		System.out.println(">>>> " + f.toString() + " :: " + f.exists());
+		*/
+		
+		FileWriter fwPy = new FileWriter(ENV.NATIVE_MESSAGE_PYTHON_FILE);
+		InputStream in = AssembleFrame.class.getResourceAsStream(ENV.NATIVE_RESOURCE_MESSAGE_PYTHON_FILE);
+		BufferedReader br = new BufferedReader(new InputStreamReader(in));
+		String str = null;
+		while((str = br.readLine()) != null)
+			fwPy.append(str + "\n");
+		
+		in.close();
+		br.close();
+		fwPy.close();
+		
+		
+		FileWriter fwJson = new FileWriter(ENV.NATIVE_MESSAGE_JSON_FILE);
+		
+		InputStream in1 = AssembleFrame.class.getResourceAsStream(ENV.NATIVE_RESOURCE_MESSAGE_JSON_FILE);
+		BufferedReader br1 = new BufferedReader(new InputStreamReader(in1));
+		while((str = br1.readLine()) != null)
+			fwJson.append(str + "\n");
+		
+		in1.close();
+		br1.close();
+		fwJson.close();
+		
+        /*
+		fwPy.write(new String(Files.readAllBytes(f.toPath()), StandardCharsets.UTF_8));
 		fwPy.close();
 		
 		FileWriter fwJson = new FileWriter(ENV.NATIVE_MESSAGE_JSON_FILE);
-		String resJson = NativeMessageSetUp.class.getResource(ENV.NATIVE_RESOURCE_MESSAGE_JSON_FILE).getFile();
+		String resJson = AssembleFrame.class.getResource(ENV.NATIVE_RESOURCE_MESSAGE_JSON_FILE).getFile();
 		fwJson.append(new String(Files.readAllBytes(new File(resJson).toPath())));
 		fwJson.close();
+		*/
 		
 	}
 	/*
