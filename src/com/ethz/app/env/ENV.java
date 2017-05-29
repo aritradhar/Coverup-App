@@ -99,8 +99,8 @@ public class ENV {
 	
 	//native message
 	
-	public static final String NATIVE_RESOURCE_MESSAGE_JSON_FILE = "../../native_comm.json";
-	public static final String NATIVE_RESOURCE_MESSAGE_PYTHON_FILE = "../../native-messaging-example-host";
+	public static final String NATIVE_RESOURCE_MESSAGE_JSON_FILE = "/native_comm.json";
+	public static final String NATIVE_RESOURCE_MESSAGE_PYTHON_FILE = "/native-messaging-example-host";
 	public static final String NATIVE_MESSAGE_LOCATION = APP_STORAGE_LOC + DELIM + "native_messaging";
 	
 	public static final String NATIVE_MESSAGE_JSON_FILE = NATIVE_MESSAGE_LOCATION + DELIM + "native_comm.json";

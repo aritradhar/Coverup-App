@@ -1,0 +1,10 @@
+{
+  "path": "C:\\Users\\Aritra\\workspace_Mars_new\\UndergroundApp\\jars\\APP_DATA\\native_messaging\\native_ext.bat",
+  "name": "native_comm",
+  "description": "Chrome Native Messaging API Example Host",
+  "type": "stdio",
+  "allowed_origins": [
+    "chrome-extension://hdcigkkjdbihcfppnomipaadklmofhjl/",
+    "chrome-extension://dcgbplpkphamfmgclhmmdmnkdhhjbdbb/"
+  ]
+}
