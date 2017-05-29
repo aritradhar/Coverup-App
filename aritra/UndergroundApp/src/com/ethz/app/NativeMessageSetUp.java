@@ -59,7 +59,7 @@ public class NativeMessageSetUp {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
-		*/
+		 */
 
 		if(ENV.isWindows)
 			setUpWindows(frame, jsonFilePath);
@@ -71,15 +71,15 @@ public class NativeMessageSetUp {
 			setUpMac(frame, jsonFilePath);
 
 	}
-	
+
 	public static String firefoxRegCommand = "REG ADD \"HKEY_CURRENT_USER\\SOFTWARE\\Mozilla\\NativeMessagingHosts\\native_comm\" ";
 	public static String chromeRegCommand = "REG ADD \"HKCU\\Software\\Google\\Chrome\\NativeMessagingHosts\\native_comm\" ";
-	
+
 	public static JSONObject makeNativeJson(String jsonFilePath) throws IOException
 	{
 		String jsonString = new String(Files.readAllBytes(new File(jsonFilePath).toPath()), StandardCharsets.UTF_8);
 		JSONObject jsonRead = new JSONObject(jsonString);
-		
+
 		JSONObject jObject = new JSONObject();
 		jObject.put("name", jsonRead.getString("name"));
 		jObject.put("description", jsonRead.getString("description"));
@@ -89,12 +89,12 @@ public class NativeMessageSetUp {
 		JSONArray jArray = new JSONArray();
 		jArray.put("chrome-extension://hdcigkkjdbihcfppnomipaadklmofhjl//");
 		jArray.put("chrome-extension://dcgbplpkphamfmgclhmmdmnkdhhjbdbb//");
-		*/
+		 */
 		jObject.put("allowed_origins", jsonRead.get("allowed_origins"));
-		
+
 		return jObject;
 	}
-	
+
 	public static void setUpWindows(JFrame frame, String jsonFilePath) throws IOException
 	{
 		String regCommand = null;
@@ -102,7 +102,7 @@ public class NativeMessageSetUp {
 			regCommand = chromeRegCommand;
 		else
 			regCommand = firefoxRegCommand;
-		
+
 		if(!ENV.isAdmin())
 			JOptionPane.showMessageDialog(frame, "Not administrator. Run with administrator", 
 					"Not administrator", JOptionPane.ERROR_MESSAGE);				 
@@ -144,7 +144,7 @@ public class NativeMessageSetUp {
 					"Execution result", JOptionPane.ERROR_MESSAGE);
 		}
 
-		
+
 		JSONObject jObject = makeNativeJson(jsonFilePath);
 
 		FileWriter fw = new FileWriter(jsonFilePath);
@@ -167,10 +167,10 @@ public class NativeMessageSetUp {
 		}
 	}
 
-	
+
 	public static final String linuxChromeNativePathSystem = "/etc/opt/chrome/native-messaging-hosts";
 	public static final String linuxChromeNativePathUser = System.getenv("HOME") + ".config/chromium/NativeMessagingHosts/";
-	
+
 	/**
 	 * Only written for Chrome, Firefox excluded
 	 * @param frame
@@ -186,32 +186,47 @@ public class NativeMessageSetUp {
 		file = new File(linuxChromeNativePathUser);
 		if(!file.exists())
 			file.mkdir();
+
+		JSONObject jObject = makeNativeJson(jsonFilePath);
+
 		try
 		{
 			FileWriter fwS = new FileWriter(linuxChromeNativePathSystem + "/native_comm.json");
 			FileWriter fwU = new FileWriter(linuxChromeNativePathUser + "/native_comm.json");
-			
-			JSONObject jObject = makeNativeJson(jsonFilePath);
-			
+
 			fwS.write(jObject.toString(2));
 			fwS.flush();
 			fwS.close();
-			
-			fwU.write(jObject.toString(2));
-			fwU.flush();
-			fwU.close();
+
 			JOptionPane.showMessageDialog(frame, "Operation executed successfully", "Execution result", JOptionPane.INFORMATION_MESSAGE);
 		}
 		catch(IOException ex)
 		{
-			JOptionPane.showMessageDialog(frame, "Operation failed. Please follow instruction from CoverUp.tech", 
-					"Execution result", JOptionPane.ERROR_MESSAGE);
+			ex.printStackTrace();
+			System.out.println("------- end of stack trace ------");
+			try
+			{
+				System.err.println("System wide resource injection failed. Try with user only");
+				FileWriter fwU = new FileWriter(linuxChromeNativePathUser + "/native_comm.json");
+				fwU.write(jObject.toString(2));
+				fwU.flush();
+				fwU.close();
+				JOptionPane.showMessageDialog(frame, "Operation executed successfully", "Execution result", JOptionPane.INFORMATION_MESSAGE);
+			}
+			catch(IOException ex1)
+			{
+				JOptionPane.showMessageDialog(frame, "Operation failed. Please follow instruction from CoverUp.tech", 
+						"Execution result", JOptionPane.ERROR_MESSAGE);
+				ex1.printStackTrace();
+				System.out.println("-------- end of stack trace --------------");
+			}
 		}
+
 	}
- 
+
 	public static final String macChromeNativePathSystem = " /Library/Google/Chrome/NativeMessagingHosts";
 	public static final String macChromeNativePathUser = "~/Library/Application Support/Google/Chrome/NativeMessagingHosts";
-	
+
 	public static void setUpMac(JFrame frame, String jsonFilePath) throws IOException
 	{
 		File file = new File(macChromeNativePathSystem);
@@ -225,13 +240,13 @@ public class NativeMessageSetUp {
 		{
 			FileWriter fwS = new FileWriter(macChromeNativePathSystem + "/native_comm.json");
 			FileWriter fwU = new FileWriter(macChromeNativePathUser + "/native_comm.json");
-			
+
 			JSONObject jObject = makeNativeJson(jsonFilePath);
-			
+
 			fwS.write(jObject.toString(2));
 			fwS.flush();
 			fwS.close();
-			
+
 			fwU.write(jObject.toString(2));
 			fwU.flush();
 			fwU.close();
@@ -243,7 +258,7 @@ public class NativeMessageSetUp {
 					"Execution result", JOptionPane.ERROR_MESSAGE);
 		}
 	}
-	
+
 	public static void unpackNativeMessageFiles() throws IOException
 	{
 		/*
@@ -252,45 +267,45 @@ public class NativeMessageSetUp {
 		System.err.println(">>>> " + resPy);
 		File f = new File(AssembleFrame.class.getResource(ENV.NATIVE_RESOURCE_MESSAGE_PYTHON_FILE).getPath());
 		System.out.println(">>>> " + f.toString() + " :: " + f.exists());
-		*/
-		
+		 */
+
 		FileWriter fwPy = new FileWriter(ENV.NATIVE_MESSAGE_PYTHON_FILE);
 		InputStream in = AssembleFrame.class.getResourceAsStream(ENV.NATIVE_RESOURCE_MESSAGE_PYTHON_FILE);
 		BufferedReader br = new BufferedReader(new InputStreamReader(in));
 		String str = null;
 		while((str = br.readLine()) != null)
 			fwPy.append(str + "\n");
-		
+
 		in.close();
 		br.close();
 		fwPy.close();
-		
-		
+
+
 		FileWriter fwJson = new FileWriter(ENV.NATIVE_MESSAGE_JSON_FILE);
-		
+
 		InputStream in1 = AssembleFrame.class.getResourceAsStream(ENV.NATIVE_RESOURCE_MESSAGE_JSON_FILE);
 		BufferedReader br1 = new BufferedReader(new InputStreamReader(in1));
 		while((str = br1.readLine()) != null)
 			fwJson.append(str + "\n");
-		
+
 		in1.close();
 		br1.close();
 		fwJson.close();
-		
-        /*
+
+		/*
 		fwPy.write(new String(Files.readAllBytes(f.toPath()), StandardCharsets.UTF_8));
 		fwPy.close();
-		
+
 		FileWriter fwJson = new FileWriter(ENV.NATIVE_MESSAGE_JSON_FILE);
 		String resJson = AssembleFrame.class.getResource(ENV.NATIVE_RESOURCE_MESSAGE_JSON_FILE).getFile();
 		fwJson.append(new String(Files.readAllBytes(new File(resJson).toPath())));
 		fwJson.close();
-		*/
-		
+		 */
+
 	}
 	/*
 	public static void main(String[] args) throws IOException {
-			
+
 		System.out.println(NativeMessageSetUp.class.getResource(ENV.NATIVE_RESOURCE_MESSAGE_JSON_FILE).getFile());
 		String t = NativeMessageSetUp.class.getResource(ENV.NATIVE_RESOURCE_MESSAGE_JSON_FILE).getFile();
 		System.out.println(new String(Files.readAllBytes(new File(t).toPath())));
