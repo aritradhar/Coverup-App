@@ -45,24 +45,6 @@ public class NativeMessageSetUp {
 	{
 		unpackNativeMessageFiles();
 		
-		/*
-		JFileChooser choose = new JFileChooser(".");
-		choose.setDialogTitle("Choose native_comm.json file");
-		choose.addChoosableFileFilter(new FileNameExtensionFilter("json files", "json"));
-		int res = choose.showDialog(frame, "Open file");
-		String jsonFilePath = null;
-
-		if(res == JFileChooser.CANCEL_OPTION)
-			return;
-
-		try {
-			jsonFilePath = choose.getSelectedFile().getCanonicalPath();
-		} catch (IOException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-		 */
-		System.out.println(">>> " + System.getProperty("os.name"));
 		if(ENV.isWindows)
 			setUpWindows(frame, NativeMessageSetUp.jsonFilePath);
 
@@ -92,11 +74,7 @@ public class NativeMessageSetUp {
 			jObject.put("path", NativeMessageSetUp.pythonFilePath);
 		
 		jObject.put("type", jsonRead.getString("type"));
-		/*
-		JSONArray jArray = new JSONArray();
-		jArray.put("chrome-extension://hdcigkkjdbihcfppnomipaadklmofhjl//");
-		jArray.put("chrome-extension://dcgbplpkphamfmgclhmmdmnkdhhjbdbb//");
-		 */
+		
 		jObject.put("allowed_origins", jsonRead.get("allowed_origins"));
 
 		return jObject;
