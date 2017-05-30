@@ -48,7 +48,7 @@ public class ENV {
 		if(OS.contains("windows"))
 			isWindows = true;
 
-		else if(OS.contains("linux"))
+		else if(OS.contains("linux") || OS.indexOf("nix") >= 0 || OS.indexOf("nux") >= 0 || OS.indexOf("aix") > 0 )
 			isLinux = true;
 		else
 			isMac = true;

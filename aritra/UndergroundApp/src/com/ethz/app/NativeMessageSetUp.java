@@ -38,11 +38,13 @@ import com.ethz.app.env.ENV;
  */
 public class NativeMessageSetUp {
 
-
+	static String jsonFilePath = new File(ENV.NATIVE_MESSAGE_JSON_FILE).getAbsolutePath();
+	static String pythonFilePath = new File(ENV.NATIVE_MESSAGE_PYTHON_FILE).getAbsolutePath();
+	
 	public static void setUp(JFrame frame) throws IOException
 	{
 		unpackNativeMessageFiles();
-		String jsonFilePath = new File(ENV.NATIVE_MESSAGE_JSON_FILE).getAbsolutePath();
+		
 		/*
 		JFileChooser choose = new JFileChooser(".");
 		choose.setDialogTitle("Choose native_comm.json file");
@@ -60,15 +62,15 @@ public class NativeMessageSetUp {
 			e1.printStackTrace();
 		}
 		 */
-
+		System.out.println(">>> " + System.getProperty("os.name"));
 		if(ENV.isWindows)
-			setUpWindows(frame, jsonFilePath);
+			setUpWindows(frame, NativeMessageSetUp.jsonFilePath);
 
 		else if(ENV.isLinux)
-			setUpLinux(frame, jsonFilePath);
+			setUpLinux(frame, NativeMessageSetUp.jsonFilePath);
 
 		else
-			setUpMac(frame, jsonFilePath);
+			setUpMac(frame, NativeMessageSetUp.jsonFilePath);
 
 	}
 
@@ -83,7 +85,12 @@ public class NativeMessageSetUp {
 		JSONObject jObject = new JSONObject();
 		jObject.put("name", jsonRead.getString("name"));
 		jObject.put("description", jsonRead.getString("description"));
-		jObject.put("path", jsonFilePath.replaceAll("native_comm.json", "native_ext.bat"));
+		if(ENV.isWindows)
+			jObject.put("path", NativeMessageSetUp.jsonFilePath.replaceAll("native_comm.json", "native_ext.bat"));
+		
+		else if(ENV.isLinux)
+			jObject.put("path", NativeMessageSetUp.pythonFilePath);
+		
 		jObject.put("type", jsonRead.getString("type"));
 		/*
 		JSONArray jArray = new JSONArray();
@@ -168,7 +175,7 @@ public class NativeMessageSetUp {
 	}
 
 
-	public static final String linuxChromeNativePathSystem = "/etc/opt/chrome/native-messaging-hosts";
+	public static final String linuxChromeNativePathSystem = "/etc/chromium/native-messaging-hosts";
 	public static final String linuxChromeNativePathUser = System.getenv("HOME") + "/.config/chromium/NativeMessagingHosts";
 
 	/**
@@ -259,13 +266,6 @@ public class NativeMessageSetUp {
 
 	public static void unpackNativeMessageFiles() throws IOException
 	{
-		/*
-		FileWriter fwPy = new FileWriter(ENV.NATIVE_MESSAGE_PYTHON_FILE);
-		String resPy = AssembleFrame.class.getResource(ENV.NATIVE_RESOURCE_MESSAGE_PYTHON_FILE).getFile();
-		System.err.println(">>>> " + resPy);
-		File f = new File(AssembleFrame.class.getResource(ENV.NATIVE_RESOURCE_MESSAGE_PYTHON_FILE).getPath());
-		System.out.println(">>>> " + f.toString() + " :: " + f.exists());
-		 */
 
 		FileWriter fwPy = new FileWriter(ENV.NATIVE_MESSAGE_PYTHON_FILE);
 		InputStream in = AssembleFrame.class.getResourceAsStream(ENV.NATIVE_RESOURCE_MESSAGE_PYTHON_FILE);
@@ -289,16 +289,6 @@ public class NativeMessageSetUp {
 		in1.close();
 		br1.close();
 		fwJson.close();
-
-		/*
-		fwPy.write(new String(Files.readAllBytes(f.toPath()), StandardCharsets.UTF_8));
-		fwPy.close();
-
-		FileWriter fwJson = new FileWriter(ENV.NATIVE_MESSAGE_JSON_FILE);
-		String resJson = AssembleFrame.class.getResource(ENV.NATIVE_RESOURCE_MESSAGE_JSON_FILE).getFile();
-		fwJson.append(new String(Files.readAllBytes(new File(resJson).toPath())));
-		fwJson.close();
-		 */
 
 	}
 	/*

