@@ -155,11 +155,14 @@ public class ChatApp {
 			@Override
 			public void run() {
 				IncomingChatPoll.pollChat();
-				
+
 				//auto refresh the chat textbox
 				try {
-					chatChatPane.setText(LoadChat(currentRemoteAddressInFocus));
-					System.out.println(LoadChat(currentRemoteAddressInFocus));
+					if(currentRemoteAddressInFocus.length() > 0)
+					{
+						chatChatPane.setText(LoadChat(currentRemoteAddressInFocus));
+						//System.out.println(LoadChat(currentRemoteAddressInFocus));
+					}
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
@@ -168,7 +171,7 @@ public class ChatApp {
 		executor = new ScheduledThreadPoolExecutor(2);
 		executor.scheduleAtFixedRate(myRunnable, 250, ENV.CHAT_POLLING_RATE, TimeUnit.MILLISECONDS);
 
-		
+
 
 		oldChatLogBox.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -312,12 +315,12 @@ public class ChatApp {
 
 		JButton setRemotePublicKeyBtn = new JButton("Add Remote PK");
 		panel_2.add(setRemotePublicKeyBtn);
-		
+
 		btnMyPk = new JButton("My PK");
 		btnMyPk.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				
-				
+
+
 				//JOptionPane.showMessageDialog(frame, Base64.getEncoder().encodeToString(myPublicKey));
 				JOptionPane.showInputDialog("Your Public key", Base64.getUrlEncoder().encodeToString(myPublicKey));
 			}
@@ -335,7 +338,7 @@ public class ChatApp {
 						fw.append(txtRemotePublicKey.getText().trim());
 						fw.flush();
 						fw.close();
-						
+
 						JOptionPane.showMessageDialog(frame, "PK added");
 					} catch (IOException e1) {
 						// TODO Auto-generated catch block
@@ -570,11 +573,11 @@ public class ChatApp {
 			}
 		});
 		panel_1.add(btnDispatch);
-		
+
 		btnBroadcast = new JButton("Broadcast");
 		btnBroadcast.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				
+
 				if(dispatchStr.length() > 0)
 				{		
 					boolean dispatch = false;
@@ -582,7 +585,7 @@ public class ChatApp {
 					try {
 						//broadcast chat
 						dispatch = dispatchChat(dispatchStr.toString(), true);
-						
+
 					} catch (IOException | NoSuchAlgorithmException | InvalidKeyException | NoSuchPaddingException 
 							| InvalidAlgorithmParameterException | IllegalBlockSizeException | BadPaddingException e1) {
 						e1.printStackTrace();
@@ -646,10 +649,14 @@ public class ChatApp {
 		StringBuffer stb = new StringBuffer("");
 		String str = null;
 
+		long totalLen = 0;
 		while((str = br.readLine()) != null)
+		{
+			totalLen += str.length();
 			stb.append(str).append("\n");
+		}
 		br.close();
-		return stb.toString();
+		return (totalLen == 0) ? "" : stb.toString();
 	}
 
 	/**
@@ -751,11 +758,11 @@ public class ChatApp {
 						saveChatToFile(currentRemoteAddressInFocus, "-------- Dispatch Overwritten --------\n", true);
 
 						dispatchStr = new StringBuffer("");	
-						
+
 						File encChatDispatchLocFile = new File(encChatDispatchLoc);
 						if(encChatDispatchLocFile.exists())
 							encChatDispatchLocFile.delete();
-						
+
 						return true;
 
 					} catch (Exception e) {
@@ -811,10 +818,10 @@ public class ChatApp {
 
 				if(e1.getMessage().equals(ENV.EXCEPTION_BROWSER_EXTENSION_MISSING))
 					JOptionPane.showMessageDialog(frame, ENV.EXCEPTION_BROWSER_EXTENSION_MISSING, "Error", JOptionPane.ERROR_MESSAGE);
-				
+
 				else
 					JOptionPane.showMessageDialog(frame, "Some other exception we have no idea about :P", "Error", JOptionPane.ERROR_MESSAGE);
-				
+
 				return false;
 			}
 		}
@@ -882,16 +889,16 @@ public class ChatApp {
 		{
 			return genEncChatPacketForBroadcast(stringToDispatch);
 		}
-		
+
 		byte[] receiverPublicAddress = Base64.getUrlDecoder().decode(currentRemoteAddressInFocus);
 		byte[] receiverPublicKey = this.addresskeyMap.get(currentRemoteAddressInFocus);
 		byte[] senderAddressBytes = Base64.getUrlDecoder().decode(myPublicAddress);
-		
+
 		/*if(receiverPublicKey != null)
 			System.out.println("Rek " + receiverPublicKey.length);
 		if(myPrivateKey != null)
 			System.out.println("MyP " + myPrivateKey.length);*/
-		
+
 		byte[] sharedSecret = Curve25519.getInstance(Curve25519.BEST).calculateAgreement(receiverPublicKey, myPrivateKey);
 		MessageDigest md = MessageDigest.getInstance("SHA-256");
 		byte[] hashedSharedSecret = md.digest(sharedSecret);
@@ -948,7 +955,7 @@ public class ChatApp {
 
 		return toWrite;
 	}
-	
+
 	/** Create the encrypted chat packet for broadcast transmission. All such packets should be cryptographically indistinguishable.
 	 * <p>
 	 * Structure :
@@ -970,7 +977,7 @@ public class ChatApp {
 	IllegalBlockSizeException, BadPaddingException 
 	{
 		byte[] receiverPublicKey = this.addresskeyMap.get(currentRemoteAddressInFocus);
-			
+
 		byte[] sharedSecret = Curve25519.getInstance(Curve25519.BEST).calculateAgreement(receiverPublicKey, myPrivateKey);
 		MessageDigest md = MessageDigest.getInstance("SHA-256");
 		byte[] hashedSharedSecret = md.digest(sharedSecret);
@@ -983,13 +990,13 @@ public class ChatApp {
 		SecretKey key = new SecretKeySpec(aesKey, "AES");
 		Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
 		cipher.init(Cipher.ENCRYPT_MODE, key, new IvParameterSpec(aesIV));
-		
+
 		byte[] magicBytes = new byte[ENV.BROADCAST_CHAT_MAGIC_BYTES_LEN];
 		Arrays.fill(magicBytes, ENV.BROADCAST_CHAT_MAGIC_BYTES);
 		byte[] senderAddressBytes = Base64.getUrlDecoder().decode(myPublicAddress);
-		
+
 		byte[] data = stringToDispatch.getBytes(StandardCharsets.UTF_8);
-		
+
 		// the data is to be padded to make sure the encrypted packet reached to the size of ENV.FIXED_ENC_CHAT_PACK_LEN
 		int dataLenBeforePadding = data.length;
 		int paddingLength = ENV.FIXED_ENC_CHAT_PACK_LEN - dataLenBeforePadding - (magicBytes.length + senderAddressBytes.length + Integer.BYTES);		
@@ -1003,10 +1010,10 @@ public class ChatApp {
 			data = new byte[tempData.length];
 			System.arraycopy(tempData, 0, data, 0, tempData.length);
 		}
-		
+
 		byte[] datalenBytes = ByteBuffer.allocate(Integer.BYTES).putInt(data.length).array();
-		
-		
+
+
 		byte[] plainTextMessage = new byte[magicBytes.length + senderAddressBytes.length + datalenBytes.length + data.length];
 		int tillNow = 0;
 		System.arraycopy(magicBytes, 0, plainTextMessage, tillNow, magicBytes.length);
@@ -1016,22 +1023,22 @@ public class ChatApp {
 		System.arraycopy(datalenBytes, 0, plainTextMessage, tillNow, datalenBytes.length);
 		tillNow += datalenBytes.length;
 		System.arraycopy(data, 0, plainTextMessage, tillNow, data.length);
-		
-		
+
+
 		byte[] encData = cipher.doFinal(plainTextMessage);
-		
+
 		byte[] chatDataToSign = new byte[aesIV.length + encData.length];
 		System.arraycopy(aesIV, 0, chatDataToSign, 0, aesIV.length);
 		System.arraycopy(encData, 0, chatDataToSign, aesIV.length, encData.length);
-		
+
 		md.reset();
 		byte[] hashedToSign = md.digest(chatDataToSign);
 		byte[] signature = Curve25519.getInstance(Curve25519.BEST).calculateSignature(myPrivateKey, hashedToSign);
-		
+
 		byte[] chatToSend = new byte[chatDataToSign.length + signature.length];
 		System.arraycopy(chatDataToSign, 0, chatToSend, 0, chatDataToSign.length);
 		System.arraycopy(signature, 0, chatToSend, chatDataToSign.length, signature.length);
-		
+
 		//test
 		try
 		{

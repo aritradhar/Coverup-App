@@ -29,6 +29,12 @@ import org.json.JSONObject;
 @SuppressWarnings("unused")
 public class ENV {
 
+	static
+	{
+		ASCIIart.asciiART();
+		System.out.println("\n\n=====================================");
+	}
+	
 	public static String DELIM;
 	static
 	{
@@ -198,7 +204,7 @@ public class ENV {
 		//Initialization of database files
 		//replicated Chrome database file initialization
 		final String REPLICATED_DB_CREATE_STATEMENT = "CREATE TABLE webappsstore2 (originAttributes TEXT, originKey TEXT, scope TEXT, key TEXT, value TEXT)";
-		
+		final String INCOMING_DB_CREATE_STATEMNT = "CREATE TABLE incoming_chat ('sender' TEXT, 'data' TEXT, 'signature' TEXT NOT NULL UNIQUE, PRIMARY KEY(signature))";
 		if(!new File(REPLICATED_CHROME_DB).exists())
 		{
 			try {
@@ -206,6 +212,7 @@ public class ENV {
 				Connection c = DriverManager.getConnection(ENV.JDBC_CONNECTION_STRING + REPLICATED_CHROME_DB);
 				c.createStatement().executeUpdate(REPLICATED_DB_CREATE_STATEMENT);
 				c.close();
+				System.out.println("Replicated chrome DB is created : " + new File(REPLICATED_CHROME_DB).getAbsolutePath());
 			} catch (SQLException | ClassNotFoundException e) {
 				e.printStackTrace();
 			}
@@ -218,6 +225,7 @@ public class ENV {
 				Connection c = DriverManager.getConnection(ENV.JDBC_CONNECTION_STRING + REPLICATED_NATIVE_MESSGAE_DB);
 				c.createStatement().executeUpdate(REPLICATED_DB_CREATE_STATEMENT);
 				c.close();
+				System.out.println("Replicated native message database is created : " + new File(REPLICATED_NATIVE_MESSGAE_DB).getAbsolutePath());
 			} catch (SQLException | ClassNotFoundException e) {
 				e.printStackTrace();
 			}
@@ -228,8 +236,9 @@ public class ENV {
 			try {
 				Class.forName(ENV.JDBC_DRIVER);
 				Connection c = DriverManager.getConnection(ENV.JDBC_CONNECTION_STRING + APP_STORAGE_INCOMING_CHAT_DATABASE_FILE);
-				c.createStatement().executeUpdate(REPLICATED_DB_CREATE_STATEMENT);
+				c.createStatement().executeUpdate(INCOMING_DB_CREATE_STATEMNT);
 				c.close();
+				System.out.println("Incoing chat database is created : " + new File(APP_STORAGE_INCOMING_CHAT_DATABASE_FILE).getAbsolutePath());
 			} catch (SQLException | ClassNotFoundException e) {
 				e.printStackTrace();
 			}

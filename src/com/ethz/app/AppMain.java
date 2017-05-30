@@ -180,7 +180,6 @@ public class AppMain {
 	@SuppressWarnings("unused")
 	public AppMain() throws NoSuchAlgorithmException, SQLException {	
 
-		ASCIIart.asciiART();
 		if(!ENV.AUTO_PILOT)
 			initiateBrowserSelection();
 
