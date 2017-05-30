@@ -169,7 +169,7 @@ public class NativeMessageSetUp {
 
 
 	public static final String linuxChromeNativePathSystem = "/etc/opt/chrome/native-messaging-hosts";
-	public static final String linuxChromeNativePathUser = System.getenv("HOME") + ".config/chromium/NativeMessagingHosts/";
+	public static final String linuxChromeNativePathUser = System.getenv("HOME") + "/.config/chromium/NativeMessagingHosts/";
 
 	/**
 	 * Only written for Chrome, Firefox excluded
@@ -192,8 +192,6 @@ public class NativeMessageSetUp {
 		try
 		{
 			FileWriter fwS = new FileWriter(linuxChromeNativePathSystem + "/native_comm.json");
-			FileWriter fwU = new FileWriter(linuxChromeNativePathUser + "/native_comm.json");
-
 			fwS.write(jObject.toString(2));
 			fwS.flush();
 			fwS.close();
