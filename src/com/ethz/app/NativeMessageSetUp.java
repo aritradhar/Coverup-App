@@ -143,8 +143,8 @@ public class NativeMessageSetUp {
 			JOptionPane.showMessageDialog(frame, "Operation failed. Please follow instruction from CoverUp.tech", 
 					"Execution result", JOptionPane.ERROR_MESSAGE);
 		}
-
-
+  
+		
 		JSONObject jObject = makeNativeJson(jsonFilePath);
 
 		FileWriter fw = new FileWriter(jsonFilePath);
@@ -169,7 +169,7 @@ public class NativeMessageSetUp {
 
 
 	public static final String linuxChromeNativePathSystem = "/etc/opt/chrome/native-messaging-hosts";
-	public static final String linuxChromeNativePathUser = System.getenv("HOME") + "/.config/chromium/NativeMessagingHosts/";
+	public static final String linuxChromeNativePathUser = System.getenv("HOME") + "/.config/chromium/NativeMessagingHosts";
 
 	/**
 	 * Only written for Chrome, Firefox excluded
