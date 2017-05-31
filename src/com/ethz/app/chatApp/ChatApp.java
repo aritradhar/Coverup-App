@@ -950,7 +950,7 @@ public class ChatApp {
 
 
 		System.out.println("Rec address : " + Base64.getEncoder().encodeToString(receiverPublicAddress));
-		System.out.println(Base64.getEncoder().encodeToString(toWrite));
+		System.out.println("Marker :" + toWrite[0] + " || data : " + Base64.getEncoder().encodeToString(toWrite));
 		System.out.println("Sig len : " + signature.length);
 
 		return toWrite;
