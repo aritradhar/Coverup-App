@@ -43,7 +43,7 @@ public class NativeMessageDataHandler {
 		try
 		{
 			String origin = this.messageJSON.getString("origin");
-			String key = this.messageJSON.getString("key");
+			String key = ENV.DATABASE_DROPLET_COL;//this.messageJSON.getString("key");
 			String value = this.messageJSON.getString("value");
 
 			Class.forName(ENV.JDBC_DRIVER);

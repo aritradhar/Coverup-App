@@ -165,6 +165,8 @@ public class RepeatedDatabaseCheck {
 		{
 			jsonBinData = BinUtils.dropletBinToDropletJson
 					(receivedBin, RepeatedDatabaseCheck.ServerPublickey, this.messaage);	
+			
+			//doDataBaseCheck(new JSONObject(jsonBinData));
 
 		}
 		catch(RuntimeException ex)
