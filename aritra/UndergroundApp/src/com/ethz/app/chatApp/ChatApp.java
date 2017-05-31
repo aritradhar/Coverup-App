@@ -958,7 +958,8 @@ public class ChatApp {
 			System.arraycopy(toWrite, 0, paddedChatPacket, 0, toWrite.length);
 			System.arraycopy(padding, 0, paddedChatPacket, toWrite.length, padding.length);
 			System.out.println("Rec address : " + Base64.getEncoder().encodeToString(receiverPublicAddress));
-			System.out.println("Marker :" + toWrite[0] + " || data : " + Base64.getEncoder().encodeToString(toWrite));
+			System.out.println("Marker :" + paddedChatPacket[0] + " || data : " + Base64.getEncoder().encodeToString(paddedChatPacket));
+			System.out.println("B64 len : " + Base64.getEncoder().encodeToString(paddedChatPacket).length());
 			System.out.println("Sig len : " + signature.length);
 			System.out.println("FIX len : " + paddedChatPacket.length);
 
