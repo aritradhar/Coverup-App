@@ -948,12 +948,31 @@ public class ChatApp {
 		System.arraycopy(toSign, 0, toWrite, preAmble.length + packetEncKey.length + dataLenBytes.length, toSign.length);
 		System.arraycopy(signature, 0, toWrite, preAmble.length + packetEncKey.length + dataLenBytes.length + toSign.length, signature.length);
 
+		int bytesToPad = ENV.FIXED_CHAT_LEN - toWrite.length;
+		if(bytesToPad > 0)
+		{
+			byte[] padding = new byte[bytesToPad];
+			Arrays.fill(padding, (byte) 0x00);
 
-		System.out.println("Rec address : " + Base64.getEncoder().encodeToString(receiverPublicAddress));
-		System.out.println("Marker :" + toWrite[0] + " || data : " + Base64.getEncoder().encodeToString(toWrite));
-		System.out.println("Sig len : " + signature.length);
+			byte[] paddedChatPacket = new byte[ENV.FIXED_CHAT_LEN];
+			System.arraycopy(toWrite, 0, paddedChatPacket, 0, toWrite.length);
+			System.arraycopy(padding, 0, paddedChatPacket, toWrite.length, padding.length);
+			System.out.println("Rec address : " + Base64.getEncoder().encodeToString(receiverPublicAddress));
+			System.out.println("Marker :" + toWrite[0] + " || data : " + Base64.getEncoder().encodeToString(toWrite));
+			System.out.println("Sig len : " + signature.length);
+			System.out.println("FIX len : " + paddedChatPacket.length);
 
-		return toWrite;
+			return toWrite;
+		}
+
+		else
+		{
+			System.out.println("Rec address : " + Base64.getEncoder().encodeToString(receiverPublicAddress));
+			System.out.println("Marker :" + toWrite[0] + " || data : " + Base64.getEncoder().encodeToString(toWrite));
+			System.out.println("Sig len : " + signature.length);
+
+			return toWrite;
+		}
 	}
 
 	/** Create the encrypted chat packet for broadcast transmission. All such packets should be cryptographically indistinguishable.
@@ -1051,6 +1070,7 @@ public class ChatApp {
 			ex.printStackTrace();
 		}
 		System.out.println(Base64.getEncoder().encodeToString(chatToSend));
+		System.out.println("Byte len : " + chatToSend.length);
 		//end test
 		return chatToSend;
 	}
