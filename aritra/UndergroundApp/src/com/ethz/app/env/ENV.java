@@ -130,6 +130,7 @@ public class ENV {
 	public static final String BROWSER_CHROME = "BROWSER_CHROME";
 	public static final String BROWSER_NATIVE_MESSAGE = "BROWSER_NATIVE_MESSAGE";
 	public static final int NATIVE_MESSAGE_LISTER_SERVER_PORT = 56789;
+	
 	//magic bytes
 	public static final byte INTR_MAGIC_BYTE = (byte)0x06;
 	public static final int INTR_MAGIC_BYTES_LEN = 8;

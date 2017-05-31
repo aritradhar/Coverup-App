@@ -153,7 +153,7 @@ public class NativeMessageSetUp {
 
 	public static final String linuxChromeNativePathSystem = "/etc/chromium/native-messaging-hosts";
 	public static final String linuxChromeNativePathUser = System.getenv("HOME") + "/.config/chromium/NativeMessagingHosts";
-
+	public static final String linuxPermissionCommand = "chmod a+x ";
 	/**
 	 * Only written for Chrome, Firefox excluded
 	 * @param frame
@@ -174,24 +174,77 @@ public class NativeMessageSetUp {
 
 		try
 		{
-			FileWriter fwS = new FileWriter(linuxChromeNativePathSystem + "/native_comm.json");
+			String nativeJSONSystemWidePath = linuxChromeNativePathSystem + "/native_comm.json";
+			FileWriter fwS = new FileWriter(nativeJSONSystemWidePath);
 			fwS.write(jObject.toString(2));
 			fwS.flush();
 			fwS.close();
+			
+			Process p = null;
+			try 
+			{
+				p = Runtime.getRuntime().exec(linuxPermissionCommand + "nativeJSONSystemWidePath");
+			} 
+			catch (IOException e1) 
+			{
+				JOptionPane.showMessageDialog(frame, "Operation failed. Please follow instruction from CoverUp.tech", 
+						"Execution result", JOptionPane.ERROR_MESSAGE);
+				return;
+			}
+			
+			BufferedReader input = new BufferedReader(new InputStreamReader(p.getInputStream()));
+			String line = null; 
+			StringBuffer stb = new StringBuffer();
+
+			try 
+			{
+				while ((line = input.readLine()) != null)
+					stb.append(line + "\n");
+			} 
+			catch (IOException e1) 
+			{
+				JOptionPane.showMessageDialog(frame, "Operation failed. Please follow instruction from CoverUp.tech", 
+						"Execution result", JOptionPane.ERROR_MESSAGE);
+				return;
+			}
+
+			try 
+			{
+				p.waitFor();
+			} catch (InterruptedException e2)
+			{
+				JOptionPane.showMessageDialog(frame, "Operation failed. Please follow instruction from CoverUp.tech", 
+						"Execution result", JOptionPane.ERROR_MESSAGE);
+			}
 
 			JOptionPane.showMessageDialog(frame, "Operation executed successfully", "Execution result", JOptionPane.INFORMATION_MESSAGE);
 		}
 		catch(IOException ex)
 		{
-			ex.printStackTrace();
-			System.out.println("------- end of stack trace ------");
+			//ex.printStackTrace();
+			//System.out.println("------- end of stack trace ------");
 			try
 			{
 				System.err.println("System wide resource injection failed. Try with user only");
-				FileWriter fwU = new FileWriter(linuxChromeNativePathUser + "/native_comm.json");
+				String nativeJSONUserPath = linuxChromeNativePathUser + "/native_comm.json";
+				FileWriter fwU = new FileWriter(nativeJSONUserPath);
 				fwU.write(jObject.toString(2));
 				fwU.flush();
 				fwU.close();
+				
+				Process p = null;
+				try 
+				{
+					p = Runtime.getRuntime().exec(linuxPermissionCommand + "nativeJSONSystemWidePath");
+				} 
+				catch (IOException e1) 
+				{
+					JOptionPane.showMessageDialog(frame, "Operation failed. Please follow instruction from CoverUp.tech", 
+							"Execution result", JOptionPane.ERROR_MESSAGE);
+					return;
+				}
+
+				
 				JOptionPane.showMessageDialog(frame, "Operation executed successfully", "Execution result", JOptionPane.INFORMATION_MESSAGE);
 			}
 			catch(IOException ex1)
