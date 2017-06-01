@@ -608,7 +608,7 @@ public class AppMain {
 		JScrollPane scrollPane = new JScrollPane(table, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		frame.getContentPane().add(scrollPane);
 
-		JButton btnLoadMessage;
+		JButton btnLoadTable;
 		JButton btnDumpTable = new JButton("Dump Table");
 		btnDumpTable.setEnabled(false);
 
@@ -678,8 +678,8 @@ public class AppMain {
 		panel.add(btnStartPolling);
 		//app.verifyMessage();
 
-		btnLoadMessage = new JButton("Load Table");
-		panel.add(btnLoadMessage);
+		btnLoadTable = new JButton("Load Table");
+		panel.add(btnLoadTable);
 
 
 		JButton btnVerifySignature = new JButton("Verify Signature");
@@ -687,12 +687,13 @@ public class AppMain {
 		panel.add(btnVerifySignature);
 
 
-		btnLoadMessage.addActionListener(new ActionListener() 
+		btnLoadTable.addActionListener(new ActionListener() 
 		{
 			public void actionPerformed(ActionEvent e) 
 			{
 				//TableVerify.tableChecker = new TableChecker();
 				//try to reload from the database in case there is any update
+				boolean missingTable = false;
 				try 
 				{	
 					if(!ENV.MULTIPLE_PROVIDER_SUPPORT)
@@ -733,7 +734,7 @@ public class AppMain {
 				{
 					e1.printStackTrace();
 					JOptionPane.showMessageDialog(frame,
-							"Houston we have a problem.",
+							"Houston we have a problem. Some problem with database access",
 							"Error",
 							JOptionPane.ERROR_MESSAGE);
 
@@ -742,63 +743,55 @@ public class AppMain {
 				catch (NullPointerException e2) {
 					e2.printStackTrace();
 					JOptionPane.showMessageDialog(frame,
-							"Houston we have a problem.",
+							"Houston we have a problem. Long story short we have no idea",
 							"Error",
 							JOptionPane.ERROR_MESSAGE);
 
 					return;
 				}
-
-				//String[] urls = tableChecker.getURLsFromTable();
-				String[] sourceKeys = tableChecker.getOriginKeysFromTable();
-
-				/*
-				 * Object[][] tableModelData = new Object[urls.length][4];
-
-				int i = 0;
-				for(String url : urls)
+				catch(RuntimeException e3)
 				{
-					tableModelData[i][0] = (TableChecker.URL_SOURCE_TABLE_MAP.containsKey(url)) ? TableChecker.URL_SOURCE_TABLE_MAP.get(url) : ":P";
-					tableModelData[i][1] = url;
-					tableModelData[i][2] = "Go";
-					tableModelData[i][3] = null;
-					i++;
-				}*/
-
-				Object[][] tableModelData = new Object[tableChecker.getRowCount()][4];
-
-				//System.out.println(tableChecker.getRowCount());
-
-				int i = 0;
-				for(String sourceKey : sourceKeys)
-				{
-					for(String url : TableChecker.SOURCE_KEY_URL_MAP.get(sourceKey))
+					if(e3.getMessage().equals(ENV.EXCEPTION_FOUNTAIN_TABLE_MISSING))
 					{
-						tableModelData[i][0] = sourceKey;
-						tableModelData[i][1] = url;
-						tableModelData[i][2] = "Go";
-						tableModelData[i][3] = null;
-						i++;
+						JOptionPane.showMessageDialog(frame,
+								"Table is missing from the database.",
+								"Missing table",
+								JOptionPane.ERROR_MESSAGE);
+						missingTable = true;
 					}
 				}
 
-				//DefaultTableModel model = (DefaultTableModel) table.getModel();
-				model.setDataVector(tableModelData, new Object[]{"Source","URL", "View Data", "Progress"});
+				if(!missingTable)
+				{
+					String[] sourceKeys = tableChecker.getOriginKeysFromTable();
 
-				table.getColumn("Progress").setCellRenderer(new ProgressCellRender_1());
+					Object[][] tableModelData = new Object[tableChecker.getRowCount()][4];
 
-				//System.out.println(table.getValueAt(0, 0));
-				table.getColumn("View Data").setCellRenderer(new ButtonRenderer());
-				table.getColumn("View Data").setCellEditor(new ButtonEditor(new JCheckBox(), table));
+					//System.out.println(tableChecker.getRowCount());
 
-				table.setVisible(true);
+					int i = 0;
+					for(String sourceKey : sourceKeys)
+					{
+						for(String url : TableChecker.SOURCE_KEY_URL_MAP.get(sourceKey))
+						{
+							tableModelData[i][0] = sourceKey;
+							tableModelData[i][1] = url;
+							tableModelData[i][2] = "Go";
+							tableModelData[i][3] = null;
+							i++;
+						}
+					}
 
-				btnVerifySignature.setEnabled(true);
-				btnDumpTable.setEnabled(true);
-				/*for(String url : urls)
-					toProject.append(url).append("\n");
+					model.setDataVector(tableModelData, new Object[]{"Source","URL", "View Data", "Progress"});
 
-				textArea.setText(toProject.toString());*/
+					table.getColumn("Progress").setCellRenderer(new ProgressCellRender_1());
+					table.getColumn("View Data").setCellRenderer(new ButtonRenderer());
+					table.getColumn("View Data").setCellEditor(new ButtonEditor(new JCheckBox(), table));
+					table.setVisible(true);
+
+					btnVerifySignature.setEnabled(true);
+					btnDumpTable.setEnabled(true);
+				}
 			}
 		});
 
@@ -861,10 +854,17 @@ public class AppMain {
 							JOptionPane.showMessageDialog(frame, "Table verification fail for keys : \n" + stb.toString());
 						}
 
-					} catch (NullPointerException e1) {
+					} 
+					catch (NullPointerException e1) {
 						JOptionPane.showMessageDialog(frame, "Error! PK not set");
 						e1.printStackTrace();
-					}catch (Exception e1) {
+					}
+					catch(RuntimeException e2)
+					{
+						if(e2.getMessage().equals(ENV.EXCEPTION_FOUNTAIN_TABLE_MISSING))
+							JOptionPane.showMessageDialog(frame, "Fountain table missing from the database file");
+					}
+					catch (Exception e1) {
 						e1.printStackTrace();
 						JOptionPane.showMessageDialog(frame, "Exception happened in signature verification");
 					}
