@@ -1049,6 +1049,7 @@ public class AppMain {
 			public void actionPerformed(ActionEvent arg0) {
 
 				byte[] keyBytes = new byte[ENV.AES_KEY_SIZE];
+				//LOL
 				Arrays.fill(keyBytes, (byte) 0x00);
 				FileOutputStream fw_bin = null;
 				try {

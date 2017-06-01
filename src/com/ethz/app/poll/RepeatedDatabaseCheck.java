@@ -66,6 +66,18 @@ public class RepeatedDatabaseCheck {
 	public String modifiedDatabaseLocation;
 
 
+	/**
+	 * Entry for the database check. Goes through the DB and checks for table and fountain/interactive data. Supports both single and multiple entry server provider. 
+	 * @param modifiedDatabaseLocation
+	 * @throws SQLException
+	 * @throws IOException
+	 * @throws IllegalBlockSizeException
+	 * @throws BadPaddingException
+	 * @throws NoSuchAlgorithmException
+	 * @throws InvalidKeyException
+	 * @throws NoSuchPaddingException
+	 * @throws InvalidAlgorithmParameterException
+	 */
 	public RepeatedDatabaseCheck(String modifiedDatabaseLocation) throws SQLException, IOException, 
 	IllegalBlockSizeException, BadPaddingException, NoSuchAlgorithmException, InvalidKeyException, 
 	NoSuchPaddingException, InvalidAlgorithmParameterException 
@@ -388,6 +400,9 @@ public class RepeatedDatabaseCheck {
 		String dropletUrl = jObject.getString("url");
 
 		JSONObject tableJSONData = TableChecker.URL_JSON_TABLE_MAP.get(dropletUrl);
+		if(tableJSONData == null)
+			throw new RuntimeException(ENV.EXCEPTION_FOUNTAIN_TABLE_MISSING);
+		
 		String dropletLocation =  tableJSONData.get("dropletLoc").toString();
 
 		this.messaage.append("\ndroplet location : ").append(dropletLocation);
@@ -647,6 +662,8 @@ public class RepeatedDatabaseCheck {
 				try {
 					this.doDataBaseCheckBin(row[0]);
 				} catch(Exception ex1) {
+					if(ex1.getMessage().equals(ENV.EXCEPTION_FOUNTAIN_TABLE_MISSING))
+						this.messaage.append("\n Fountain table missing from database");
 					continue;
 				}
 			}
