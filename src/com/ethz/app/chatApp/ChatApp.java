@@ -963,7 +963,7 @@ public class ChatApp {
 			System.out.println("Sig len : " + signature.length);
 			System.out.println("FIX len : " + paddedChatPacket.length);
 
-			return toWrite;
+			return paddedChatPacket;
 		}
 
 		else
