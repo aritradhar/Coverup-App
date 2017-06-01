@@ -25,6 +25,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.management.RuntimeErrorException;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -132,6 +134,8 @@ public class TableChecker
 		ffce.getFirefoxCacheFile();
 		this.multipleProviderRows = ffce.connectDatabaseMultipleProvider(ENV.DATABASE_TABLE_COL);
 
+		if(multipleProviderRows.size() == 0)
+			throw new RuntimeException(ENV.EXCEPTION_FOUNTAIN_TABLE_MISSING);
 		
 		for(String[] row : this.multipleProviderRows)
 		{
@@ -280,6 +284,9 @@ public class TableChecker
 	{
 		if(this.ServerpublicKey == null)
 			return false;
+		
+		if(sliceJson == null)
+			throw new RuntimeException(ENV.EXCEPTION_FOUNTAIN_TABLE_MISSING);
 		
 		byte[] sliceTableBytes = sliceJson.getBytes(StandardCharsets.UTF_8);
 		
