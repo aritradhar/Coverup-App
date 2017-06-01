@@ -126,6 +126,11 @@ public class RepeatedDatabaseCheck {
 			else
 				tabCheck.loadtableDataMultipleProvider();
 		}
+		catch(RuntimeException ex1)
+		{
+			if(ex1.getMessage().equals(ENV.EXCEPTION_FOUNTAIN_TABLE_MISSING))
+				throw new RuntimeException(ENV.EXCEPTION_FOUNTAIN_TABLE_MISSING);
+		}
 		catch(Exception ex)
 		{
 			return false;
