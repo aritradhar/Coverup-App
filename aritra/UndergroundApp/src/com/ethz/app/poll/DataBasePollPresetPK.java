@@ -156,8 +156,14 @@ public class DataBasePollPresetPK extends JFrame {
 
 				catch(RuntimeException ex)
 				{
-					ex.printStackTrace();
-					textArea.append("\n".concat(ex.getMessage()));
+					if(ex.getMessage().equals(ENV.EXCEPTION_FOUNTAIN_TABLE_MISSING))
+					{
+						textArea.append("\nTable does not exist in the database");
+						RepeatedDatabaseCheck.count %= 4;
+						textArea.append("\n---------------" + ENV.PROGRESS_SYMB[RepeatedDatabaseCheck.count++] + "---------------");
+					}
+					else
+						textArea.append("\n".concat(ex.getMessage()));
 
 				}
 				catch (Exception e) 
