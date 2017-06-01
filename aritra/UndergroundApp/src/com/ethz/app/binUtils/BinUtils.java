@@ -253,7 +253,9 @@ public class BinUtils {
 			
 			if(!verifiyResult)
 				throw new RuntimeException("Droplet Signbature not verified");
-							
+			
+			messageLog.append("\nDroplet signature verified\n");
+			
 			signatureBase64 = Base64.getUrlEncoder().encodeToString(signature);
 		} 
 
